@@ -1,0 +1,30 @@
+
+<div id="bloc">
+	<a href="2.html" id="a">IT</a>
+</div>
+
+<script type="text/javascript">
+window.onload = function(){
+	var top = Math.round(Math.random() * 450);
+	var left = Math.round(Math.random() * 460);
+	document.getElementById("a").style.top = top + "px";
+	document.getElementById("a").style.left = left + "px";
+}
+</script>
+
+<style>
+	a{
+		color: white;
+		font-size : 2.5em;
+		position : relative;
+	}
+	#bloc{
+		margin : 50px auto;
+		border : 1px solid;
+		width : 500px;
+		height : 500px;
+	}
+	a:hover{
+		color: lightgrey;
+	}
+</style>

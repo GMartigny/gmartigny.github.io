@@ -1,0 +1,19 @@
+.vol_outter{
+	background : lightgrey;
+	border : 1px inset lightgrey;
+	width : 200px;
+	height : 20px;
+	border-radius : 5px;
+	padding-right : 7px;
+	margin : 0;
+}
+.vol_inner{
+	position : relative;
+	width : 2%;
+	height : 18px;
+	background : red;
+	border : 1px outset red;
+	border-radius : 4px;
+	cursor : e-resize;
+	margin : 0;
+}

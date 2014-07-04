@@ -1,0 +1,164 @@
+<head>
+<style>
+#main{
+	width : 100%;
+}
+form{
+	padding-top : 10px;
+	margin : 10px 10px 50px;
+}
+#fileInput{
+	display : none;
+}
+#fileLabel{
+	position : relative;
+	font-weight : bold;
+	font-size : 1.3em;
+	background-color : orange;
+	border : 3px outset lightgrey;
+	color : #F2F2F2;
+	text-shadow : -1px -1px 0 grey;
+	padding : 10px 40px 10px 15px;
+	border-radius : 8px;
+	cursor : pointer;
+	transition : background linear 0.5s;
+}
+#fileLabel:active{
+	border-style : inset;
+	padding : 9px 41px 11px 14px;
+}
+#labelImg{
+	position : absolute;
+	right : 9px;
+	top : 7px;
+	height : 32px;
+}
+#fileLabel:active img{
+	top : 6px;
+	right : 10px;
+}
+#fileList{
+
+}
+#fileList li{
+	position : relative;
+	padding : 20px 10px;
+	margin : 10px 0;
+	box-shadow : 2px 2px 0 grey;
+	border-radius : 2px;
+	background : lightblue;
+	overflow : hidden;
+	transition : opacity ease-in-out 0.6s;
+}
+#fileList li:nth-child(even){
+	background : lightgrey;
+}
+#fileList li span{
+	position : absolute;
+	left : 300px;
+}
+#fileList li img{
+	position : absolute;
+	left : 600px;
+	top : 2px;
+	height : 56px;
+}
+</style>
+<script>
+var imgs = [];
+var fileLabel;
+var fileInput;
+var labelImg;
+
+var fileList;
+
+var timer = 0;
+
+window.onload = function(){
+	fileLabel = getById("fileLabel");
+	fileInput = getById("fileInput");
+	labelImg = getById("labelImg");
+	fileList = getById("fileList");
+
+	fileLabel.onclick = function(){
+		fileInput.click();
+	};
+
+	fileInput.onchange = function(){
+		fileLabel.firstChild.data = this.value;
+		fileLabel.style.backgroundColor = "orange";
+		labelImg.src = imgs[1];
+		setTimeout(function(){
+			if(Math.random()*1.3<<0){
+				labelImg.src = imgs[3];
+				fileLabel.style.backgroundColor = "red";
+			}
+			else{
+				labelImg.src = imgs[2];
+				fileLabel.style.backgroundColor = "lightgreen";
+				addNewFile(fileInput.value);
+			}
+		}, 1500);
+	};
+
+	imgs = ["hi.gif", "load.gif", "ok.gif", "ko.gif"];
+	var tmp = new Image();
+	for(var i=0;i<imgs.length;++i){
+		tmp.src = imgs[i];
+	}
+	labelImg.src = imgs[0];
+
+	addNewFile("Portes ouvertes.png");
+};
+
+var alphabet = "abcdefghijklmopqrstuvwxyz1234567890ABCDEFGHIJKLMOPQRSTUVWXYZ";
+function addNewFile(name){
+	var url = "";
+	for(var i=0;i<5;++i){
+		url += alphabet[Math.random()*alphabet.length<<0];
+	}
+
+	var newLi = document.createElement("li");
+	newLi.style.opacity = "0";
+	newLi.innerHTML = name;
+	var link = document.createElement("span");
+	link.innerHTML = "<a href='http://goo.gl/"+ url +"' target='_blank'>goo.gl/"+ url +"</a>";
+	newLi.appendChild(link);
+	var qrc = new Image();
+	qrc.src = "http://goo.gl/"+ url +".qr";
+	timer = Date.now();
+	qrc.onload = function(){
+		var diff = Date.now() - timer;
+		console.log(diff);
+		if(diff < 1000) setTimeout(reset, 1000-diff);
+		else reset();
+	};
+	newLi.appendChild(qrc);
+	fileList.appendChild(newLi);
+}
+
+function reset(){
+	fileList.lastChild.style.opacity = "1";
+	fileLabel.firstChild.data = "Nouveau Fichier";
+	fileLabel.style.backgroundColor = "orange";
+	labelImg.src = imgs[0];
+}
+
+function getById(id){
+	return document.getElementById(id);
+}
+</script>
+</head>
+<body>
+<div id="main">
+	<form>
+		<label for="fileInput" id="fileLabel" title="Pas plus de 5Mo">
+			Nouveau Fichier
+			<img src="hi.gif" id="labelImg"/>
+		</label>
+		<input type="file" id="fileInput" name="fileInput"><br/>
+	</form>
+	<ul id="fileList">
+	</ul>
+</div>
+</body>

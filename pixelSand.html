@@ -1,0 +1,185 @@
+<style type="text/css">
+#holder{
+	position: relative;
+	width: 850px;
+	margin: 50px auto 0;
+}
+#c{
+	display: inline-block;	
+	width: 800px;
+	height: 400px;
+	box-shadow: 0 0 20px #666;
+	cursor: default;
+	background: #FFF;
+}
+#palette{
+	position: absolute;
+	top: 10px;
+	right: 0;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+#palette li{
+	width: 30px;
+	height: 30px;
+	border-radius: 10px;
+	margin: 10px;
+}
+#palette li.selected{
+	box-shadow: 0 0 10px #E80;
+}
+#options{
+	position: absolute;
+}
+</style>
+<div id="holder">
+	<canvas id="c" width="400" height="200"></canvas>
+	<ul id="palette"></ul>
+</div>
+<script type="text/javascript">
+var can = document.getElementById("c"),
+	bound = can.getBoundingClientRect(),
+	list = document.getElementById("palette"),
+	selected,
+	glue = false,
+	ctx = can.getContext("2d"),
+	PI = Math.PI,
+	grains = {},
+	color = "",
+	palette = ["#E80", "#222", "#EB4", "#F63", "#EE3", "#DCA"];
+	mouse = {x:0, y:0, pressed:false};
+
+function start(){
+	for(var i=0;i<palette.length;++i){
+		var li = document.createElement("li");
+		li.style.background = palette[i];
+		li.value = i;
+		li.onclick = function(){
+			selColor(this.value);
+		}
+		list.appendChild(li);
+	}
+	selColor(0);
+	grains[color] = [];
+	setInterval(draw, 14);
+}
+start();
+
+function selColor(i){
+	color = palette[i];
+	if(selected) selected.className = "";
+	selected = list.children[i];
+	selected.className = "selected";
+	grains[color] = grains[color] || [];
+}
+
+function draw(){
+	if(mouse.pressed){
+		var x = mouse.x + roll(0, 2)-1,
+			y = mouse.y;
+		if(!something(x, y)){
+			var g = new Grain(x, y);
+			g.render();
+			grains[color].push(g);
+		}
+	}
+	everything(function(i){
+		i.prev.x = i.x;
+		i.prev.y = i.y;
+		i.falling = i.canMove();
+		if(i.falling){
+			i.render();
+		}
+	}, true);
+}
+function wipe(){
+	ctx.clearRect(0, 0, can.width, can.height);
+	grains = {};
+	grains[color] = [];
+}
+
+function everything(f, setColor){
+	for(var c in grains){
+		if(c){
+			if(setColor) ctx.fillStyle=c;
+			var grp = grains[c];
+			for (var i=0;i<grp.length;++i) {
+				f(grp[i]);
+			}
+		}
+	}
+}
+
+window.onkeydown = function(e){
+	if(e.keyCode == 27) // escape
+		wipe();
+}
+window.onmousemove = function(e){
+	mouse.x = (e.clientX-bound.left)/2<<0;
+	mouse.y = (e.clientY-bound.top)/2<<0;
+	if(mouse.x < 0) mouse.x = 0;
+	else if(mouse.x > can.width) mouse.x = can.width;
+	if(mouse.y < 0) mouse.y = 0;
+	else if(mouse.y > can.height) mouse.y = can.height;
+};
+can.onmousedown = function(){
+	mouse.pressed = true;
+};
+window.onmouseup = function(){
+	mouse.pressed = false;
+};
+
+function Grain(x, y){
+	this.x = x;
+	this.y = y;
+	this.prev = {};
+
+	this.falling = true;
+
+	this.render = function(){
+		// draw the grain
+		ctx.clearRect(this.prev.x, this.prev.y, 1, 1);
+		ctx.fillRect(this.x, this.y, 1, 1);
+	};
+	this.canMove = function(){
+		if(this.y>can.height-5) return false;
+
+		if(this.falling){
+			var und = this.y+1,
+				a, b, c;
+			// check what's under
+			if((a=something(this.x, und)) && !a.falling){
+				if((b=something(this.x-1, und)) && !b.falling){
+					if((c=something(this.x+1, und)) && !c.falling){
+						return false;
+					}
+					else ++this.x;
+				}
+				else if(something(this.x+1, und))
+					--this.x;
+				else{
+					if(roll(0, 1)) ++this.x;
+					else --this.x;
+				}
+			}
+			++this.y;
+			return true;
+		}
+		else return false;
+	}
+}
+
+function something(x, y){
+	var res = false;
+	everything(function(i){
+		if(i.x == x && i.y == y) res = i;
+	}, false);
+	return res;
+}
+
+function roll(from, to){
+	return (random()*(to-from+1)+from)<<0;
+}
+var random = Math.random;
+</script>

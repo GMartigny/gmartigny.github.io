@@ -1,0 +1,172 @@
+<style>
+#snook{
+	background : #B1770A;
+	padding : 25px;
+	position : absolute;
+	border : 2px outset #B1770A;
+	border-radius : 23px;
+	box-shadow : 2px 2px 7px black;
+	margin : 130px 450px;
+}
+#floor{
+	height : 300;
+	width : 500;
+	background : green;
+	border : 5px inset #B1770A;
+}
+#can{
+	position : absolute;
+	margin-left: 5px;
+    margin-top: -305px;
+}
+ul{
+	list-style : none;
+	position : absolute;
+	padding : 5px;
+	margin-top : -10px;
+	margin-left : -10px;
+	width : 540px
+}
+ul :nth-child(3n+1){
+	margin-left : 0;
+}
+li{
+	width : 25px;
+	height : 25px;
+	background : black;
+	border-radius : 15px;
+	border : 1px inset black;
+	float : left;
+	margin-left : 220px;
+	margin-bottom : 270px;
+}
+#dot{
+	position : absolute;
+	background : white;
+	width : 6px;
+	height : 6px;
+	border-radius : 3px;
+	opacity : 0.8;
+	margin: -157px 127px;
+}
+</style>
+<div id="snook">
+	<ul>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+	<div id="floor"></div>
+	<div id="dot"></div>
+	<canvas height="300" width="500" id="can"></canvas>
+</div>
+frottement = { x: <span id="x">0</span>, y: <span id="y">0</span>};
+<script>
+var can;
+var ctx;
+
+var mov = false;
+
+var all = {
+	wht : {
+		x: 113,
+		y: 138,
+		v: {
+			x: 0,
+			y: 0
+		},
+		mov: false
+	},
+	red : [],
+	ylw : [],
+	blk : {
+		x: 375,
+		y: 150,
+		v: {
+			x: 0,
+			y: 0
+		}
+	}
+}
+
+window.onload = function(){
+	can = document.getElementById("can");
+	ctx = can.getContext("2d");
+	
+	setInterval(looping, 20);
+	setTimeout(function(){
+		all.wht.v.x = 7;
+		all.wht.v.y = 2;
+		all.wht.mov = true;
+	}, 1000);
+};
+
+window.onmousemove = function(e){
+
+};
+
+function looping(){
+	ctx.clearRect(0, 0, 500, 300);
+	if(all.wht.mov) moveBall(all.wht);
+	draw(all.wht, 200,200,200);
+}
+
+function moveBall(bal){
+	bal.x += bal.v.x;
+	bal.y += bal.v.y;
+	frX = 0.99 - 0.009 * (1/(4 * Math.abs(bal.v.x)+1));
+	frY = 0.99 - 0.009 * (1/(4 * Math.abs(bal.v.y)+1));
+	bal.v.x *= frX;
+	bal.v.y *= frY;
+	
+	if(Math.abs(bal.v.x) < 0.1 && Math.abs(bal.v.y) < 0.1){
+		bal.v.x = 0;
+		bal.v.y = 0;
+		bal.mov = false;
+	}
+	
+	rebound(bal);
+	document.getElementById("x").innerHTML = bal.v.x;
+	document.getElementById("y").innerHTML = frX;
+}
+
+function rebound(bal){
+	if(bal.x < 0){
+		bal.x = 0;
+		bal.v.x *= -0.7;
+	}
+	if(bal.y < 0){
+		bal.y = 0;
+		bal.v.y *= -0.7;
+	}
+	if(bal.x > 476){
+		bal.x = 476;
+		bal.v.x *= -0.7;
+	}
+	if(bal.y > 276){
+		bal.y = 276;
+		bal.v.y *= -0.7;
+	}
+}
+
+function draw(bal, r, g, b){
+	var ra = (r+40 < 255) ? r+40 : 255;
+	var ga = (g+40 < 255) ? g+40 : 255;
+	var ba = (b+40 < 255) ? b+40 : 255;
+
+	var gra = ctx.createRadialGradient(bal.x+8, bal.y+8, 3, bal.x+12, bal.y+12, 12);
+	gra.addColorStop(0, "rgb(" + ra+","+ga+","+ba + ")");
+	gra.addColorStop(0.99, "rgb(" + r+","+g+","+b + ")");
+	gra.addColorStop(1, "rgba(" + r+","+g+","+b + ", 0)");
+	
+	ctx.fillStyle = gra;
+	ctx.fillRect(bal.x, bal.y, 100, 100);
+}
+
+function dist(b1, b2){
+	
+}
+</script>

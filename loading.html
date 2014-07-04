@@ -1,0 +1,100 @@
+<head>
+	<style>
+	*{
+		box-sizing: border-box;
+	}
+	.barre{
+		position : relative;
+		width : 900px;
+		height : 40px;
+		line-height: 40px;
+		margin : 20px auto;
+		border-radius : 5px;
+		box-shadow: 0 0 5px grey inset;
+		text-align : center;
+		font-family : Trebuchet MS;
+		font-weight : bold;
+	}
+	.inner{
+		position : absolute;
+		top : 0px;
+		width : 0px;
+		height : 100%;
+		border-radius : 5px;
+		background-image : linear-gradient(lightblue 10%, blue 180%);
+		overflow : hidden;
+		z-index : -1;
+	}
+	.inner.big{
+		width: 100%;
+	}
+	/*- Animation -*/
+	.anim{
+		position : absolute;
+		top : -20px;
+		left : -100px;
+		width : 100px;
+		height : 70px;
+		background : linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(230, 240, 250, 0.7) 50%, rgba(255, 255, 255, 0) 100%);
+		-webkit-transform : rotate(15deg);
+		-webkit-animation : slide 2s ease-in infinite;
+	}
+	@-webkit-keyframes slide{
+		0%{
+			left : -100px;
+		}
+		30%{
+			left : -100px;
+		}
+		100%{
+			left : 900px;
+		}
+	}
+	/*---------------*/
+	</style>
+</head>
+<body>
+	<div class="barre">Loading
+		<div class="inner"><div class="anim"></div></div>
+	</div>
+	<div class="barre">Loading
+		<div class="inner"><div class="anim"></div></div>
+	</div>
+	<div class="barre">Loading
+		<div class="inner"><div class="anim"></div></div>
+	</div>
+	<script>
+	//- Variables à modifier (en seconde) -//
+	var tempsMin = 4;
+	var tempsMax = 7;
+	var delaiMax = 2;
+	//-------------------------------------//
+
+	var loaders = [];
+	function loading(){
+		loaders = document.getElementsByClassName("barre");
+		for(var i=0;i<loaders.length;++i){
+			loaders[i].children[0].style.transition = "width linear " + (Math.random()*(tempsMax-tempsMin)+tempsMin) + "s " + Math.random()*delaiMax + "s";
+			loaders[i].children[0].style.width = "100%";
+			//loaders[i].children[0].classList.add("big");
+		}
+		setInterval(percent, 16);
+	}
+	
+	window.onload = function(){
+		setTimeout(loading, 100);
+	};
+
+	function percent(){
+		for(var i=0;i<loaders.length;++i){
+			var prct = loaders[i].children[0].offsetWidth/9<<0;
+			if(prct > 0) loaders[i].firstChild.data = prct + "%"; // affichage des pourcentage
+			if(prct >= 100){
+				loaders[i].children[0].style.background = "linear-gradient(white -10%, lightgreen 70%)"; // mise en vert
+				loaders[i].firstChild.data = "Ok !"; // message en fin de "téléchargement"
+				loaders[i].children[0].innerHTML = ""; // suppression de l'animation
+			}
+		}
+	}
+	</script>
+</body>

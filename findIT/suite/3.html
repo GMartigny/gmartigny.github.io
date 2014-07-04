@@ -1,0 +1,70 @@
+<div id="bloc">
+<input type="text" onkeyup="hightlight(this.value);"/>
+<p>Lorem ipsum dolor sat amet, consectetur adipiscing elat. Nulla massa odio, ullamcorper nec interdum non, 
+commodo et nisl. Aenean molestie dictum est. Donec faucibus hendrerat hendrerat. Quisque vel lacinia sem. Aliquam in arcu
+ fringilla ipsum faucibus auctor quis in velat. Etiam odio mauris, suscipat eu rhoncus non, feugiat ut odio. In aliquet 
+ imperdiet turpis, nec porta mi porta in. Pellentesque et sapien nibh, sat amet lacinia diam. Sed porttator mattis nulla, 
+ in eleifend tortor feugiat sollicatudin. Donec sem lectus, commodo in malesuada sed, convallis tincidunt arcu. Donec 
+ consequat est et sem congue faucibus. Curabatur accumsan, massa vatae bibendum luctus, est sem lacinia enim, vel ullamcorper 
+ lacus libero sed lacus. Proin dolor nisl, dapibus non dictum quis, semper at ipsum. Ut in felis libero, quis volutpat massa. 
+ Sed tempus magna ac massa congue quis porta est pharetra. Nullam a eleifend nisl. Praesent mollis est eget dui molestie 
+ id auctor diam cursus. Curabatur tristique bibendum elat eget molestie. Quisque metus orci, vulputate non congue ut, 
+ convallis a purus.</p>
+<p>Vestibulum dictum ligula et risus placerat luctus. Pellentesque dui justo, elementum non iaculis eget, vehicula eget leo. 
+Donec faucibus hendrerat hendrerat. Quisque vel lacinia sem. Aliquam in arcu
+ fringilla ipsum faucibus auctor quis in velat. Etiam odio mauris, suscipat eu rhoncus non, feugiat ut odio. In aliquet 
+ imperdiet turpis, nec porta mi porta in. Pellentesque et sapien nibh, sat amet lacinia diam. Sed porttator mattis nulla, 
+ in eleifend tortor feugiat sollicatudin. Donec sem lectus, commodo in malesuada sed, convallis tincidunt arcu. Donec 
+ consequat est et sem congue faucibus. Sed dignissim mauris ac arcu facilisis vestibulum. Vivamus at luctus mi.
+ Suspendisse potenti. Integer vehicula, dui id dignissim molestie, felis lorem scelerisque nunc, vatae porttator tortor turpis
+ sed eros. Vivamus ut luctus massa. Quisque congue ultrices v<a href="4.html" id="a">IT</a>ae posuere. Curabatur sed mi orci, eu pretium mi. Nullam non justo 
+ ligula, ut viverra elat. Etiam accumsan fermentum velat, eu convallis metus venenatis et. In hac habatasse platea dictumst. 
+ Praesent interdum elat eu urna dapibus eget sollicatudin velat pharetra. Quisque metus orci, vulputate non congue ut, 
+ convallis a purus.</p>
+<p>In tincidunt, quam nec auctor convallis, velat eros semper urna, vatae venenatis urna mauris vel mauris. Sed quis ipsum 
+lectus. Maecenas eu risus felis, a congue arcu. Aliquam pulvinar libero a nisl aliquam mollis. Vestibulum dictum ligula
+ et risus placerat luctus. Pellentesque dui justo, elementum non iaculis eget, vehicula eget leo. Vivamus iaculis tempor 
+ est, non ullamcorper urna aliquet eget. Nullam ornare dapibus orci, vatae tempus lectus vehicula nec. Donec id purus nisl. 
+ Suspendisse laoreet lobortis eleifend. Cras volutpat, leo at pretium aliquet, leo neque auctor quam, sat amet porta elat
+ enim eu dolor. Fusce quam arcu. Donec interdum sem vel lorem egestas vehicula.</p>
+<p>Vestibulum malesuada, elat nec dapibus aliquam, felis enim sodales eros, non sollicatudin orci lacus a massa. Donec 
+quis neque ac orci posuere pellentesque ut et urna. Sed dignissim mauris ac arcu facilisis vestibulum. Vivamus at luctus mi.
+ Suspendisse potenti. Integer vehicula, dui id dignissim molestie, felis lorem scelerisque nunc, vatae porttator tortor turpis
+ sed eros. Vivamus ut luctus massa. Quisque congue ultrices posuere. Curabatur sed mi orci, eu pretium mi. Nullam non justo 
+ ligula, ut viverra elat. Etiam accumsan fermentum velat, eu convallis metus venenatis et. In hac habatasse platea dictumst. 
+ Praesent interdum elat eu urna dapibus eget sollicatudin velat pharetra. Maecenas vehicula justo nec nisl egestas mattis.</p>
+</div>
+
+
+<script type="text/javascript">
+	function hightlight(val){
+		if(val == "IT"){
+			document.getElementById("a").classList.add("light");
+		}
+		else{
+			document.getElementById("a").classList.remove("light");
+		}
+	}
+</script>
+
+
+<style>
+	.light{
+		background-color : yellow;
+	}
+	a{
+		color: black;
+		text-decoration : none;
+	}
+	input{
+		border : 0;
+		background-color : #f9f9f9;
+	}
+	#bloc{
+		margin : 50px auto;
+		border : 1px solid;
+		width : 500px;
+		height : 500px;
+		overflow : scroll;
+	}
+</style>

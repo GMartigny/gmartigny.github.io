@@ -1,0 +1,84 @@
+<style>
+#can{
+	box-shadow : 0 0 10px grey;
+}
+</style>
+<canvas id="can" width="800" height="600"></canvas>
+<script src="Player.js"></script>
+<script src="Map.js"></script>
+<script src="GameInput.js"></script>
+<script>
+var can = getById("can");
+var ctx = can.getContext("2d");
+
+var map = new Map(ctx, "mapData.png");
+var me = new Player(ctx, map);
+
+var raf = 	requestAnimationFrame ||
+			webkitRequestAnimationFrame ||
+			mozRequestAnimationFrame ||
+			function(f){
+				return setInterval(f, 20);
+			};
+
+function start(){
+	GameInput.link([
+		[
+			GameInput.UP,
+			function(){
+				me.jump();
+			}
+		],
+		[
+			GameInput.RIGHT,
+			function(){
+				me.run(1);
+			}
+		],
+		[
+			GameInput.LEFT,
+			function(){
+				me.run(-1);
+			}
+		]
+	]);
+	draw();
+}
+start();
+
+function draw(){
+	raf(draw);
+	ctx.clearRect(0, 0, can.width, can.height);
+	
+	map.render();
+	me.render();
+	me.move();
+}
+
+function getById(id){
+	return document.getElementById(id);
+}
+function retreive(url, onsuccess){
+	var xhr = new XMLHttpRequest();
+	
+	xhr.open("GET", url, false);
+	xhr.onload = function(){
+		onsuccess(xhr.responseText);
+	};
+	xh.send(null);
+}
+ImageData.prototype.getPixel = function(x, y){
+	var pos = 4*((y*this.width)+x);
+	return new Pixel(this.data[pos++], this.data[pos++], this.data[pos++], this.data[pos++]);
+};
+Array.prototype.contains = function(o, strict){
+	if(strict === undefined) strict = true;
+	var find = false;
+	for(var i=0;i<this.length&&!find;++i){
+		if(this[i] === o || (this[i] == o && !strict)){
+			find = true;
+		}
+	}
+	return find;
+}
+</script>

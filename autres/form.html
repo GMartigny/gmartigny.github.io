@@ -1,0 +1,96 @@
+<style>
+	form{
+		position : relative;
+		width : 450px;
+	}
+	label{
+		font-weight : bold;
+	}
+	.verifable{
+		width : 50%;
+		border : 1px solid grey;
+		border-radius : 3px;
+		padding-right : 60px;
+		margin-bottom : 10px;
+	}
+	.verifable:focus{
+		background : #FFF9D8;
+	}
+
+	.check{
+		position : absolute;
+		background : grey;
+		height : 8px;
+		width : 50px;
+		border-radius : 4px;
+		margin : 7px -55px;
+		transition : all linear 0.5s;
+	}
+
+	.infos{
+		position : absolute;
+		float : right;
+		color : grey;
+		font-size : 13px;
+		transition : all linear 0.5s;
+	}
+
+	input[type="submit"]{
+		background : white;
+		border-radius : 5px;
+		margin : 5px 141px 0;
+	}
+</style>
+<form action="#" method="post" onsubmit="return allGood;">
+	<label for="id">Votre identifiant :</label><br/>
+	<input id="id" type="text" class="verifable"/><span class="check"></span>&nbsp;<span class="infos">Entre 2 et 20 caractères (pas de caractères spéciaux sauf "_")</span><br/>
+	<label for="psw">Votre mot de passe :</label><br/>
+	<input id="psw" type="password" class="verifable"/><span class="check"></span>&nbsp;<span class="infos">Au moins 4 caractères dont un spécial</span><br/>
+	<input type="submit" value="Connexion"/>
+</form>
+<script>
+var conditions = {
+	id : function(v){ return (2 <= v.length && v.length <= 20 && !/\W/.test(v)); },
+	psw : function(v){ return (4 <= v.length && /[\W_]/.test(v)); }
+};
+
+var allGood = false;
+
+var verifs = document.getElementsByClassName("verifable");
+var checks = document.getElementsByClassName("check");
+var infoss = document.getElementsByClassName("infos");
+
+for(var i=0;i<verifs.length;++i){
+	verifs[i].onkeyup = function(){ checkContent(this); };
+	verifs[i].check = checks[i];
+	verifs[i].infos = infoss[i];
+	checkContent(verifs[i]);
+}
+
+function checkContent(inp){
+	allGood[inp.id] = false;
+	var val = inp.value;
+	if(val.length){
+		if(conditions[inp.id](val)){
+			inp.check.style.backgroundColor = "green";
+			inp.infos.style.opacity = 0;
+			allGood[inp.id] = true;
+		}
+		else{
+			inp.check.style.backgroundColor = "red";
+			inp.infos.style.opacity = 1;
+		}
+	}
+	else{
+		inp.check.style.backgroundColor = "grey";
+		inp.infos.style.opacity = 1;
+	}
+
+	var ready = true;
+	for(var i=0;i<verifs.length;++i){
+		ready = ready && conditions[verifs.item(i).id](verifs.item(i).value);
+		console.log(ready);
+	}
+	allGood = ready;
+}
+</script>

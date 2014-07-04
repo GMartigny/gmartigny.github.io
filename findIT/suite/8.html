@@ -1,0 +1,41 @@
+<body>
+<div id="bloc">
+	<input type="button" value="Clique !" onclick="charge(this);" id="but"/><br/>
+	<span id="load" style="display : none;"><img src="loader.gif" alt="Loading" />Wait for it !</span><br/>
+	<span id="legen" style="display : none;">LEGENDARY !</span>
+</div>
+<div id="it"><a href="9.html">IT</a></div>
+
+<script type="text/javascript">
+window.onload = function(){
+	document.getElementById("but").disabled = false;
+};
+
+function charge(but){
+	but.disabled = "disabled";
+	document.getElementById("load").style.display = "";
+	// setTimeout(legendary, 2000);
+}
+
+function legendary(){
+	document.getElementById("legen").display = "";
+}
+</script>
+
+
+<style>
+	
+	#bloc{
+		margin : 50px auto;
+		border : 1px solid;
+		width : 500px;
+		height : 500px;
+		text-align : center;
+	}
+	#it{
+		position : absolute;
+		bottom : 2px;
+		right : 2px;
+	}
+</style>
+</body>

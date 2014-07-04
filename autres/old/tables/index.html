@@ -1,0 +1,374 @@
+﻿<style>
+	div{
+		margin : 130px auto;
+		background-color : lightyellow;
+		border : 2px groove orange;
+		padding : 20px;
+		/* FireFox */
+		-moz-border-radius : 4px 22px;
+		-moz-box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+		
+		/* Chrome */
+		border-radius: 4px 22px;
+		-webkit-box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+	}
+	
+	#table td{
+		width : 24px;
+		margin-bottom : 2px;
+		border : 1px solid black;
+		
+		border-radius: 5px;
+		-moz-border-radius : 5px;
+	}
+	
+	#table{
+		position : absolute;
+		top : -110px;
+		right : 30px;
+		
+		-webkit-transition: all 0.6s ease-in-out;
+		-moz-transition: all 0.6s ease-in-out;
+		-webkit-transform: scale(0.3);
+		-moz-transform: scale(0.3);
+	}
+	
+	#table:hover{
+		-webkit-transform: scale(1);
+		-moz-transform: scale(1);
+	}
+	
+	#cache{
+		margin-top : -254px;
+		background-color : lightgrey;
+		text-align : center;
+		opacity : 0.8;
+	}
+
+	#jeu, #cache{
+		width : 220px;
+		height : 80px;
+	}
+	
+	#infos{
+		margin-top : -100px;
+		width : 1100px;
+		height : 56px;
+	}
+	
+	#infos img{
+		width : 22px;
+		height : 22px;
+	}	
+	
+	#fore{
+		opacity : 0.8;
+		margin-left : 29px;
+	}
+	
+	#fore td{
+		width : 100px;
+		text-align : center;
+		background-color : #DDD;
+		-webkit-transition: all 0.5s ease-in-out;
+		-moz-transition: all 0.5s ease-in-out;
+	}
+	
+	/*
+	#top td:hover{
+		-webkit-transform: translate(0px, -26px);
+		-moz-transform: translate(0px, -26px);
+	}
+	
+	#bottom td:hover{
+		-webkit-transform: translate(0px, 26px);
+		-moz-transform: translate(0px, 26px);
+	}*/
+	
+	#fore td:hover{
+		opacity : 0;
+		
+		
+		-webkit-transform: scale(0.8);
+		-moz-transform: scale(0.8);
+		-webkit-transform: scale(1.2);
+		-moz-transform: scale(1.2);
+	}
+	
+	#back{
+		font-weight : bold;
+		margin-top : -52px;
+		margin-left : 29px;
+	}
+	
+	#back td{
+		width : 100px;
+		text-align : center;
+	}
+	
+</style>
+
+<title>Table de multi</title>
+
+<script language="javascript">
+
+	function constTable(){
+		table = document.getElementById("table");
+		
+		tbody = document.createElement("tbody");
+		
+		for(i=1;i<=10;i++){
+			tr = document.createElement("tr");
+			
+			for(j=1;j<=10;j++){
+				td = document.createElement("td");
+				td.innerHTML = i*j;
+				td.setAttribute("onmouseover", "colory("+(i-1)+","+(j-1)+")");
+				
+				tr.appendChild(td);
+			}
+			
+			tbody.appendChild(tr);
+		}
+		
+		table.appendChild(tbody);
+	}
+	
+	cache = jeu = quest = inp = moy = cJoue = cGagne = infos = fore = back = 0;
+	
+	function initVal(){
+		cache = document.getElementById("cache");
+		
+		jeu = document.getElementById("jeu");
+			quest = document.getElementById("quest");
+			inp = document.getElementById("in");
+			cJoue = document.getElementById("joue");
+			cGagne = document.getElementById("gagne");
+			moy = document.getElementById("moy");
+			
+		infos = document.getElementById("infos");
+			fore = document.getElementById("fore");
+			back = document.getElementById("back");
+		
+	}
+	
+	function colory(row, col){
+		trs = document.getElementById("table").getElementsByTagName("tr");
+		
+		for(i=0;i<trs.length;i++){
+		
+			tds = trs[i].getElementsByTagName("td");
+			for(j=0;j<tds.length;j++){
+			
+				if((i == row || j == col) && (i <= row && j <= col)){
+					if(i == row && j == col){
+						tds[j].style.border = "1px solid red";
+					}
+					else{
+						tds[j].style.border = "1px solid orange";
+					}
+				}
+				else{
+					tds[j].style.border = "1px solid black";
+				}
+			}
+		}
+	}
+
+	nb1 = 0;
+	nb2 = 0;
+	res = 0;
+	
+	ref = 0;
+	tempsTot = 0;
+	
+	gagne = 0;
+	joue = 0;
+	
+	function initJeu(){
+		
+		for(i=0;i<20;i++){
+			fore.getElementsByTagName("img")[i].src = "ny.gif";
+			fore.getElementsByTagName("td")[i].style.backgroundColor = "#DDD";
+			back.getElementsByTagName("td")[i].innerHTML = "";
+		}
+		
+		cache.style.display = "none";
+		tirage();
+	}
+
+	function tirage(){
+		
+		if(jeu.style.WebkitTransform != "rotate(360deg)"){
+			jeu.style.WebkitTransform = "rotate(360deg)";
+		}
+		else{
+			jeu.style.WebkitTransform = "rotate(0deg)";
+		}
+		
+		if(jeu.style.MozTransform != "rotate(360deg)"){
+			jeu.style.MozTransform = "rotate(360deg)";
+		}
+		else{
+			jeu.style.MozTransform = "rotate(0deg)";
+		}
+		
+		nb1 = Math.ceil(Math.random()*8)+1;
+		nb2 = Math.ceil(Math.random()*8)+1;
+		res = (nb1*nb2).toString();
+		
+		ref = new Date();
+		
+		quest.innerHTML = nb1 + " x " + nb2;
+		
+		inp.value = "";
+		inp.style.backgroundColor = "";
+		inp.select();
+	}
+	
+	function verif(){
+		if(inp.value.length == res.length){
+			current = new Date();
+			tempsTot += ((current.getTime() - ref.getTime())/1000);
+			
+			back.getElementsByTagName("td")[joue].innerHTML = quest.innerHTML + " = ";
+			
+			if(inp.value == res){ // réussite
+				gagne += 1;
+				inp.style.backgroundColor = "lightgreen";
+				
+				fore.getElementsByTagName("img")[joue].src = "ok.gif";
+				fore.getElementsByTagName("td")[joue].style.backgroundColor = "lightgreen";
+				
+				back.getElementsByTagName("td")[joue].innerHTML += inp.value;
+				back.getElementsByTagName("td")[joue].style.color = "green";
+			}
+			else{ // échoué
+				inp.style.backgroundColor = "red";
+				
+				fore.getElementsByTagName("img")[joue].src = "no.gif";
+				fore.getElementsByTagName("td")[joue].style.backgroundColor = "#FFAEAE";
+				
+				back.getElementsByTagName("td")[joue].innerHTML += inp.value.strike() + " " + res;
+				back.getElementsByTagName("td")[joue].style.color = "red";
+			}
+			
+			joue ++;
+			
+			cJoue.innerHTML = joue;
+			cGagne.innerHTML = gagne;
+			moy.innerHTML = (tempsTot/joue).toFixed(2);
+			
+			if(joue < 20){
+				setTimeout(tirage, 1200);
+			}
+			else{
+				setTimeout(fin,1000);
+			}
+		}
+	}
+	
+	function padTo2(lenum){
+		lenum = lenum.toString();
+		if(lenum.length != 2){
+			return "0"+lenum;
+		}
+		else{
+			return lenum;
+		}
+	}
+	
+	function fin(){
+		inp.value = "";
+		inp.style.backgroundColor = "";
+		cache.style.display = "block";
+		
+		list = 
+		
+		nb1 = 0;
+		nb2 = 0;
+		res = 0;
+		
+		ref = 0;
+		tempsTot = 0;
+		
+		gagne = 0;
+		joue = 0;
+	}
+</script>
+
+<body onload="constTable();initVal();">
+
+<div id="table" onmouseout="colory(-1,-1);">
+</div>
+
+<div id="jeu">
+
+	<span id="quest">????</span> = <input size="3" type="text" onkeyup="verif();" id="in"/><br/>
+	temps moyen de réponse : <span id="moy"></span><br/>
+	<span id="gagne">0</span>/<span id="joue">0</span>
+	
+</div>
+<div id="cache">
+	<input type="button" onclick="initJeu();" value="C'est parti !"/>
+</div>
+
+<div id="infos">
+	
+	<table id="fore">
+		<tr id="top">
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+		</tr>
+		<tr id="bottom">
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+			<td><img src="ny.gif" alt="ny"/></td>
+		</tr>
+	</table>
+	
+	<table id="back">
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+
+</div>
+
+</body>

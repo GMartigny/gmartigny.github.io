@@ -1,0 +1,75 @@
+<head>
+	<style type="text/css">
+		#longurl{
+			opacity: 0;
+			transition: all .4s linear;
+		}
+
+		#shorturl{
+			padding: 10px;
+			background: #f7f;
+			opacity: 0;
+			transition: all .4s linear;
+		}
+
+		#shorturl img{
+			height: 100px;
+			margin-left: 10px;
+		}
+	</style>
+	<script type="text/javascript">
+	var key = "AIzaSyCFj15TpkchL4OUhLD1Q2zgxQnMb7v3XaM",
+		output,
+		shorten,
+		qr,
+		form;
+
+	function load() {
+		
+		//gapi.client.setApiKey(key);
+		gapi.client.load('urlshortener', 'v1');
+
+		output = getById("shorturl");
+		shorten = getById("out");
+		qr = getById("qr");
+		form = getById("longurl");
+
+		qr.onload = function(){
+			output.style.opacity = "1";
+		}
+
+		form.onsubmit = function(ev){
+			ev.preventDefault();
+			output.style.opacity = "0";
+
+			var request = gapi.client.urlshortener.url.insert({
+				'resource': {
+					'longUrl': this.url.value
+				}
+			});
+			request.execute(function(response) {
+				shorten.innerHTML = response.id;
+				qr.src = response.id+".qr";
+			});
+			return false;
+		};
+
+		form.style.opacity = "1";
+	}
+
+	function getById(id){
+		return document.getElementById(id);
+	}
+	function log(m){
+		console.log(m);
+	}
+	</script>
+	<script id="gapi" src="https://apis.google.com/js/client.js?onload=load"></script>
+</head>
+<body>
+	<h1>Shortener</h1>
+	<form id="longurl" style="">
+		<label for="url">Url :</label><input type="url" name="url" id="url" required/>
+	</form>
+	<div id="shorturl"><span id="out"></span><img id="qr"/></div>
+</body>

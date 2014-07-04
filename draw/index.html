@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Draw.js</title>
+        <style type="text/css">
+            html, body{
+                margin: 0;
+                background: #EEE;
+                width: 100%;
+                height: 100%;
+            }
+            #canvas canvas{
+                position: absolute;
+                cursor: none;
+            }
+            #tools.hide{
+                opacity: 0;
+            }
+            #tools{
+                position: absolute;
+                padding: 5px;
+                background: #444;
+                box-shadow: 1px 1px 5px #666;
+                z-index: 1;
+                opacity: 1;
+                transition: opacity linear .1s;
+            }
+            #colors{
+                cursor: crosshair;
+            }
+            #selected *{
+                float: left;
+                width: 36px;
+                height: 15px;
+            }
+            #switchColor{
+                width: 23px;
+                margin: 0 2px;
+                padding: 0;
+                font-size: 17px;
+                line-height: 0;
+            }
+            #left{
+                background: #000;
+            }
+            #right{
+                background: #FFF;
+            }
+            #openning{
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="tools">
+            <canvas width="100" height="100" id="colors"></canvas>
+            <div id="selected">
+                <div id="left"></div>
+                <button id="switchColor">&harr;</button>
+                <div id="right"></div>
+            </div>
+        </div>
+        <div id="canvas">
+            <canvas width="0" height="0" id="canDraw"></canvas>
+            <canvas width="0" height="0" id="canMouse"></canvas>
+        </div>
+        <a href="#" id="openning" target="_blank"></a>
+        <script type="text/javascript">
+            var mouse = {
+                    x: -100, y: -100, pressed: 0, hover: 1, color: 0,
+                    rad: 50, left: "#000000", right: "#FFFFFF"},
+                tools = document.getElementById("tools"),
+                switchColor = document.getElementById("switchColor"),
+                selLeft = document.getElementById("left"),
+                selRight = document.getElementById("right"),
+                cans = document.getElementById("canvas"),
+                canColors = document.getElementById("colors"),
+                ctxColors = canColors.getContext("2d"),
+                dataColors = 0,
+                canDraw = document.getElementById("canDraw"),
+                ctxDraw = canDraw.getContext("2d"),
+                canTmp = document.createElement("canvas"),
+                ctxTmp = canTmp.getContext("2d"),
+                canMouse = document.getElementById("canMouse"),
+                ctxMouse = canMouse.getContext("2d"),
+                drawBuff = {
+                    x: -100,
+                    y: -100
+                },
+                newTab = document.getElementById("openning");
+
+            (function start(){
+                canDraw.width = canTmp.width = canMouse.width = document.body.offsetWidth;
+                canDraw.height = canTmp.height = canMouse.height = document.body.offsetHeight;
+                ctxDraw.fillStyle = "#FFFFFF";
+                ctxDraw.fillRect(0, 0, canDraw.width, canDraw.height);
+
+                ctxMouse.strokeStyle = "#888888";
+                ctxMouse.fillStyle = "#888888";
+                ctxDraw.lineCap = "round"
+                
+                var img = new Image();
+                img.src = "colors.png";
+                img.onload = function(){
+                    ctxColors.drawImage(this, 0, 0);
+                    dataColors = ctxColors.getImageData(0, 0, canColors.width, canColors.height);
+                };
+
+                draw();
+            })();
+
+            function draw(){
+                requestAnimationFrame(draw);
+                ctxMouse.clearRect(0, 0, canMouse.width, canMouse.height);
+                
+                if(mouse.hover){
+                    ctxMouse.beginPath();
+                    ctxMouse.arc(mouse.x, mouse.y, 1, 0, 2 * Math.PI, 1);
+                    ctxMouse.fill();
+                    ctxMouse.beginPath();
+                    ctxMouse.arc(mouse.x, mouse.y, mouse.rad, 0, 2 * Math.PI, 1);
+                    ctxMouse.stroke();
+                    ctxMouse.closePath();
+                }
+
+                if(mouse.pressed){
+                    tools.classList.add("hide");
+                    ctxDraw.lineWidth = mouse.rad * 2;
+                    
+                    if(mouse.pressed == 2){ // middle
+                        ctxDraw.fillStyle = "#FFF";
+                        ctxDraw.fillRect(0, 0, canTmp.width, canTmp.height);
+                        var x = mouse.x - drawBuff.x,
+                            y = mouse.y - drawBuff.y;
+                        ctxDraw.drawImage(canTmp, x, y);
+                    }
+                    else{
+                        if(mouse.pressed == 1){ // left
+                            ctxDraw.strokeStyle = mouse.left;
+                            ctxDraw.fillStyle = mouse.left;
+                        }
+                        else if(mouse.pressed == 3){ // right
+                            ctxDraw.strokeStyle = mouse.right;
+                            ctxDraw.fillStyle = mouse.right;
+                        }
+                        ctxDraw.beginPath();
+                        ctxDraw.moveTo(drawBuff.x, drawBuff.y);
+                        ctxDraw.lineTo(mouse.x, mouse.y);
+                        ctxDraw.stroke();
+                        ctxDraw.arc(mouse.x, mouse.y, mouse.rad, 0, 2 * Math.PI, 1);
+                        ctxDraw.fill();
+
+                        drawBuff.x = mouse.x;
+                        drawBuff.y = mouse.y;
+                    }
+                }
+            }
+            
+            // Suivi de la souris //
+            window.onmousemove = function(e)
+            {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                
+                if(mouse.color){
+                    var x = e.clientX - canColors.offsetLeft,
+                        y = e.clientY - canColors.offsetTop;
+                    if(x < 0) x = 0;
+                    else if(x > canColors.width-1) x = canColors.width-1;
+                    if(y < 0) y = 0;
+                    else if(y > canColors.height-1) y = canColors.height-1;
+                    
+                    var c = getPixel(x, y);
+                    if(mouse.color == 1){
+                        mouse.left = c;
+                        selLeft.style.background = c;
+                    }
+                    else if(mouse.color == 3){
+                        mouse.right = c;
+                        selRight.style.background = c;
+                    }
+                }
+            };
+            canMouse.onmouseenter = function(){
+                mouse.hover = 1;
+            };
+            canMouse.onmouseleave = function(){
+                mouse.hover = 0;
+            };
+            // Selection de la couleur //
+            canColors.onmousedown = function(e){
+                mouse.color = e.button + 1;
+            };
+            switchColor.onclick = function(){
+                var t = mouse.left;
+                mouse.left = mouse.right;
+                mouse.right = t;
+                selLeft.style.background = mouse.left;
+                selRight.style.background = mouse.right;
+            };
+            // Dessin //
+            canMouse.onmousedown = function(e){
+                e.preventDefault();
+                
+                ctxTmp.drawImage(canDraw, 0, 0);
+                
+                drawBuff.x = mouse.x = e.clientX;
+                drawBuff.y = mouse.y = e.clientY;
+                mouse.pressed = e.button + 1;
+                
+                if(mouse.pressed == 2){
+                    ctxTmp.drawImage(canDraw, 0, 0);
+                }
+            };
+            window.onmouseup = function(){
+                mouse.pressed = 0;
+                mouse.color = 0;
+                tools.classList.remove("hide");
+            };
+            // Suivi de la taille de la page //
+            window.onresize = function(){
+                canDraw.width = canTmp.width = canMouse.width = document.body.offsetWidth;
+                canDraw.height = canTmp.height = canMouse.height = document.body.offsetHeight;
+                
+                ctxDraw.fillStyle = "#FFFFFF";
+                ctxDraw.fillRect(0, 0, canDraw.width, canDraw.height);
+            };
+            // Suppression menu clic-droit //
+            window.oncontextmenu = function(){
+                return false;
+            };
+            // Molette //
+            window.onwheel = function(e){
+                changeSize(e.wheelDelta / 20 || e.detail * 6);
+            };
+            window.onmousewheel = function(e){
+                changeSize(e.wheelDelta / 20 || e.detail * 6);
+            };
+            window.addEventListener("DOMMouseScroll", function(e){
+                changeSize(e.wheelDelta / 20 || e.detail * 6);
+            });
+            // Clavier //
+            window.onkeydown = function(e){
+                //console.log(e.which);
+                if(e.ctrlKey && (e.which == 83 || e.which == 90)){
+                    e.preventDefault();
+                    if(e.which == 83){ // ctrl+s
+                        newTab.href = canDraw.toDataURL();
+                        newTab.click();
+                    }
+                    else if(e.which == 90){ // ctrl+z
+                        ctxDraw.drawImage(canTmp, 0, 0);
+                    }
+                    return false;
+                }
+                return true;
+            };
+            
+            function changeSize(x){
+                mouse.rad -= x;
+                if(mouse.rad < 5)
+                    mouse.rad = 5;
+                else if(200 < mouse.rad)
+                    mouse.rad = 200;
+            }
+            function getPixel(x, y){
+                var p = (x*4) + (y*canColors.width*4),
+                    c = "#"+formatHex(dataColors.data[p])+formatHex(dataColors.data[p+1])+formatHex(dataColors.data[p+2]);
+                return c;
+            }
+            function formatHex(v){
+                return v < 10 ? "0"+v : v.toString(16);
+            }
+        </script>
+    </body>
+</html>

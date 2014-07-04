@@ -1,0 +1,105 @@
+<style>
+#oeil{
+	position : absolute;
+	height : 120px;
+	width : 240px;
+	top : 100px;
+	left : 200px;
+	overflow : hidden;
+	border-radius : 40px;
+}
+#globe{
+	position : absolute;
+	height : 200px;
+	width : 240px;
+	top : -50px;
+	border-radius : 100%;
+	background : #f6f5fb;
+}
+body{
+	background : #dead8d;
+}
+#iris{
+	position : absolute;
+	background : -webkit-radial-gradient(center, ellipse cover, #741705 0%, #bb8b29 55%, #4d4521 85%, #495d68 110%);
+	background : -moz-radial-gradient(center, ellipse cover, #741705 0%, #bb8b29 55%, #4d4521 85%, #495d68 110%);
+	height : 120px;
+	width : 120px;
+	border-radius : 60px;
+	top : 40px;
+	left : 60px;
+}
+#iris > .reflet{
+	position : absolute;
+	background : -webkit-linear-gradient(left, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
+	background : -moz-linear-gradient(left, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
+	height : 66px;
+	width : 35px;
+	border-radius : 40px 0 0 40px;
+	top : 14px;
+	left : 14px;
+	-webkit-transform : rotate(23deg);
+	-moz-transform : rotate(23deg);
+}
+#pupille{
+	position : absolute;
+	background : black;
+	height : 40px;
+	width : 40px;
+	border-radius : 20px;
+	top : 40px;
+	left : 40px;
+}
+#pupille .reflet{
+	position : absolute;
+	height : 10px;
+	width : 10px;
+	background : #f6f5fb;
+	border-radius : 5px;
+	top : 5px;
+	left : 15px
+}
+#paupiere{
+	position : absolute;
+	overflow : hidden;
+}
+#paupiere div{
+	position : relative;
+	height : 100px;
+	width : 240px;
+	background : #dead8d;
+	-webkit-transition : all ease-in-out 0.4s;
+	-moz-transition : all ease-in-out 0.4s;
+}
+#paupiere div:nth-child(1){
+	top : -100px;
+}
+#paupiere div:nth-child(2){
+	top : 20px;
+}
+#oeil:hover #paupiere div{
+	top : -50px;
+}
+</style>
+<body>
+	<div id="oeil">
+		<div id="globe">
+			<div id="iris">	
+				<div id="effet">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+				<div id="pupille">
+					<div class="reflet"></div>
+				</div>
+				<div class="reflet"></div>
+			</div>
+		</div>
+		<div id="paupiere">
+			<div></div>
+			<div></div>
+		</div>
+	</div>
+</body>

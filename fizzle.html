@@ -1,0 +1,282 @@
+<meta charset="UTF-8">
+<style>
+    *{
+        box-sizing: border-box;
+    }
+    body{
+        margin: 0;
+        background: #000;
+    }
+    #menu{
+        position: absolute;
+        background: #777;
+        width: 350px;
+        padding: 10px;
+    }
+    #menu h2{
+        position: relative;
+        color: #FFF;
+        margin: 1.3em 0 .3em;
+        text-shadow: 1px 1px 3px #222;
+    }
+    #menu input{
+        width: 100%;
+    }
+    #can{
+        display: block;
+        width: 800px;
+        margin: 0 auto;
+    }
+    #expendable{
+        cursor: pointer;
+    }
+    #expendable:after{
+        content: "";
+        position: absolute;
+        top: calc(50% - 10px);
+        right: 0;
+        width: 0;
+        height: 0;
+        border: 10px solid;
+        border-color: rgba(255,255,255,0) rgba(255,255,255,0) rgba(255,255,255,0) #FFF;
+        transition: all linear .1s;
+        -webkit-transform-origin: 25% 50%;
+    }
+    #expendable.expended:after{
+        -webkit-transform: rotate(90deg);
+    }
+    #output{
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        transition: height linear .3s;
+        height: 180px;
+        max-width: 100%;
+        width: 100%;
+    }
+    #output.hidden{
+        height: 0;
+    }
+</style>
+<div id="menu">
+    <h2>Chaine</h2>
+    <input type="text" id="txt" value="Hellow"/>
+    <h2>Taille des caractères</h2>
+    <input type="range" id="siz" min="0" max="1" step="0.01" value="0.5"/>
+    <h2>Taille des bulles</h2>
+    <input type="range" id="fat" min="0" max="1" step="0.01" value="0.5"/>
+    <h2>Liberté</h2>
+    <input type="range" id="fre" min="0" max="1" step="0.01" value="0.5"/>
+    <h2>Excitement</h2>
+    <input type="range" id="vit" min="0" max="1" step="0.01" value="0.5"/>
+    <h2>Densité</h2>
+    <input type="range" id="den" min="0" max="1" step="0.01" value="0.5"/>
+    <h2 onclick="toggleOptions();" id="expendable">Options</h2>
+    <textarea id="output" class="hidden" onclick="select(this);" readonly></textarea>
+</div>
+<canvas id="can" width="800" height="400"></canvas>
+<script type="text/javascript">
+    var can = document.getElementById('can'),
+        ctx = can.getContext("2d"),
+        out = document.getElementById('output'),
+        PI2 = Math.PI * 2,
+        rdm = Math.random,
+        abs = Math.abs,
+        drag = {
+            elem: 0,
+            prev: 0
+        },
+        animFrame = 0,
+        fizz;
+
+    document.getElementById('txt').onkeyup = function(){
+        if(Fizzle.text != this.value){
+            Fizzle.text = this.value;
+            start();
+            writeOptions();
+        }
+    };
+    document.getElementById('siz').onmousedown =
+    document.getElementById('fat').onmousedown =
+    document.getElementById('fre').onmousedown =
+    document.getElementById('vit').onmousedown =
+    document.getElementById('den').onmousedown = function(){
+        drag.elem = this;
+    };
+    window.onmousemove = changeValue;
+    window.onmouseup = function(){
+        changeValue();
+        drag.elem = 0;
+    };
+    function changeValue(){
+        if(drag.elem && drag.prev != drag.elem.value){
+            var redraw = 0;
+            switch(drag.elem.id){
+                case "siz":
+                    Fizzle.size = drag.elem.value;
+                    redraw = 1;
+                    break;
+                case "fat":
+                    Dot.fat = drag.elem.value;
+                    break;
+                case "fre":
+                    Dot.freedom = drag.elem.value;
+                    break;
+                case "vit":
+                    Dot.speed = drag.elem.value;
+                    break;
+                case "den":
+                    Fizzle.density = drag.elem.value;
+                    redraw = 1;
+                    break;
+            }
+            writeOptions();
+
+            drag.prev = drag.elem.value;
+            if(redraw) start();
+        }
+    }
+
+    function start(){
+        fizz = new Fizzle(ctx);
+
+        var imgData = fizz.getData();
+
+        var space = 3,
+            rng = 10;
+        for(var i = 0; i < imgData.length; i += 4){
+            if(imgData[i] == 0)
+                --space;
+            if(space < 0){
+                fizz.dots.push(new Dot((i / 4) % can.width, (i / 4) / can.width));
+                var spc = 70 - 60 * Fizzle.density;
+                if(spc < 10) spc = 10;
+                space = rand(spc, spc + rng);
+            }
+        }
+        if(animFrame) cancelAnimationFrame(animFrame);
+        draw();
+    }
+
+    function draw(){
+        animFrame = requestAnimationFrame(draw);
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, can.width, can.height);
+
+        fizz.render();
+    }
+
+    function Fizzle(ctx){
+        this.ctx = ctx;
+        this.dots = [];
+
+        this.getData = function(){
+            this.ctx.fillStyle = "#010101";
+            this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            this.ctx.fillStyle = "#000";
+            this.ctx.font = 100 + 200 * Fizzle.size + 'px sans-serif';
+            this.ctx.textAlign = "center";
+            this.ctx.textBaseline = "middle";
+            this.ctx.fillText(Fizzle.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+            return this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height).data;
+        };
+        this.render = function(){
+            var c = this.ctx;
+            this.dots.forEach(function(d){
+                d.render(c);
+            });
+        };
+    }
+    Fizzle.text = "Hellow";
+    Fizzle.size = 0.5;
+    Fizzle.density = 0.5;
+    Fizzle.colors = ["#0ED", "#F32", "#FE0", "#1C0", "#F8E"];
+
+    function Dot(x, y){
+        this.bound = {
+            x: rand(20 * Dot.freedom, 10 + 30 * Dot.freedom),
+            y: rand(20 * Dot.freedom, 10 + 30 * Dot.freedom)
+        };
+        this.origin = {
+            x: x - 10,
+            y: y - 10
+        };
+        this.pos = {
+            x: rand(this.origin.x, this.origin.x + this.bound.x),
+            y: rand(this.origin.y, this.origin.y + this.bound.y)
+        };
+        this.vit = {
+            x: rand(1, 3) * (rand(0, 2) << 0 ? 1 : -1),
+            y: rand(1, 3) * (rand(0, 2) << 0 ? 1 : -1)
+        };
+        this.size = rand(3, 7);
+        this.color = Fizzle.colors[rand(0, Fizzle.colors.length) << 0];
+
+        this.render = function(ctx){
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.arc(this.pos.x, this.pos.y, 1 + this.size * Dot.fat, 0, PI2);
+            ctx.fill();
+
+            this.pos.x += this.vit.x * (Dot.speed) / 5;
+            this.pos.y += this.vit.y * (Dot.speed) / 5;
+
+            if(this.pos.x < this.origin.x && this.vit.x < 0)
+                this.vit.x *= -1;
+            else if(this.pos.x > this.origin.x + this.bound.x * Dot.freedom && this.vit.x > 0)
+                this.vit.x *= -1;
+            if(this.pos.y < this.origin.y && this.vit.y < 0)
+                this.vit.y *= -1;
+            else if(this.pos.y > this.origin.y + this.bound.y * Dot.freedom && this.vit.y > 0)
+                this.vit.y *= -1;
+        }
+    }
+    Dot.speed = 0.5;
+    Dot.fat = 0.5;
+    Dot.freedom = 0.5;
+
+    writeOptions();
+    function writeOptions(){
+        out.value = "Fizzle.text = \"" + Fizzle.text + "\";\n";
+        out.value += "Fizzle.size = " + Fizzle.size + ";\n";
+        out.value += "Fizzle.density = " + Fizzle.density + ";\n";
+        out.value += "Fizzle.colors = " + JSON.stringify(Fizzle.colors) + ";\n\n";
+
+        out.value += "Dot.speed = " + Dot.speed + ";\n";
+        out.value += "Dot.fat = " + Dot.fat + ";\n";
+        out.value += "Dot.freedom = " + Dot.freedom + ";\n";
+    }
+
+    function toggleOptions(){
+        var exp = document.getElementById("expendable");
+        if(out.classList.contains("hidden")){
+            out.classList.remove("hidden");
+            exp.classList.add("expended");
+        }
+        else{
+            out.classList.add("hidden");
+            exp.classList.remove("expended");
+        }
+    }
+
+    function rand(f, t){
+        return rdm() * (t - f) + f;
+    }
+</script>
+<script>
+
+    /* DEFAULT OPTIONS */
+    /* values should go from 0 to 1 but can overflow (unless density which is cap for perfomance's sake) */
+
+    Fizzle.text = "Hellow";
+    Fizzle.size = 0.5;
+    Fizzle.density = 0.5;
+    Fizzle.colors = ["#0ED", "#F32", "#FE0", "#1C0", "#F8E"];
+
+    Dot.speed = 0.5;
+    Dot.fat = 0.5;
+    Dot.freedom = 0.5;
+
+    start();
+</script>

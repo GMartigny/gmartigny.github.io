@@ -1,0 +1,20 @@
+body{
+    background-color: silver;
+}
+
+div{
+    background-color: white;
+    border: gray outset 2px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.spacer{
+    padding: 20px;
+}
+
+#retour{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}

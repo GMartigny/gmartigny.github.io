@@ -1,0 +1,698 @@
+<title>Extract</title>
+<body>
+<style>
+	body{background : #555;}
+	#display{color : white;}
+	canvas{
+		position : relative;
+		display : block;
+		width : 800px;
+		height : 600px;
+		background : #111;
+		border : 8px inset grey;
+		margin : 40px auto 0;
+		border-radius : 10px;
+		box-shadow : 0 0 400px #222;
+		cursor : none;
+	}
+</style>
+<canvas id="can" width="800" height="600"></canvas>
+<script>
+var raf = 	window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.requestAnimationFrame;
+localStorage.ar = localStorage.ar || [];
+var can = getById("can");
+var ctx = can.getContext("2d");
+ctx.lineCap = "round";
+var PI = Math.PI;
+var state = 0;
+var over = 0;
+var splash = 0;
+var rh = false;
+var intro = [	"We are approaching an asteroid belt.",
+				"Get ready to extract those ores !",
+				"But, be carefull with the hull, nano repare-bots can't make miracles.",
+				"We're gonna be rich, let's go !"];
+var bu = [""];
+var me = ["Start", "Archievements", "Credits"];
+var ar = ["Go closer", "Multi-task", "Over 9000", "Journey", "Lucky blind", "???"]; ar.n = [];
+ar.d = ["Get really close to an asteroid without being hit", "Extract at least 4 asteroids at the same time", "Score more than 9000 points in one game",
+		"Survive during 5 minutes inside the asteroid belt", "Don't make any move for 20 secondes without damage", "Face an extreme rush like a sir !"];
+var closer = 0; var confidence = false; var journey = false;
+var ne = [];
+var st = [];
+var ba = [new back()];
+var en = [];
+var bo = 0;
+var me = {
+	x : 400,
+	y : 400,
+	i : 0,
+	l : 3,
+	r : 0
+};
+var px = me.x;
+var sc = 0;
+var p = [];
+window.onmousemove = function(e){
+	confidence = 0;
+	
+	var x = e.clientX - can.offsetLeft - 8;
+	if(x < 4) x = 4;
+	if(796 < x) x = 796;
+	var y = e.clientY - can.offsetTop - 8;
+	if(y < 4) y = 4;
+	if(596 < y) y = 596;
+	
+	me.x = x;
+	me.y = y;
+	if(state == 1){
+		if(345 < me.x && me.x < 760){
+			over = (150 < me.y && me.y < 210)? 1 : (270 < me.y && me.y < 330)? 2 : (390 < me.y && me.y < 450)? 3 : 0;
+		}
+		else over = 0;
+	}
+	else if(state == 1.1){
+		if(140 < me.x && me.x < 260 && 280 < me.y && me.y < 364) over = 1;
+		else if(350 < me.x && me.x < 470 && 280 < me.y && me.y < 364) over = 2;
+		else if(560 < me.x && me.x < 680 && 280 < me.y && me.y < 364) over = 3;
+		else if(140 < me.x && me.x < 260 && 400 < me.y && me.y < 484) over = 4;
+		else if(350 < me.x && me.x < 470 && 400 < me.y && me.y < 484) over = 5;
+		else if(560 < me.x && me.x < 680 && 400 < me.y && me.y < 484) over = 6;
+		else over = 0;
+	}
+};
+window.onkeydown = function(e){
+	if(e.keyCode == 27){
+		if(state == 2.1) state = 0;
+		else if(state === 0){
+			state = 2.1;
+			draw();
+		}
+	}
+};
+window.onmousedown = function(){
+	if(state == 1){
+		if(345 < me.x && me.x < 760){
+			if(150 < me.y && me.y < 210) start();
+			else if(270 < me.y && me.y < 330) menu(1);
+			else if(390 < me.y && me.y < 450) menu(2);
+		}
+	}
+	else if(state == 1.1 || state == 1.2) menu(0);
+	else if(state == 2.0){
+		journey = 0;
+		state = 2.1;
+	}
+	else if(state == 2.2){
+		menu(0);
+		if((localStorage.sc || 0) < sc) localStorage.sc = sc;
+	}
+	else if(state === 0){
+		state = 2.1;
+		draw();
+	}
+};
+function menu(x){
+	state = 1+x/10;
+	for(var i=0;i<25;++i){
+		st[i] = new star(true);
+	}
+	ne = (rand(0, 1))? [new nebula(true)] : [];
+}
+menu(0);
+draw();
+function archievement(earn){
+	if(!localStorage[ar[earn]]){
+		localStorage[ar[earn]] = true;
+		ar.n.push({a:earn, t:200});
+	}
+}
+function start(){
+	state = 2;
+	me.l = 3;
+	me.i = 0;
+	sc = 0;
+	ba = [new back()];
+	en = [];
+	ne = [];
+	bu = [""];
+	rh = false;
+	
+	var m = 0;
+	for(var i=0;i<25;++i){
+		m = rand(-7, 6);
+		p[i] = {
+			x : me.x + m,
+			y : me.y,
+			m : m,
+			a : rand(0, 30)
+		}
+		st[i] = new star(true);
+	}
+}
+function draw(){
+	switch(state<<0){
+		case 0: // paused
+			ctx.fillStyle = "rgba(100, 100, 100, 0.5)";
+			ctx.rect(0, 0, 800, 600);
+			ctx.fill();
+			
+			ctx.fillStyle = "#FFF";
+			ctx.font = "100px arial";
+			ctx.fillText("PAUSED", 200, 350);
+			
+			ctx.strokeStyle = "#FFF";
+			ctx.lineWidth = 10;
+			
+			ctx.beginPath();
+			ctx.moveTo(200, 255);
+			ctx.lineTo(610, 255);
+			ctx.closePath();
+			ctx.stroke();
+			
+			ctx.beginPath();
+			ctx.moveTo(200, 370);
+			ctx.lineTo(610, 370);
+			ctx.closePath();
+			ctx.stroke();
+		break;
+		case 1: // menu
+			raf(draw);
+			ctx.clearRect(0, 0, 800, 600);
+			
+			var n; var nn;
+			for(var i=0;i<ne.length;++i){
+				n = ne[i];
+				ctx.fillStyle = n.c;
+				for(var j=0;j<n.n.length;++j){
+					nn = n.n[j];
+					ctx.globalAlpha = nn.a;
+					circ(n.x+nn.x, n.y+nn.y, nn.r);
+				}
+			}
+			ctx.globalAlpha = 1;
+			
+			ctx.fillStyle = "#FFF";
+			var s;
+			for(var i=0;i<st.length;++i){
+				s = st[i];
+				circ(s.x, s.y, s.r);
+			}
+			ctx.font = "60px arial";
+			var p = false;
+			switch(state*10-10){
+				case 0: // menu
+					var m = ["Start", "Archievements", "Credits"];
+					for(var i=0;i<m.length;++i){
+						var fs = "";
+						if(over == i+1){
+							ctx.globalAlpha = 0.3;
+							fs = "#DD3";
+						}
+						else{
+							ctx.globalAlpha = 0;
+							fs = "#FFF";
+						}
+						
+						ctx.fillStyle = "#999";
+						ctx.fillRect(345, 150+120*i, 415, 60);
+						ctx.globalAlpha = 1;
+						ctx.fillStyle = fs;
+						ctx.fillText(m[i], 750-ctx.measureText(m[i]).width, 200+120*i);
+					}
+				break;
+				case 1: // archievement
+					p = "Archievements";
+					ctx.font = "20px arial";
+					for(var i=0;i<ar.length;++i){
+						ctx.fillStyle = "#999";
+						ctx.globalAlpha = 0.3;
+						ctx.fillRect(140+210*(i%3), 280+120*(i/3<<0), 120, 80);
+						if (over === i+1){
+							if(localStorage[ar[i]]){
+								ctx.fillStyle = "#FFF";
+								ctx.globalAlpha = 1;
+								ctx.fillText(ar.d[i], 400-ctx.measureText(ar.d[i]).width/2, 570);
+							}
+							ctx.fillStyle = "#DD3";
+							ctx.strokeStyle = "#DD3"
+						}
+						else{
+							ctx.fillStyle = "#FFF";
+							ctx.strokeStyle = "#FFF"
+						}
+						ctx.globalAlpha = (localStorage[ar[i]])? 1 : 0.2;
+						ctx.fillText(ar[i], 200+210*(i%3)-ctx.measureText(ar[i]).width/2, 300+120*(i/3<<0));
+						switch(i){
+							case 0:
+								circ(185, 335, 20);
+								circ(215, 345, 8);
+								ctx.beginPath();
+								ctx.moveTo(185, 335);
+								ctx.lineWidth = 9;
+								ctx.lineTo(215, 345);
+								ctx.stroke();
+								ctx.closePath();
+							break;
+							case 1:
+								circ(415, 325, 8);
+								var c = [{x:380, y:325, r:18}, {x:390, y:345, r:11}, {x:445, y:320, r:12}, {x:445, y:340, r:16}];
+								for(var l=0;l<4;++l){
+									circ(c[l].x, c[l].y, c[l].r);
+									ctx.beginPath();
+									ctx.moveTo(415, 325);
+									ctx.lineWidth = 6;
+									ctx.lineTo(c[l].x, c[l].y);
+									ctx.stroke();
+									ctx.closePath();
+								}
+							break;
+							case 2:
+								ctx.save();
+								ctx.translate(580, 355);
+								ctx.rotate(-0.3);
+								ctx.font = "bold 42px arial";
+								ctx.fillText("9ooo", 0, 0);
+								ctx.restore();
+							break;
+							case 3:
+								var x = 160; var y = 470;
+								ctx.beginPath();
+								ctx.moveTo(x, y);
+								ctx.bezierCurveTo(x+10, y-30, x+70, y-25, x+70, y-40); x+=70; y-=40;
+								ctx.lineTo(x+10, y); x+=10;
+								ctx.bezierCurveTo(x-10, y+30, x-40, y+15, x-30, y+40);
+								ctx.fill();
+							break;
+							case 4:
+								circ(390, 457, 18);
+								circ(430, 457, 18);
+								ctx.lineWidth = 12;
+								ctx.beginPath();
+								ctx.moveTo(385, 433);
+								ctx.lineTo(381, 445);
+								ctx.lineTo(438, 445);
+								ctx.lineTo(433, 433);
+								ctx.stroke();
+								ctx.closePath();
+							break;
+							case 5:
+								circ(620, 450, 27);
+								var c = [{x:-40, y:-15}, {x:-45, y:10}, {x:-35, y:20}, {x:+20, y:-20}, {x:40, y:-5}, {x:35, y:15}];
+								for(var l=0;l<c.length;++l){
+									circ(620+c[l].x, 450+c[l].y, 5);
+								}
+							break;
+						}
+						ctx.globalAlpha = 1;
+					}
+				break;
+				case 2: // credits
+					p = "Credits";
+					ctx.fillStyle = "#FFF";
+					ctx.font = "25px arial";
+					ctx.fillText("Coding in Javacript with HTML5 canvas using only one file by :", 30, 300);
+					ctx.font = "40px arial";
+					ctx.fillText("Guillaume Martigny", 420, 400);
+				break;
+			}
+			if(localStorage.sc){
+				var hs = "High Score : " + (localStorage.sc<<0);
+				ctx.fillStyle = "#FF5";
+				ctx.font = ((Math.sin(splash)*2+18)) + "px arial";
+				if(1000 < splash) splash = 0;
+				else splash += 0.17;
+				ctx.fillText(hs, 400-ctx.measureText(hs).width/2, 580);
+			}
+			
+			ctx.font = "60px arial";
+			ctx.fillStyle = "#FFF";
+			if(p) ctx.fillText(p, 400-ctx.measureText(p).width/2, 100);
+			drawMe();
+		break;
+		case 2: // playing
+			raf(draw);
+			ctx.clearRect(0, 0, 800, 600);
+			
+			var n; var nn;
+			for(var i=0;i<ne.length;++i){
+				n = ne[i];
+				ctx.fillStyle = n.c;
+				for(var j=0;j<n.n.length;++j){
+					nn = n.n[j];
+					ctx.globalAlpha = nn.a;
+					circ(n.x+nn.x, n.y+nn.y, nn.r);
+					nn.y += nn.v.y;
+				}
+				n.x += n.v.x;
+				n.y += n.v.y;
+				if(700 < n.y){
+					ne.splice(i--, 1);
+				}
+			}
+			ctx.globalAlpha = 1;
+			
+			ctx.fillStyle = "#FFF";
+			var s;
+			for(var i=0;i<st.length;++i){
+				s = st[i];
+				circ(s.x, s.y, s.r);
+				s.y += s.v.y;
+				s.x += s.v.x;
+				if(610 < s.y){
+					st.splice(i--, 1);
+				}
+			}
+			
+			var b;
+			var gr;
+			for(var i=0;i<ba.length;++i){
+				b = ba[i];
+				gr = ctx.createRadialGradient(b.x-b.r/3, b.y-b.r/3, b.r/10, b.x, b.y, b.r);
+				gr.addColorStop(0, '#A7D30C');
+				gr.addColorStop(0.9, '#019F62');
+				gr.addColorStop(1, 'rgba(1,159,98,0)');
+				ctx.fillStyle = gr;
+				ctx.fillRect(b.x-b.r, b.y-b.r, b.r*2, b.r*2);
+				b.x += b.v.x;
+				b.y += b.v.y;
+				if(640+b.r < b.y){
+					ba.splice(i--, 1);
+				}
+			}
+		
+			var x = 0; var y = 10;
+			ctx.fillStyle = "#CCC";
+			for(var i=1;i<me.l;++i){
+				x = 20*i;
+				ctx.moveTo(x, y);
+				ctx.beginPath();
+				ctx.bezierCurveTo(x+3, y+3, x+15, y+8, x+5, y+10); x+=5; y+=10;
+				ctx.bezierCurveTo(x, y-2, x-3, y-5, x-5, y-5); x-=5; y-=5;
+				ctx.bezierCurveTo(x-2, y, x-5, y+3, x-5, y+5); x-=5; y+=5;
+				ctx.bezierCurveTo(x-10, y-2, x+2, y-7, x+5, y-10); x+=5; y-=10;
+				ctx.fill();
+			}
+			
+			if(state == 2){ // intro
+				drawMe();
+				ctx.fillStyle = "#055";
+				ctx.strokeStyle = "#999";
+				ctx.lineWidth = 10;
+				ctx.lineJoin = "round";
+				ctx.beginPath();
+				ctx.rect(20, 480, 760, 100);
+				ctx.closePath();
+				ctx.stroke();
+				ctx.fill();
+				
+				ctx.fillStyle = "#FFF";
+				ctx.font = "20px arial";
+				
+				var l = bu.length-1;
+				if(intro[l][bu[l].length]) bu[l] += intro[l][bu[l].length];
+				else if(intro[l+1]) bu[l+1] = "";
+				
+				for(var i=0;i<=l;++i){
+					ctx.fillText(bu[i], 23, 500+25*i);
+				}
+				for(var i=0;i<400;++i){
+					ctx.fillStyle = (rand(0, 1))? "#111" : "#EEE";
+					ctx.fillRect(680+4*(i%20), 490+4*(i/20<<0), 4, 4);
+				}
+				ctx.font = "bold 15px arial";
+				ctx.fillStyle = "#D00";
+				ctx.fillText("No signal", 685, 560);
+			}
+			else{ // not intro
+				if(rand(0, 40) == 0){
+					en.push(new enemie());
+				}
+				
+				if(state == 2.1){
+					if(!bo && 700 < journey && rand(0, 20001) == 0){
+						en.push(new boss());
+						bo = 2;
+					}
+					if(closer) ++closer;
+					if(30 < closer && closer < 80){
+						archievement(0);
+						closer = 0;
+					}
+					if(18750 < journey++ && journey < 18780) archievement(3);
+					if(1250 < confidence++ && confidence < 1280) archievement(4);
+					drawMe();
+				}
+				else if(state == 2.2){
+					ctx.fillStyle = "#600";
+					ctx.font = "100px arial";
+					ctx.fillText("Game Over", 150, 350);
+					if((localStorage.sc || 0) < sc){
+						ctx.save();
+						ctx.rotate(0.32);
+						ctx.font = "bold 30px arial";
+						ctx.fillStyle = "#EE0";
+						ctx.fillText("New Record", 625, 85);
+						ctx.restore();
+					}
+					else{
+						ctx.font = "12px arial";
+						ctx.fillStyle = "#FFF";
+						var h = [	"extract many asteroids to get a multiplier.", "the closer your are, the better you extract.",
+									"slower asteroids are safer.", "calm down :)", "only cokpit can be damage, don't care for the wings."];
+						rh = rh || "hint : " + h[rand(0, h.length-1)];
+						ctx.fillText(rh, 665-ctx.measureText(rh).width, 370);
+					}
+				}
+				// asteroides
+				ctx.fillStyle = "#F00";
+				var e;
+				var d = 0;
+				var s = 0;
+				var mu = 0;
+				for(var i=0;i<en.length;++i){
+					e = en[i];
+					d = distance(me, e)-e.r-4;
+					if(d < 1 && !me.i) closer++;
+					if(d < 0) boom();
+					if(e.boss){
+						if(e.y+e.r < 0 && (e.y/5<<0)/2<<0 == (e.y/5<<0)/2){
+							ctx.font = "bold 50px arial";
+							ctx.fillText("Warning", 300, 300);
+						}
+						if(rand(0, 5) == 0){
+							en.push(new enemie(e.x, e.y));
+						}
+						if(590 < e.y-e.r){
+							if(bo == 2) archievement(5);
+							bo = 0;
+						}
+					}
+					circ(e.x, e.y, e.r);
+					if(d < 40 && state == 2.1 && !me.i){ // extract
+						var r = ((1-d/40)*100<<0)/100;
+						++mu; s += r;
+						ctx.strokeStyle = "rgba(50,255,50," + (r+0.3) + ")";
+						ctx.lineWidth = 7*r;
+						ctx.beginPath();
+						ctx.moveTo(me.x, me.y);
+						ctx.lineTo(e.x+rand(-2, 1), e.y+rand(-2, 1));
+						ctx.closePath();
+						ctx.stroke();
+					}
+					e.x += e.v.x;
+					e.y += e.v.y;
+					if(e.y < -100-e.r || 700+e.r < e.y || e.x < -100-e.r || 900+e.r < e.x){
+						en.splice(i--, 1);
+					}
+				}
+				if(1 < mu){
+					if(3 < mu) archievement(1);
+					ctx.font = (11+mu*3)+"px arial";
+					ctx.fillStyle = "#EE0";
+					ctx.fillText("x"+mu, me.x+6, me.y-11);
+				}
+				sc += s * mu;
+				if(9000 < sc && sc < 9020) archievement(2);
+			}
+			
+			if(rand(0, 400) == 0){
+				ba.push(new back());
+			}
+			if(rand(0, 50) == 0){
+				st.push(new star());
+			}
+			if(rand(0, 1400) == 0){
+				ne.push(new nebula());
+			}
+			
+			// score
+			ctx.fillStyle = "#EEE";
+			ctx.font = "17px arial";
+			ctx.fillText(sc<<0, 780-ctx.measureText(sc<<0).width, 22);
+			
+			// archievement get
+			if(ar.n.length){
+				for(var i=0;i<ar.n.length;++i){
+					ctx.font = "17px arial";
+					ctx.fillText("Archievement get :", 260, 22+22*i);
+					ctx.font = "bold 20px arial";
+					ctx.fillText(ar[ar.n[i].a], 400, 23+22*i);
+					if(ar.n[i].t-- < 0) ar.n.splice(i--, 1);
+				}
+			}
+		break;
+	}
+}
+function drawMe(){
+	if(state<<0 == 2){
+		if(0 < me.i) me.i--;
+		var c = 0;
+		for(var i=0;i<p.length;++i){
+			c = p[i].a+Math.abs(p[i].m)*2;
+			ctx.fillStyle = "rgba(0," + (c/36*255<<0) + ",255,1)";
+			
+			circ(p[i].x, (p[i].y+p[i].a), 2);
+			p[i].a += 1.8;
+			
+			if(c >= 36){
+				m = rand(-7, 6);
+				p[i] = {
+					x : me.x + m,
+					y : me.y,
+					m : m,
+					a : 0
+				}
+			}
+		}
+		ctx.save();
+		ctx.translate(me.x, me.y);
+		var r = -(px - me.x)/10;
+		r = (r < -PI/2.5)? -PI/2.5 : ((PI/2.5 < r)? PI/2.5 : r);
+		me.r += (r - me.r)/10;
+		if(me.r-0.03 < 0 && 0 < me.r+0.03) me.r = 0;
+		ctx.rotate(me.r);
+		px = me.x;
+		ctx.beginPath();
+		var x = 0;
+		var y = -12;
+		ctx.moveTo(x, y);
+		ctx.bezierCurveTo(x+5, y, x+5, y+10, x+10, y+10); x+=10; y+=10;
+		ctx.bezierCurveTo(x+20, y+5, x+15, y+15, x+10, y+20); x+=10; y+=20;
+		ctx.bezierCurveTo(x, y-5, x-5, y-10, x-20, y-10); x-=20; y-=10;
+		
+		ctx.bezierCurveTo(x-15, y, x-20, y+5, x-20, y+10); x-=20; y+=10;
+		ctx.bezierCurveTo(x-5, y-5, x-10, y-15, x+10, y-20); x+=10; y-=20;
+		ctx.bezierCurveTo(x+5, y, x+5, y-10, x+10, y-10); x+=10; y-=10;
+		if(0 < me.i) ctx.fillStyle = "#" + (Math.sin(me.i*1.5)*4.5+4.5);
+		else ctx.fillStyle = "#CCC";
+		ctx.fill();
+		ctx.restore();
+	}
+	
+	ctx.fillStyle = "#FF3";
+	circ(me.x, me.y, 4);
+}
+function boom(){
+	if(bo == 2) bo = 1;
+	closer = 0;
+	confidence = 0;
+	if(!me.i){
+		me.i = 100;
+		--me.l;
+		if(me.l <= 0){
+			journey = 0;
+			state = 2.2;
+		}
+	}
+}
+function enemie(x, y){
+	this.r = rand(5, 15);
+	this.x = x? x : rand(this.r, 800-this.r);
+	this.y = y? y : 0-this.r;
+	var v = rand(-36, 35)/10;
+	this.v = {
+		x : (x? v : rand(-6, 5)/10),
+		y : (x? 0 : rand(15, 35)/10)
+	};
+	if(x) this.v.y = (rand(0,1)*2-1)*(3.5-Math.abs(v));
+}
+function boss(){
+	b = true;
+	this.r = rand(220, 300);
+	this.x = rand(50+this.r, 750-this.r);
+	this.y = -60-this.r;
+	this.v = {
+		x : 0,
+		y : 0.3
+	};
+	this.boss = true;
+}
+function back(){
+	this.r = rand(100, 250);
+	this.x = rand(-this.r, 800+this.r);
+	this.y = 0-this.r;
+	this.v = {
+		x : rand(-2, 1)/10,
+		y : rand(3, 15)/10
+	};
+}
+function star(n){
+	this.r = rand(5, 15)/10;
+	this.x = rand(0, 800);
+	this.y = (n)? rand(0, 600) : 0-this.r;
+	this.v = {
+		x : 0,
+		y : rand(1, 7)/10
+	};
+}
+function nebula(n){
+	this.n = [];
+	this.x = rand(0, 800);
+	this.c = "#" + rand(0, 15).toString(16) +rand(0, 6) + rand(0, 15).toString(16);
+	var s = rand(15, 30);
+	var m = {
+		r : 0,
+		y : 0
+	};
+	for(var i=0;i<s;++i){
+		this.n[i] = {
+			r : rand(50, 300)/10,
+			x : rand(-71, 70),
+			y : 0,
+			a : rand(1, 3)/10,
+			v : {
+				x : 0,
+				y : rand(0, 1)/20
+			}
+		};
+		this.n[i].y = rand(-71+Math.abs(this.n[i].x), 70-Math.abs(this.n[i].x));
+		m.r = Math.max(m.r, this.n[i].r);
+		m.y = Math.max(m.y, this.n[i].y);
+	}
+	this.y = (n)? rand(0, 600) : -m.y-m.r;
+	this.v = {
+		x : 0,
+		y : rand(1, 5)/10
+	};
+}
+function circ(x, y, r){
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, 2*Math.PI, true);
+	ctx.fill();
+}
+function distance(from, to){
+	return Math.sqrt(Math.pow(from.x - to.x,2) + Math.pow(from.y - to.y,2));
+}
+
+
+function rand(from, to){
+	return Math.random()*(to-from+1)+from<<0;
+}
+function getById(id){
+	return document.getElementById(id);
+}
+</script>
+</body>

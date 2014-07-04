@@ -1,0 +1,309 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Le pendu</title>
+    <link type="text/css" href="style.css" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script language="javascript" type="text/javascript" src="dico.js">alert("erreur de chargement du dictionnaire !");</script>
+    <script language="javascript" type="text/javascript">
+        var mod;
+        var diff;
+        var pseudo1;
+        var pseudo2;
+        var leMot;
+        var affichage;
+
+        function module(modSelected){
+            mod  = modSelected;
+            if(mod != 0){
+                document.getElementById("difficulte").removeAttribute("disabled");
+                document.getElementById("bouton1").removeAttribute("disabled");
+
+                document.getElementById("module").setAttribute("disabled", "");
+            }
+        }
+
+        function retourMod(){
+            document.getElementById("difficulte").setAttribute("disabled", "");
+            document.getElementById("bouton1").setAttribute("disabled", "");
+
+            document.getElementById("module").removeAttribute("disabled");
+            document.getElementById("module").selectedIndex = 0;
+        }
+
+        function difficulte(lvlSelected){
+            diff = lvlSelected;
+            if(diff != 0){
+                document.getElementById("enterj1").removeAttribute("disabled");
+                if(mod == 2){
+                    document.getElementById("enterj2").removeAttribute("disabled");
+                }
+                document.getElementById("bouton2").removeAttribute("disabled");
+                document.getElementById("bouton3").removeAttribute("disabled");
+
+                document.getElementById("difficulte").setAttribute("disabled", "");
+                document.getElementById("bouton1").setAttribute("disabled", "");
+            }
+        }
+
+        function retourDiff(){
+            document.getElementById("enterj1").setAttribute("disabled", "");
+            document.getElementById("enterj2").setAttribute("disabled", "");
+            document.getElementById("bouton2").setAttribute("disabled", "");
+            document.getElementById("bouton3").setAttribute("disabled", "");
+
+            document.getElementById("difficulte").removeAttribute("disabled");
+            document.getElementById("difficulte").selectedIndex = 0;
+            document.getElementById("bouton1").removeAttribute("disabled");
+        }
+
+        function startGame(){
+            if(document.getElementById("enterj1").value != "" && (mod == 1 || document.getElementById("enterj2").value != "")){
+                pseudo1 = document.getElementById("enterj1").value;
+                pseudo2 = document.getElementById("enterj2").value; // enregistre les pseudo
+                document.getElementById("entree").size = 3+diff*4;
+                document.getElementById("entree").maxLength = 3+diff*4; // met la difficulte
+
+                if(mod == 1){
+                    pseudo2 = pseudo1;
+                    pseudo1 = "l'ordinateur";
+                    document.getElementById("entree").value = getMot(diff);
+                    enregistrement();
+                }
+                else{
+
+                }
+
+                document.getElementById("enterj1").setAttribute("disabled", "");
+                document.getElementById("enterj2").setAttribute("disabled", "");
+                document.getElementById("bouton2").setAttribute("disabled", "");
+                document.getElementById("bouton3").setAttribute("disabled", ""); // disabled le reste du menu
+
+                document.getElementById("game").style.display = "block"; // ouvre le jeu
+                document.getElementById("joueur1").innerHTML = pseudo1;
+                document.getElementById("joueur2").innerHTML = pseudo2; // affiche les pseudo
+            }
+        }
+
+        function enregistrement(){
+            leMot = document.getElementById("entree").value;
+            exp = new RegExp("[^a-z]");
+            if(!exp.test(leMot)){
+                document.getElementById("entree").type = "password";
+                affichage = "";
+                for(i=0;i<leMot.length;i++){
+                    affichage += "-";
+                }
+                document.getElementById("vue").innerHTML = affichage;
+                document.getElementById("entree").setAttribute("disabled", "");
+                document.getElementById("boutonOk").setAttribute("disabled", "");
+
+                document.getElementById("essai").removeAttribute("disabled");
+                document.getElementById("boutonEssai").removeAttribute("disabled");
+            }
+        }
+
+        function test(){
+            var essai = document.getElementById("essai").value;
+            if(essai != ""){
+                var index;
+                var succes = false;
+                for(i=0;i<leMot.length;i++){
+                    index = leMot.indexOf(essai,i);
+                    if(index != -1){
+                        i = index;
+                        affichage = changeAt(affichage,index,essai);
+                        succes = true;
+                    }
+                }
+                if(!succes){
+                    document.getElementById("erreur").innerHTML++;
+                }
+                document.getElementById("vue").innerHTML = affichage;
+                document.getElementById("essai").value = "";
+                if(affichage.indexOf("-") == -1){
+                    gagne();
+                }
+                if(document.getElementById("erreur").innerHTML == 9){
+                    perd();
+                }
+            }
+            document.getElementById("essai").focus();
+        }
+
+        function changeAt(chaine, index, lettre){
+            var deb = chaine.substring(0,index);
+            var fin = chaine.substring(index+1,chaine.length+1);
+            return deb+lettre+fin;
+        }
+
+        function gagne(){
+            document.getElementById("infos").innerHTML = "Bien joué " + pseudo2 + ", tu as gagné !";
+            document.getElementById("boutonrs").style.display = "inline";
+            document.getElementById("entree").type = "text";
+            document.getElementById("boutonEssai").setAttribute("disabled", "");
+        }
+
+        function perd(){
+            document.getElementById("infos").innerHTML = "Dommage " + pseudo2 + ", tu t'es fait pendre !";
+            document.getElementById("boutonrs").style.display = "inline";
+            document.getElementById("entree").type = "text";
+            document.getElementById("boutonEssai").setAttribute("disabled", "");
+        }
+
+        function ferme2(){
+            document.getElementById("game").style.display = "none"; // ferme le jeu
+            ferme();
+            document.getElementById("entree").removeAttribute("disabled");
+            document.getElementById("entree").type = "text";
+            document.getElementById("boutonOk").removeAttribute("disabled");
+            document.getElementById("essai").setAttribute("disabled", "");
+            document.getElementById("boutonEssai").setAttribute("disabled", "");
+            document.getElementById("entree").value = "";
+            document.getElementById("essai").value = "";
+            document.getElementById("vue").innerHTML = "";
+            document.getElementById("erreur").innerHTML = "0"; // remet les champs du jeu a 0
+        }
+
+        function ferme(){
+            document.getElementById("infos").innerHTML = ""; // efface l'info'
+
+            document.getElementById("enterj1").value = "";
+            document.getElementById("enterj2").value = ""; // efface les pseudo
+
+            document.getElementById("difficulte").selectedIndex = 0;
+            document.getElementById("module").selectedIndex = 0; // remet les select a l'index 0
+            document.getElementById("module").removeAttribute("disabled"); // enabled le choix de module
+        }
+
+        function restart(){
+            document.getElementById("infos").innerHTML = ""; // efface les info
+            document.getElementById("boutonrs").style.display = "none"; // cache bouton restart
+            affichage = ""; // reset l'affichage
+            document.getElementById("vue").innerHTML = ""; // enleve la vue
+            document.getElementById("erreur").innerHTML = 0;
+
+            if(mod == 2){
+                document.getElementById("essai").setAttribute("disabled", ""); // disabled l'essai
+                document.getElementById("entree").removeAttribute("disabled");
+                document.getElementById("boutonOk").removeAttribute("disabled"); // enabled l'entree et son bouton
+                document.getElementById("entree").value = ""; // efface l'entree'
+                document.getElementById("entree").focus(); // focus dessus
+
+                var tmp = pseudo1;
+                pseudo1 = pseudo2;
+                pseudo2 = tmp; // echange des pseudo
+                document.getElementById("joueur1").innerHTML = pseudo1;
+                document.getElementById("joueur2").innerHTML = pseudo2; // réaffichage
+            }
+            else{
+                document.getElementById("entree").value = getMot(diff);
+                enregistrement();
+            }
+        }
+    </script>
+  </head>
+  <body>
+      <div id="menu">
+          <table>
+              <tr>
+                  <td rowspan="2">
+                      choix du mode :
+                  </td>
+                  <td rowspan="2">
+                      choix du niveau :
+                  </td>
+                  <td colspan="2">
+                      Joueur 1 :
+                  </td>
+              </tr>
+              <tr>
+                  <td colspan="2">
+                      <input type="text" id="enterj1" size="15" maxlength="15" tabindex="40" disabled/>
+                  </td>
+              </tr>
+              <tr>
+                  <td rowspan="2">
+                      <select id="module" onchange="module(this.selectedIndex);" tabindex="10">
+                          <option>faites votre choix</option>
+                          <option>Uni-joueur</option>
+                          <option>Multi-joueur</option>
+                      </select>
+                  </td>
+                  <td rowspan="2">
+                      <select id="difficulte" onchange="difficulte(this.selectedIndex);" tabindex="20" disabled>
+                          <option value="0">faites votre choix</option>
+                          <option value="1">premiers pas (de 0 à 6 lettres)</option>
+                          <option value="2">entrainé (jusqu'à 10)</option>
+                          <option value="3">professionel (jusqu'à 14)</option>
+                      </select>
+                  </td>
+                  <td colspan="2">
+                      Joueur 2 :
+                  </td>
+              </tr>
+              <tr>
+                  <td colspan="2">
+                      <input type="text" id="enterj2" size="15" maxlength="15" tabindex="50" disabled/>
+                  </td>
+              </tr>
+              <tr>
+                  <td></td>
+                  <td>
+                      <input id="bouton1" type="button" value="<=" onclick="retourMod()" tabindex="30" disabled/>
+                  </td>
+                  <td></td>
+                  <td>
+                      <input id="bouton2" type="button" value="<=" onclick="retourDiff()" tabindex="70" disabled/>
+                  </td>
+                  <td>
+                      <input id="bouton3" type="button" value="Start" onclick="startGame()" tabindex="60" disabled/>
+                  </td>
+              </tr>
+          </table>
+      </div>
+      <div id="game" style="display: none">
+          <table>
+              <tr>
+                  <td>
+                      <span id="joueur1"></span> rentre un mot :
+                  </td>
+                  <td rowspan="3" class="spacer"></td>
+                  <td>
+                      <span id="joueur2"></span> doit trouver :
+                  </td>
+                  <td rowspan="3" class="spacer"></td>
+                  <td>
+                      <input type="button" value="X" onclick="ferme2()"/>
+                  </td>
+                  <td></td>
+              </tr>
+              <tr>
+                  <td>
+                      <input type="text" id="entree" size="" maxlength=""/>
+                      <input type="button" id="boutonOk" value="OK" onclick="enregistrement()"/>
+                  </td>
+                  <td>
+                      <input type="text" id="essai" size="1" maxlength="1" disabled/>
+                      <input type="button" id="boutonEssai" value="essai" onclick="test()" disabled/>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <span id="vue"></span>
+                  </td>
+                  <td>
+                      raté : <span id="erreur">0</span>
+                  </td>
+                  <td colspan="2">
+                      <span id="infos"></span><input type="button" id="boutonrs" value="restart" onclick="restart()" style="display: none"/>
+                  </td>
+              </tr>
+          </table>
+      </div>
+  </body>
+</html>

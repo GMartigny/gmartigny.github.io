@@ -1,0 +1,47 @@
+body{
+	background : #888;
+	margin : 0;
+}
+#c{
+	position : relative;
+	background : url(res/title.png);
+	width : 800px;
+	height : 608px;
+}
+canvas{ display : none; }
+#c canvas{
+	position : absolute;
+	float : left;
+}
+#c div{
+	position : absolute;
+}
+
+form{
+	margin : 0;
+}
+
+#loading{
+	top: 440px;
+	left: 400px;
+}
+
+#ask{
+	padding : 15px 10px;
+	top: 400px;
+	left: 325px;
+}
+
+#chat{
+	bottom : 0;
+	width : 50%;
+}
+#blah{
+	background : rgba(255,255,255,.5);
+	border : 1px inset lightgrey;
+	width : 100%;
+}
+
+form.hidden input[type="submit"]{
+	display : none;
+}

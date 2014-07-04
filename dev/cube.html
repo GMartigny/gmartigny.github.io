@@ -1,0 +1,44 @@
+<style>
+    .cube{
+        position: relative;
+        -webkit-perspective: 400px;
+        -webkit-perspective-origin: 0 50px;
+        width: 100px;
+        height: 100px;
+        margin: 20px auto;
+        transition: all ease-in-out .5s;
+    }
+    .cube:hover{
+        -webkit-perspective-origin: 100px 50px;
+    }
+    .cube:hover *:first-child{
+        -webkit-transform: rotateY(0deg);
+        -webkit-transform-origin: 0% 0;
+        left: 0;
+    }
+    .cube:hover *:last-child{
+        -webkit-transform: rotateY(90deg);
+        -webkit-transform-origin: 100% 0;
+    }
+    .cube *{
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        transition: all ease-in-out .5s;
+        background-image: -webkit-radial-gradient(30% 20%, rgba(255, 255, 255, .5) 0, rgba(255, 255, 255, 0) 70%);
+    }
+    .cube *:first-child{
+        -webkit-transform: rotateY(-90deg);
+        -webkit-transform-origin: 100% 0;
+        background-color: red;
+        left: -100%;
+    }
+    .cube *:last-child{
+        -webkit-transform-origin: 0 0;
+        background-color: green;
+    }
+</style>
+<div class="cube">
+    <div></div>
+    <div></div>
+</div>

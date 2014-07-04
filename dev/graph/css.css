@@ -1,0 +1,124 @@
+form{
+	margin : 0;
+	padding : 3px;
+}
+#calc{
+	width : 880px;
+	margin : 0 auto;
+	padding : 20px 0;
+	background : #8CC9A7;
+	border-radius : 10px;
+	border : 5px outset #9EDBB9;
+}
+#can{
+	position : relative;
+	margin : 0 40px;
+	background : #F5F5F5;
+	border-radius : 7px;
+	border : 2px inset grey;
+}
+#menu{
+	overflow : hidden;
+}
+fieldset{
+	width : 44%;
+	float : left;
+	margin-left : 2%;
+}
+#clear{
+	clear : both;
+}
+ul{
+	margin : 0;
+	padding : 0;
+	list-style : none;
+}
+ul li{
+	height : 1px;
+	overflow : hidden;
+	-webkit-transition : height 0.5s;
+	-moz-transition : height 0.5s;
+	transition : height 0.5s;
+	background : #9EDBB9;
+	padding-left : 3px;
+}
+ul li#patern{
+	display : none;
+}
+ul li.final{
+	height : 20px;
+	margin-bottom : 3px;
+	padding : 3px;
+}
+select{
+	width : 20px;
+	height : 20px;
+	-webkit-appearance : none;
+	-moz-appearance : none;
+	appearance : none;
+	border : 2px inset rgba(120,120,120,0.6);
+	border-radius : 3px;
+	outline : none;
+}
+input.func{
+	width : 280px;
+}
+input[type="text"]{
+	border : 1px inset #9EDBB9;
+	background : none;
+}
+div.color{
+	float : left;
+	height : 20px;
+	width : 20px;
+	border-radius : 3px;
+	margin-right : 5px;
+}
+input[type="submit"]{
+	height : 0px;
+}
+input.close{
+	float : right;
+	border : none;
+	width : 12px;
+	height : 15px;
+	background : url(close.png);
+	cursor : pointer;
+}
+input.close:hover{
+	box-shadow : 0 0 5px orange;
+}
+.switch{
+	height : 20px;
+	width : 40px;
+	border : 1px inset #9EDBB9;
+	border-radius : 10px;
+	cursor : pointer;
+	font-size : 10px;
+	font-weight : bold;
+}
+.switch span{
+	margin : 3px 1px;
+}
+.switch span:nth-child(even){
+	float : left;
+	color : #191;
+}
+.switch span:nth-child(odd){
+	float : right;
+	color : #911;
+}
+.switch div{
+	position : absolute;
+	width : 18px;
+	height : 18px;
+	border-radius : 9px;
+	border : 1px outset;
+	background-color : #9EDBB9;
+}
+.switch.on div{
+	margin-left : 20px;
+}
+.switch.off div{
+	margin-left : 0px;
+}

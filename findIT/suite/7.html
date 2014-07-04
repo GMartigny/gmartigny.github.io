@@ -1,0 +1,53 @@
+<div id="bloc">
+<div id="stage">
+	<div id="bouncer"><a href="8.html">IT</a></div>
+</div>
+
+
+<script type="text/javascript">
+</script>
+
+
+<style>
+
+#stage {
+	position: relative;
+	margin: 50px auto;
+	width: 500px;
+	height: 500px;
+	border: 1px solid;
+}
+@-moz-keyframes top {
+	from { bottom: 0; }
+	to   { bottom: 486px; }
+}
+@-moz-keyframes left {
+	from { left : 0; }
+	to   { left : 488px; }
+}
+@-webkit-keyframes top {
+	from { bottom: 0; }
+	to   { bottom: 486px; }
+}
+@-webkit-keyframes left {
+	from { left : 0; }
+	to   { left : 488px; }
+}
+
+#bouncer {
+	position: absolute;
+	width: 12px;
+	height: 14px;
+	font-size : 0.7em;
+
+	-moz-animation: top 0.9s linear 0s infinite alternate, left 1.3s linear 0s infinite alternate;
+	-moz-animation-play-state : running;
+	-webkit-animation: top 0.9s linear 0s infinite alternate, left 1.3s linear 0s infinite alternate;
+	-webkit-animation-play-state : running;
+}
+
+div#bouncer:hover{
+	-moz-animation-play-state : paused;
+	-webkit-animation-play-state : paused;
+}
+</style>

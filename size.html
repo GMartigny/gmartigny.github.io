@@ -1,0 +1,193 @@
+<style>
+	*{
+		box-sizing: border-box;
+	}
+	body{
+		background: #DDD;
+		font-family: sans-serif;
+		margin: 10px;
+	}
+	#rule{
+		position: absolute;
+		background: #46F;
+		width: 200px;
+		margin: 10px;
+		left: calc(50% - 100px);
+		top: 10px;
+		height: 8cm;
+		overflow: hidden;
+		box-shadow: 0 0 50px #666;
+		-webkit-transform-origin: 50% 0;
+	}
+	#rule.horizontal{
+		-webkit-transform: rotate(-90deg);
+		top: 50%;
+		left: -90px;
+	}
+	#rule.trans{
+		transition: all linear .3s;
+	}
+	#drag{
+		position: absolute;
+		width: 100%;
+		height: 0;
+		bottom: 0;
+		border: outset #999;
+		border-width: 2px 0;
+		cursor: n-resize;
+	}
+	.horizontal #drag{
+		cursor: e-resize;
+	}
+	
+	#compare{
+		position: absolute;
+		visibility: hidden;
+		width: 200px;
+		z-index: -10;
+	}
+	
+	#warning{
+		position: absolute;
+		opacity: 0;
+		transition: opacity linear .3s;
+		font-weight: bold;
+		text-shadow: -1px -1px 0 #999 ,1px 1px 0 #FFF;
+	}
+
+	#horiz{
+		display: none;
+	}
+	#horiz + label{
+		position: relative;
+		padding: 1px 5px;
+		cursor: pointer;
+		width: 108px;
+	}
+	#horiz + label > span{
+		position: absolute;
+		width: 1em;
+		height: 1em;
+		right: -1em;
+		-webkit-perspective: 50px;
+	}
+	#horiz + label span span, #horiz + label span span:after{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		background: #800;
+		transition: all linear .3s;
+		-webkit-backface-visibility: hidden;
+		-webkit-transform: rotateX(0);
+		-webkit-transform-origin: 50% 50%;
+		-webkit-backface-visibility: hidden;
+	}
+	#horiz + label span span:after{
+		content: "";
+		background: #080;
+		-webkit-transform: rotateX(180deg);
+	}
+	#horiz:checked + label span span{
+		-webkit-transform: rotateX(180deg);
+	}
+	#horiz:checked + label span span:after{
+		-webkit-transform: rotateX(0);
+	}
+</style>
+<body>
+	<input type="number" id="mesure" value="8" min="0"/>
+	<select id="unite">
+		<option value="px">pixel</option>
+		<option value="cm" selected>cm</option>
+		<option value="in">inch</option>
+	</select><br/>
+	<input type="checkbox" id="horiz"/><label for="horiz">Horizontal rule<span><span></span></span></label>
+	<div id="rule"><div id="drag"></div><div id="compare"></div></div>
+	<div id="warning">The rule is longer than the page</div>
+	<script>
+		var rule = document.getElementById("rule"),
+			drag = document.getElementById("drag"),
+			comp = document.getElementById("compare"),
+			val = document.getElementById("mesure"),
+			unit = document.getElementById("unite"),
+			hori = document.getElementById('horiz'),
+			warn = document.getElementById("warning");
+		
+		if(localStorage.val) val.value = localStorage.val;
+		if(localStorage.unit) unit.selectedIndex = localStorage.unit;
+		setSize(val.value, unit.selectedIndex);
+		
+		val.onmouseup = val.onchange = function(){
+			setSize(val.value, unit.selectedIndex);
+		};
+		unit.onchange = function(){
+			comp.style.height = "0";
+			findSize(this.options[this.selectedIndex].value);
+			localStorage.unit = this.selectedIndex;
+		};
+		hori.onclick = function(){
+			if(this.checked)
+				rule.className = "horizontal trans";
+			else
+				rule.className = "trans";
+
+			setTimeout(function(){
+				rule.classList.remove("trans");
+			}, 300);
+			if(!hori.checked && rule.offsetHeight+10 > document.body.offsetHeight || hori.checked && rule.offsetHeight+10 > document.body.offsetWidth) warn.style.opacity = "1";
+			else warn.style.opacity = "0";
+		}
+		var t = 0;
+		function findSize(u){
+			v = u=="px"? t++/5 : t++/50;
+			comp.style.height = (v) + u;
+			if(comp.offsetHeight < rule.offsetHeight) findSize(u);
+			else{
+				val.value = v;
+				localStorage.val = v;
+				t = 0;
+			}
+		}
+		
+		mouse = {
+			x: 0,
+			y: 0,
+			dwn: false
+		};
+		drag.onmousedown = function(){
+			mouse.dwn = true;
+			if(hori.checked) document.body.style.cursor = "e-resize";
+			else document.body.style.cursor = "n-resize";
+		};
+		
+		window.onmousemove = function(e){
+			if(mouse.dwn){
+				e.preventDefault();
+				unit.selectedIndex = 0;
+				if(hori.checked){
+					setSize(e.clientX-19, 0);
+					val.value = e.clientX-19;
+				}
+				else{
+					setSize(e.clientY-16, 0);
+					val.value = e.clientY-16;
+				}
+			}
+		};
+		window.onmouseup = function(){
+			document.body.style.cursor = "";
+			mouse.dwn = false;
+		};
+		
+		function setSize(v, u){
+			rule.style.height = v + unit.options[u].value;
+			if(!hori.checked && rule.offsetHeight+10 > document.body.offsetHeight || hori.checked && rule.offsetHeight+10 > document.body.offsetWidth) warn.style.opacity = "1";
+			else warn.style.opacity = "0";
+			
+			localStorage.val = v;
+			localStorage.unit = u;
+		}
+	</script>
+</body>

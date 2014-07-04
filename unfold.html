@@ -1,0 +1,89 @@
+<style>
+*{
+	box-sizing: border-box;
+	margin: 0;
+}
+ul{
+	padding: 0;
+	list-style: none;
+}
+.fold li{
+	display: block;
+	width: 100%;
+}
+
+.fold{
+	display: block;
+	width: 500px;
+	margin: 0 auto;
+	background: #666;
+}
+.fold h2, .fold li li h3{
+	padding: 20px;
+}
+.fold ul li, .fold li li h3{
+	transition: all ease-in-out .4s;
+}
+.fold ul li{
+	-webkit-perspective: 600;
+	-webkit-perspective-origin: 50% 0;
+	height: 0;
+}
+.fold li li h3{
+	position: relative;
+	height: 60px;
+	-webkit-transform-origin: 50% 0;
+}
+.fold li li:nth-child(even) h3{
+	background-image: linear-gradient(rgba(230, 230, 230, .1) 0, rgba(230, 230, 230, 0) 100%);
+	-webkit-transform: translateZ(-60px) rotateX(90deg);
+}
+.fold li li:nth-child(odd) h3{
+	background-image: linear-gradient(rgba(40, 40, 40, .1) 0, rgba(40, 40, 40, 0) 100%);
+	-webkit-transform: rotateX(-90deg);
+}
+.fold > li:hover ul li{
+	height: 60px;
+}
+.fold > li:hover li h3{
+	-webkit-transform: rotateX(0deg);
+}
+
+.fold .red h2, .fold .red h3{
+	background-color: #F33;
+	color: #FFF;
+}
+.fold .blue h2, .fold .blue h3{
+	background-color: #4AF;
+	color: #FFF;
+}
+.fold .green h2, .fold .green h3{
+	background-color: #2D5;
+	color: #222;
+}
+</style>
+<ul class="fold">
+	<li class="red"><h2>Greetings</h2>
+		<ul>
+			<li><h3>Hello</h3></li>
+			<li><h3>world</h3></li>
+			<li><h3>!</h3></li>
+		</ul>
+	</li>
+	<li class="blue"><h2>Question</h2>
+		<ul>
+			<li><h3>How</h3></li>
+			<li><h3>Do</h3></li>
+			<li><h3>You</h3></li>
+			<li><h3>Do ?</h3></li>
+		</ul>
+	</li>
+	<li class="green"><h2>Answer</h2>
+		<ul>
+			<li><h3>I'm</h3></li>
+			<li><h3>Fine</h3></li>
+			<li><h3>Thank</h3></li>
+			<li><h3>You</h3></li>
+		</ul>
+	</li>
+</ul>

@@ -1,0 +1,45 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Graph JS</title>
+	<link rel="stylesheet" href="css.css" type="text/css"/>
+	<script src="js.js"></script>
+</head>
+<body>
+	<div id="calc">
+		<canvas width="800" height="600" id="can"></canvas>
+		<div id="menu">
+			<fieldset><legend>Fonctions</legend>
+				<ul id="funcs">
+					<li id="patern">
+						<div class="color" style="background:red"></div><span class="name"></span>(x) = <span class="func"></span>
+						<input type="button" class="close" onclick="removeFunc(this);"/>
+					</li>
+					<li id="f0" class="final" onclick="change(this);">
+						<div class="color" style="background:red"></div><span class="name">f</span>(x) = <span class="func">x^3</span>
+						<input type="button" class="close" onclick="removeFunc(this);"/>
+					</li>
+				</ul>
+				<form action="#" onsubmit="return addFunc(this);" id="add">
+					<select onchange="color(this);" title="Couleur" name="colorPicker" id="colorPicker">
+						<option style="background:red" value="red"></option>
+						<option style="background:violet" value="violet"></option>
+						<option style="background:goldenrod" value="goldenrod"></option>
+						<option style="background:yellow" value="yellow"></option>
+						<option style="background:green" value="green"></option>
+						<option style="background:skyblue" value="skyblue"></option>
+						<option style="background:blue" value="blue"></option>
+						<option style="background:black" value="black"></option>
+					</select>
+					<input type="text" size="1" maxlength="1" class="name" name="name" title="Nom"/>(x) =
+					<input type="text" class="func" name="func" title="Fonction">
+					<input type="submit" style="visibility:hidden;"/>
+				</form>
+			</fieldset>
+			<fieldset id="param"><legend>Parametrage</legend>
+				Repère : <div class="switch on" onclick="switchLandmark(this);"><div></div><span>ON</span><span>OFF</span></div>
+			</fieldset>
+		</div>
+	</div>
+</body>
+<html>

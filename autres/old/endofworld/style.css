@@ -1,0 +1,25 @@
+body{
+    background-color: black;
+    color: lime;
+}
+
+div{
+    margin: 20px;
+    padding: 10px;
+    border: 2px silver groove;
+}
+
+a{
+    text-decoration: underline;
+    color: green;
+}
+
+a:hover{
+    color: orange;
+}
+
+#retour{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}

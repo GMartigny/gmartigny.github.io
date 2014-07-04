@@ -1,0 +1,75 @@
+<body onmousemove="resize(event);" onmouseup="lache();">
+<span id="debug"></span>
+<div id="it">
+	<a href="10.html">IT</a>
+</div>
+<div id="dragabble" onmouseover="curseur(this);" onmousedown="clique(event);" style="height:500px;">
+	<div id="bloc">
+
+	</div>
+</div>
+
+<script type="text/javascript">
+var clicked = false;
+var debY;
+var debHei;
+var div;
+
+window.onload = function(){
+	div = document.getElementById("dragabble");
+}
+
+function curseur(div){
+	div.style.cursor = "s-resize";
+}
+
+function clique(ev){
+	clicked = true;
+	debY = ev.clientY;
+	debHei = div.clientHeight;
+}
+
+function resize(ev){
+	if(clicked){
+		var tmp = debHei + ev.clientY - debY
+		div.style.height = tmp;
+	}
+}
+
+function lache(){
+	clicked = false;
+	document.getElementById("debug").innerHTML = "";
+}
+</script>
+
+
+<style>
+	div#dragabble{
+		position : relative;
+		margin : 50px auto;
+		width : 500px;
+		background-color : white;
+		display : block;
+		padding-bottom : 8px;
+	}
+	#bloc{
+		position : relative;
+		margin : 50px auto 0;
+		border : 1px solid;
+		width : 500px;
+		height : 100%;
+		background-color : white;
+		cursor : default;
+	}
+	#it{
+		position : absolute;
+		top : 430px;
+		left : 50%;
+	}
+	#debug{
+		position : absolute;
+		top : 0;
+		left : 0;
+	}
+</style>
+</body>

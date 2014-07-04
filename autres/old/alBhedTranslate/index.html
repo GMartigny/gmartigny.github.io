@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Le premier traducteur Français - Al Bhed</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script language="javascript" type="text/javascript" src="alphabet.js">alert("Erreur lors du chargement des Scripts.");</script>
+    <script language="javascript" type="text/javascript">
+        var frCara = "âäààÂÄÀêëéèÈÊËîïìÎÏÌôöòÔÖÒûüùÛÜÙ";
+        function trad(num){
+            var string = "";
+            if(num == 1){ // choix de l'alphabet
+                var alpha = alphaToAlBhed;
+            }
+            else{
+                var alpha = alphaToFr;
+            }
+
+            var input = document.getElementById("input").value;
+            var regexCara = new RegExp("[a-zA-Z"+frCara+"]");
+            for(i=0;i<input.length;i++){ // parcours de de l'input
+                var car = input.charAt(i);
+
+                if(regexCara.test(car)){ // si c'est un caractere fr connu
+                    car = sansAccent(car);
+
+                    if(car.toUpperCase() == car){ // si c'est une majuscule
+                        car = car.toLowerCase();
+                        var n = alphaReel.indexOf(car);
+                        string += alpha.charAt(n).toUpperCase();
+                    }
+                    else{
+                        var n = alphaReel.indexOf(car);
+                        string += alpha.charAt(n);
+                    }
+                }
+                else{
+                    string += car;
+                }
+
+            }
+            document.getElementById("output").value = string;
+        }
+
+        function sansAccent(car){ // enleve les accents si necessaire
+            rega = new RegExp("[âäàà]");
+            regA = new RegExp("[ÂÄÀ]");
+            rege = new RegExp("[éèêë]");
+            regE = new RegExp("[ÊËÈÉ]");
+            regi = new RegExp("[îïì]");
+            regI = new RegExp("[ÎÏÌ]");
+            rego = new RegExp("[ôöò]");
+            regO = new RegExp("[ÔÖÒ]");
+            regu = new RegExp("[ûüù]");
+            regU = new RegExp("[ÛÜÙ]");
+            regc = new RegExp("[ç]");
+            regC = new RegExp("[Ç]");
+            if(rega.test(car)){car = "a";}
+            else if(regA.test(car)){car = "A";}
+            else if(rege.test(car)){car = "e";}
+            else if(regE.test(car)){car = "E";}
+            else if(regi.test(car)){car = "i";}
+            else if(regI.test(car)){car = "I";}
+            else if(rego.test(car)){car = "o";}
+            else if(regO.test(car)){car = "O";}
+            else if(regu.test(car)){car = "u";}
+            else if(regU.test(car)){car = "U";}
+            else if(regc.test(car)){car = "c";}
+            else if(regC.test(car)){car = "C";}
+            return car;
+        }
+    </script>
+  </head>
+  <body>
+      <div>
+          <textarea id="input" cols="50" rows="8" onfocus="if(this.value == 'Votre texte ici'){this.value = ''}"
+                    onblur="if(this.value == ''){this.value = 'Votre texte ici'}">Votre texte ici</textarea><br/>
+          <input type="button" value="Trad vers l'Al Bhed" onclick="trad(1);"/>
+          <input type="button" value="Trad vers le Français" onclick="trad(2);"/><br/>
+          <textarea id="output" cols="50" rows="8"></textarea>
+      </div>
+  </body>
+</html>

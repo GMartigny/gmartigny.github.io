@@ -1,0 +1,145 @@
+<head>
+<meta charset="UTF-8">
+<title>MC Papertoy</title>
+<style media="print">
+canvas#print{
+	display : block;
+	border : 3px solid red;
+}
+</style>
+<style media="screen">
+#print{
+	display : none;
+}
+#can{
+	background : url(back.gif);
+	box-shadow : 0 0 10px grey;
+}
+form{
+	margin : 10px 0 0 0;
+	overflow : hidden;
+}
+.block{
+	font-family : Minecraft;
+	font-size : 15px;
+	float : left;
+	margin : 2px;
+	height : 32px;
+	padding : 5px 10px;
+	box-shadow : 2px 2px 0 grey;
+}
+input[type="text"]{
+	width : 250px;
+}
+input[type="submit"], input[type="button"]{
+	border : none;
+	background : #ABE;
+	cursor : pointer;
+	color : white;
+	width : 86px;
+}
+input[type="submit"]:active, input[type="button"]:active{
+	box-shadow : 1px 1px 0 grey;
+	margin : 3px 1px 1px 3px;;
+}
+#printButton{
+	background : orange;
+	width : 340px;
+}
+@font-face{
+	src : url(Minecraft.ttf);
+	font-family : Minecraft;
+}
+#options{
+	position : relative;
+	display : block;
+	background : lightgrey;
+	clear : both;
+	width : 320px;
+	padding-top : 0;
+	overflow : hidden;
+	transition : height 0.5s ease-out;
+}
+#legend{
+	position : relative;
+	font-size : 15px;
+	text-align : center;
+	margin : 10px;
+	cursor : pointer;
+}
+.expanded{
+	height : 100px;
+}
+.expanded #legend:before, .expanded #legend:after{
+	background-position : 25px 0;
+}
+#legend:before, #legend:after{
+	content : "";
+	position : absolute;
+	background : url(arrow.gif);
+	height : 15px;
+	width : 25px;
+}
+#legend:before{
+	left : 80px;
+}
+#legend:after{
+	right : 80px;
+}
+</style>
+</head>
+<body>
+<canvas id="can" width="640" height="320"></canvas>
+<canvas id="print" width="1654" height="2339"></canvas>
+<form onsubmit="return getIt(this);">
+	<input type="text" placeholder="Pseudo" name="pseudo" class="block"/>
+	<input type="submit" value="Get It" class="block"/>
+</form>
+<input type="button" value="Print My Papertoy" id="printButton" class="block" title="Check your skin preview"/>
+<div id="options" class="block">
+	<h1 id="legend">Options</h1>
+	<input type="checkbox" id="noHelm"/><label for="noHelm" title="Can sometimes look shity with it.">Print without Helm</label>
+</div>
+<script>
+var can = getById("can");
+var ctx = can.getContext("2d");
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.font = "20px Minecraft";
+
+getById("printButton").onclick = printIt;
+getById("legend").onclick = function(){ expand(this.parentNode); };
+
+var skin = new Image();
+skin.onload = function(){ drawIt(true); };
+skin.onerror = function(){ drawIt(false); };
+
+function getIt(form){
+	skin.src = "http://s3.amazonaws.com/MinecraftSkins/"+ form.pseudo.value +".png";
+	return false;
+}
+
+function drawIt(success){
+	ctx.clearRect(0, 0, can.width, can.height);
+	if(success) ctx.drawImage(skin, 0, 0, 640, 320);
+	else ctx.fillText("Impossible to retreive this Skin", 134.5, 162.5);
+}
+
+function printIt(){
+	window.print();
+}
+
+function expand(div){
+	if(div.classList.contains("expanded")){
+		div.classList.remove("expanded");
+	}
+	else{
+		div.classList.add("expanded");
+	}
+}
+
+function getById(id){
+	return document.getElementById(id);
+}
+</script>
+</body>

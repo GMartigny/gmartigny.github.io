@@ -1,0 +1,32 @@
+<head>
+<script src="suite/cook.js" type="text/javascript"></script>
+</head>
+<div id="bloc">
+	<h3>find IT !</h3>
+	<p>
+		Dans findIt, le but est de trouver "IT" au travers de différent niveau.<br/>
+		Votre rapidité, votre intelligence, votre observation ... tous seront mis à l'épreuve.<br/>
+		Bonne chance !<br/>
+		<input value="Commencer" type="button" onclick="start();"/>
+	</p>
+</div>
+
+
+<script type="text/javascript">
+function start(){
+	setCook("depart", (new Date()).getTime());
+	setCook("clic", 0);
+	
+	location.href='suite/1.html';
+}
+</script>
+
+<style>
+	#bloc{
+		margin : 50px auto;
+		border : 1px solid;
+		width : 500px;
+		height : 500px;
+		text-align : center;
+	}
+</style>

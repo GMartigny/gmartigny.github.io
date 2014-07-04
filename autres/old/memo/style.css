@@ -1,0 +1,44 @@
+body{
+    background-color: orange;
+	text-align : center;
+	color : white;
+}
+
+table{
+	padding : 5px;
+    width: 700px;
+    height: 600px;
+}
+
+img{
+	border : none;
+}
+
+div{
+    color: white;
+    background-color: #266600;
+}
+
+#game, #selecteur{
+	margin:0px auto;
+    width: 700px;
+    height: 650px;
+}
+
+#game .infos{
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+}
+
+#retour{
+	color : #000000;
+	padding : 20px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+a{
+	color : white;
+}

@@ -1,0 +1,430 @@
+<style>
+    body{
+        margin : 0;
+        height : 100%;
+        overflow : hidden;
+        //background : radial-gradient(#333 50%, #000 150%);
+    }
+    #can{
+        background : #333;
+        cursor : crosshair;
+    }
+    #fps{
+        position : absolute;
+        top : 0;
+        right : 0;
+        color : #FFF;
+    }
+    #options{
+        position : absolute;
+        top : -100%;
+        left : -100%;
+        transition : all ease-out .2s;
+        background : url(more.gif) bottom right no-repeat #EEE;
+        border : 2px solid #EEE;
+        padding : 15px;
+    }
+    #options:hover{
+        top : 0 !important;
+        left : 0 !important;
+    }
+
+</style>
+<canvas id="can"></canvas>
+<div id="fps"></div>
+<div id="options">
+    <input type="button" value="Reset" onclick="start();"/>
+</div>
+<script>
+    var divOptions = getById("options");
+    divOptions.style.left = (-divOptions.clientWidth + 14) + "px";
+    divOptions.style.top = (-divOptions.clientHeight + 14) + "px";
+
+    // définition des variables globales
+    var PI = Math.PI;
+    var can = getById("can");
+    var ctx = can.getContext("2d");
+
+    var fps = {
+        holder: getById("fps"),
+        count: 0,
+        delay: 0,
+        enabled: true
+    };
+    var mouse = {
+        x: 0,
+        y: 0,
+        d: false,
+        r: 0
+    };
+
+    var raf = window.requestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame;
+    var caf = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+    var animId = 0;
+
+    var plancs = [];
+    var herbis = [];
+    var carnis = [];
+
+    // listeners
+    window.addEventListener("resize", function(){
+        can.width = document.body.clientWidth;
+        can.height = document.body.clientHeight;
+        plancs = [];
+    });
+    window.addEventListener("mousedown", function(){
+        mouse.d = true;
+    });
+    window.addEventListener("mouseup", function(){
+        mouse.d = false;
+        mouse.r = 0;
+    });
+    window.addEventListener("mousemove", function(e){
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    // point de départ
+    // création des entités et premier appel à draw
+    function start(){
+        if(animId) caf(animId);
+        can.width = document.body.clientWidth;
+        can.height = document.body.clientHeight;
+
+        plancs = [];
+        herbis = [];
+        carnis = [];
+
+        for(var i = 0; i < 20; ++i){
+            //herbis[i] = new Herbi(ctx);
+            //carnis[i] = new Carni(ctx);
+        }
+        herbis.push(new Herbi(ctx));
+        carnis.push(new Carni(ctx));
+        carnis.push(new Carni(ctx));
+        carnis.push(new Carni(ctx));
+
+        draw();
+    }
+    start();
+
+    // fonction de dessin, appelé en boucle avec requestAnimationFrame (raf)
+    function draw(){
+        animId = raf(draw);
+        ctx.clearRect(0, 0, can.width, can.height);
+
+        // dessin des 3 types d'entitées
+        ctx.fillStyle = "#FFF";
+        plancs.forEach(function(each){
+            each.draw();
+        });
+        ctx.fillStyle = "#0F0";
+        herbis.forEach(function(each){
+            each.draw();
+        });
+        ctx.fillStyle = "#F00";
+        ctx.strokeStyle = "#F00";
+        carnis.forEach(function(each){
+            each.draw();
+        });
+
+        // ajout de la nourriture au clic
+        if(mouse.d){
+            if(0 < mouse.r)
+                --mouse.r;
+            else if(plancs.length < 20){
+                mouse.r = 5;
+                plancs.push(new Planc(ctx, mouse.x, mouse.y));
+            }
+        }
+        //if(!rand(0, 100)) plancs.push(new Planc(ctx));
+
+        // gestion et affichage des fps
+        if(fps.enabled){
+            var now = Date.now();
+            if(fps.delay + 1000 < now){
+                fps.holder.innerHTML = (1000 / (now - fps.count) << 0) + "fps";
+                fps.delay = now;
+            }
+            fps.count = now;
+        }
+    }
+
+    // pseudo-objet pour la nourriture
+    function Planc(ctx, x, y){
+        this.ctx = ctx;
+
+        x = x != undefined ? x + rand(0, 20) - 10 : rand(0, ctx.canvas.width);
+        y = y != undefined ? y + rand(0, 20) - 10 : rand(0, ctx.canvas.height);
+        if(x < 0)
+            x = 0;
+        else if(ctx.canvas.width < x)
+            x = ctx.canvas.width;
+        if(y < 0)
+            y = 0;
+        else if(ctx.canvas.height < y)
+            y = ctx.canvas.height;
+
+        this.x = x;
+        this.y = y;
+
+        this.size = 2;
+
+        // fonction de dessin
+        this.draw = function(){
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.size, 0, 2 * PI, true);
+            this.ctx.fill();
+        }
+    }
+
+    //pseudo-objet pour les herbivores
+    function Herbi(ctx){
+        this.ctx = ctx;
+
+        this.size = 3;
+
+        this.x = rand(0, ctx.canvas.width);
+        this.y = rand(0, ctx.canvas.height);
+
+        this.v = 0.7;
+        this.dir = rand(0, 200) / 200;
+
+        this.pv = 10000;
+
+        this.aim = false;
+        this.sight = 150;
+        this.fear = {
+            enemy: false,
+            dist: 9999999
+        };
+
+        // fonction de dessin
+        this.draw = function(){
+            this.x += this.v * cos(-this.dir * PI);
+            this.y += this.v * sin(-this.dir * PI);
+
+            // detection des bords
+            if(this.x < 0){
+                this.x = 0;
+                this.dir = rand(150, 250) / 100;
+            }
+            else if(this.y < 0){
+                this.y = 0;
+                this.dir = rand(100, 200) / 100;
+            }
+            if(this.x > this.ctx.canvas.width){
+                this.x = this.ctx.canvas.width - this.size;
+                this.dir = rand(50, 150) / 100;
+            }
+            else if(this.y > this.ctx.canvas.height){
+                this.y = this.ctx.canvas.height - this.size;
+                this.dir = rand(0, 100) / 100;
+            }
+
+            // recherche de nourriture
+            if(plancs.length){
+                this.aim = plancs[0]
+                var dx = this.aim.x - this.x;
+                var dy = this.aim.y - this.y;
+                var min = dist(dx, dy);
+                var cur = 0;
+                for(var i = 1; i < plancs.length; ++i){
+                    dx = plancs[i].x - this.x;
+                    dy = plancs[i].y - this.y;
+                    cur = dist(dx, dy);
+                    if(cur < min){
+                        this.aim = plancs[i];
+                        min = cur;
+                    }
+                }
+                if(this.sight < min)
+                    this.aim = false; // le plus près est trop loin
+                else if(min < this.aim.size + this.size)
+                    plancs.out(plancs.indexOf(this.aim)); // omnomnomnom
+            }
+            this.setDir(min);
+
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.translate(this.x, this.y);
+            this.ctx.rotate(-this.dir * PI);
+
+            this.ctx.moveTo(this.size, 0);
+            this.ctx.lineTo(-this.size, this.size);
+            this.ctx.lineTo(-this.size, -this.size);
+
+            this.ctx.fill();
+            this.ctx.restore();
+
+            this.ctx.globalAlpha = 0.4;
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.sight, 0, 2 * PI, true);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.globalAlpha = 0.8;
+            this.ctx.arc(this.x, this.y, this.sight * .5, 0, 2 * PI, true);
+            this.ctx.fill();
+            this.ctx.globalAlpha = 1;
+
+            if(this.fear.enemy){
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.x, this.y);
+                this.ctx.lineTo(this.fear.enemy.x, this.fear.enemy.y);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+        };
+
+        this.setDir = function(min){
+            if(this.fear.enemy){
+                var up = (this.fear.enemy.y - this.y) < 0 ? 1 : -1
+                this.dir = 1 + acos((this.fear.enemy.x - this.x) / this.fear.dist) / PI * (up);
+            }
+            else if(this.aim && min){
+                var up = (this.aim.y - this.y) < 0 ? 1 : -1
+                this.dir = acos((this.aim.x - this.x) / min) / PI * (up);
+            }
+            else
+                this.dir += (rand(0, 16) - 8) / 200;
+        };
+
+        this.setFear = function(enemy, dist){
+            this.fear.enemy = enemy;
+            this.v = enemy ? 0.8 : 0.7
+            this.fear.dist = dist || 1;
+        };
+
+        this.duplicate = function(){
+
+        };
+    }
+    //pseudo-objet pour les carnivores
+    function Carni(ctx){
+        this.ctx = ctx;
+
+        this.size = 3;
+
+        this.x = rand(0, ctx.canvas.width);
+        this.y = rand(0, ctx.canvas.height);
+
+        this.v = 0.7;
+        this.dir = rand(0, 200) / 200;
+
+        this.pv = 10000;
+
+        this.aim = false;
+        this.sight = 120;
+
+        // fonction de dessin
+        this.draw = function(){
+            this.x += this.v * cos(-this.dir * PI);
+            this.y += this.v * sin(-this.dir * PI);
+
+            // detection des bords
+            if(this.x < 0){
+                this.x = 0;
+                this.dir = rand(150, 250) / 100;
+            }
+            else if(this.y < 0){
+                this.y = 0;
+                this.dir = rand(100, 200) / 100;
+            }
+            if(this.x > this.ctx.canvas.width){
+                this.x = this.ctx.canvas.width - this.size;
+                this.dir = rand(50, 150) / 100;
+            }
+            else if(this.y > this.ctx.canvas.height){
+                this.y = this.ctx.canvas.height - this.size;
+                this.dir = rand(0, 100) / 100;
+            }
+
+            // recherche de nourriture
+            var min = 0;
+            if(herbis.length){
+                this.aim = herbis[0]
+                var dx = this.aim.x - this.x;
+                var dy = this.aim.y - this.y;
+                min = dist(dx, dy);
+                var cur = 0;
+                for(var i = 1; i < herbis.length; ++i){
+                    dx = herbis[i].x - this.x;
+                    dy = herbis[i].y - this.y;
+                    cur = dist(dx, dy);
+                    if(cur < min){
+                        this.aim = herbis[i];
+                        min = cur;
+                    }
+                }
+                if(this.sight < min)
+                    this.aim = false; // le plus près est trop loin
+                else if(min < this.aim.size + this.size)
+                    herbis.out(herbis.indexOf(this.aim)); // omnomnomnom
+                else if(min < this.aim.sight * .5){
+                    this.aim.setFear(this, min);
+                }
+                else
+                    this.aim.setFear(false);
+            }
+            this.setDir(min);
+
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.translate(this.x, this.y);
+            this.ctx.rotate(-this.dir * PI);
+
+            this.ctx.arc(0, 0, this.size, 0.7 * PI, 1.3 * PI, true);
+            this.ctx.moveTo(0, 0);
+            this.ctx.lineTo(-1.7 * this.size, 0);
+
+            this.ctx.stroke();
+            this.ctx.fill();
+            this.ctx.restore();
+        };
+
+        this.setDir = function(min){
+            if(this.aim && min){
+                var up = (this.aim.y - this.y) < 0 ? 1 : -1
+                this.dir = acos((this.aim.x - this.x) / min) / PI * (up);
+            }
+            else
+                this.dir += (rand(0, 16) - 8) / 200;
+        };
+
+        this.duplicate = function(){
+
+        };
+    }
+
+    // fonctions utiles
+    function getById(id){
+        return document.getElementById(id);
+    }
+    function sin(x){
+        return Math.sin(x);
+    }
+    function cos(x){
+        return Math.cos(x);
+    }
+    function acos(x){
+        return Math.acos(x);
+    }
+    function square(x){
+        return Math.pow(x, 2);
+    }
+    function sqrt(x){
+        return Math.sqrt(x);
+    }
+    function rand(min, max){
+        return min + Math.random() * (max - min + 1) << 0;
+    }
+    function dist(dx, dy){
+        return sqrt(square(dx) + square(dy));
+    }
+
+    Array.prototype.out = function(i){
+        return this.splice(i, 1);
+    }
+</script>

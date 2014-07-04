@@ -1,0 +1,58 @@
+<style>
+.topbarre{
+	width : 100%;
+	background : -moz-linear-gradient(#77E 0, #AAF 20%, #77E 100%);
+	overflow : hidden;
+}
+.barrebutton{
+	position : relative;
+	width : 20px;
+	height : 20px;
+	margin : 2px 3px;
+	border-radius : 3px;
+	float : right;
+	border : 1px solid #FFF;
+}
+.close{
+	background : red;
+}
+.close:before{
+	content : "";
+	position : absolute;
+	width : 4px;
+	height : 18px;
+	background : #FFF;
+	left : 8px;
+	top : 1px;
+	transform : rotate(45deg);
+	border-radius : 2px;
+}
+.close:after{
+	content : "";
+	position : absolute;
+	width : 4px;
+	height : 18px;
+	background : #FFF;
+	left : 8px;
+	top : 1px;
+	transform : rotate(-45deg);
+	border-radius : 2px;
+}
+.minimize{
+	background : #77E;
+}
+.minimize:after{
+	content : "";
+	position : absolute;
+	width : 14px;
+	height : 4px;
+	bottom : 2px;
+	left : 3px;
+	background : #FFF;
+	border-radius : 2px;
+}
+</style>
+<div class="topbarre">
+	<span class="barrebutton close clickable"></span>
+	<span class="barrebutton minimize clickable"></span>
+</div>
