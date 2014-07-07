@@ -10,6 +10,8 @@
     }
     li{
         padding: 1px 5px;
+        border: 1px solid transparent;
+        width: 300px;
     }
     .dir a{
         color: #0A0;
@@ -19,8 +21,8 @@
         color: #00A;
     }
     li:hover{
-        background: radial-gradient(#FFF 0, #ADF 100%);
-        border-radius: 3px;
+        background: rgba(110, 190, 230, .3);
+        border: 1px solid #70C0E7;
     }
 </style>
 <body>
