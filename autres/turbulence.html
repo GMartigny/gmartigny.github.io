@@ -1,95 +1,87 @@
 <style type="text/css">
-body{
-	margin: 0;
-}
-#can{
-	background: linear-gradient(55deg, #99B 0, #E76 25%, #C9E 50%, #4FA 75%, #6BD 100%);
-}
+    body{
+        margin: 0;
+    }
+    #can{
+        background: linear-gradient(55deg, #99B 0, #E76 25%, #C9E 50%, #4FA 75%, #6BD 100%);
+    }
 </style>
 <canvas id="can"></canvas>
 <script type="text/javascript">
-var can = document.getElementById("can"),
-	ctx = can.getContext("2d"),
-	dots = []
-	r = Math.random,
-	buf = {};
+    var can = document.getElementById("can"),
+        ctx = can.getContext("2d"),
+        dots = [],
+        r = Math.random,
+        buf = {};
 
-can.width = document.body.offsetWidth;
-can.height = document.body.offsetHeight;
+    can.width = document.body.offsetWidth;
+    can.height = document.body.offsetHeight;
 
-(function start(){
-	ctx.fillStyle = "#FFF";
-	for(var i=0;i<50;++i){
-		dots.push(new Dot(rand(0, can.width)<<0, rand(0, can.height)<<0, rand(0.5, 1)));
-	}
-	draw();
-})();
+    (function start(){
+        ctx.fillStyle = "#FFF";
+        for(var i = 0; i < 50; ++i)
+            dots.push(new Dot(rand(0, can.width) << 0, rand(0, can.height) << 0, rand(0.5, 1)));
+        
+        draw();
+    })();
 
-window.onmousemove = function(e){
-	if(buf.x){
-		var a = {
-			x: (e.clientX - buf.x)/40,
-			y: (e.clientY - buf.y)/40
-		};
+    window.onmousemove = function(e){
+        if(buf.x){
+            var a = {
+                x: (e.clientX - buf.x) / 40,
+                y: (e.clientY - buf.y) / 40
+            };
 
-		dots.forEach(function(d){
-			d.vit.x += a.x;
-			d.vit.y += a.y;
-		})
-	}
-	buf.x = e.clientX;
-	buf.y = e.clientY;
-}
+            dots.forEach(function(d){
+                d.vit.x += a.x;
+                d.vit.y += a.y;
+            });
+        }
+        buf.x = e.clientX;
+        buf.y = e.clientY;
+    };
 
-function draw(){
-	requestAnimationFrame(draw);
-	ctx.clearRect(0, 0, can.width, can.height);
+    function draw(){
+        requestAnimationFrame(draw);
+        ctx.clearRect(0, 0, can.width, can.height);
 
-	ctx.beginPath();
-	dots.forEach(function(d){
-		d.render();
-	});
-	ctx.fill();
-}
+        ctx.beginPath();
+        dots.forEach(function(d){
+            d.render();
+        });
+        ctx.fill();
+    }
 
-function Dot(x, y, z){
-	this.pos = {
-		x: x,
-		y: y,
-		z: z
-	};
-	this.vit = {
-		x: 0,
-		y: 0
-	};
+    function Dot(x, y, z){
+        this.pos = {
+            x: x,
+            y: y,
+            z: z
+        };
+        this.vit = {
+            x: 0,
+            y: 0
+        };
 
-	this.render = function(){
-		var t = 3*this.pos.z;
-		ctx.rect(this.pos.x, this.pos.y, t, t);
+        this.render = function(){
+            var t = 3 * this.pos.z;
+            ctx.rect(this.pos.x, this.pos.y, t, t);
 
-		this.pos.x += (this.vit.x)*this.pos.z + rand(-2.5, 2.5)<<0;
-		this.pos.y += (this.vit.y)*this.pos.z + rand(-2.5, 2.5)<<0;
+            this.pos.x += (this.vit.x) * this.pos.z + rand(-2.5, 2.5) << 0;
+            this.pos.y += (this.vit.y) * this.pos.z + rand(-2.5, 2.5) << 0;
 
-		if(this.pos.x < 0){
-			this.pos.x = can.width;
-		}
-		else if(this.pos.y < 0){
-			this.pos.y = can.height;
-		}
-		else if(this.pos.x > can.width){
-			this.pos.x = 0;
-		}
-		else if(this.pos.y > can.height){
-			this.pos.y = 0;
-		}
-		else{
-			this.vit.x /= 1.01;
-			this.vit.y /= 1.01;
-		}
-	};
-}
+            if(this.pos.x < 0) this.pos.x = can.width;
+            else if(this.pos.y < 0) this.pos.y = can.height;
+            else if(this.pos.x > can.width) this.pos.x = 0;
+            else if(this.pos.y > can.height) this.pos.y = 0;
+            else{
+                this.vit.x /= 1.01;
+                this.vit.y /= 1.01;
+            }
+        };
+    }
 
-function rand(f, t){
-	return (r()*(t-f)+f);
-}
+    function rand(f, t){
+        return (r() * (t - f) + f);
+    }
 </script>
