@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Bonne St Valentin</title>
-	<style>
-	html{
-		height: 100%;
-	}
-	body{
-		background: #DC144B;
-		margin: 0;
-		box-shadow: 0 0 60px -10px #000 inset;
-		height: 100%;
-	}
-	#center{
-		color: #FFF;
-		text-align: center;
-	}
-	#center img{
-		box-shadow: 0 0 4px #333,
-			0 10px 50px #8E0205;
-		height: 360px;
-		margin: 80px;
-	}
-	#center h1{
-		position: relative;
-		font-size: 50px;
-		text-shadow: 1px 1px 3px #111;
-		text-align: left;
-		padding-left: calc(50% - 260px);
-		font-family: times;
-	}
-	span{
-		position: absolute;
-		opacity: 1;
-		top: 0;
-		transition: all .2s linear;
-	}
-	span.hide{
-		opacity: 0;
-		top: -1em;
-	}
-	</style>
-	<script>
-		var love = [
-			"un drop exo sur un skrit", "un code bien commenté", "... ooooh j'ai plus d'idées", 
-			"un réveil à midi", "une profiterole au chocolat", "une soirée au resto", "un aprèm sous la couette", "un bisou dans le cou", "tes sourires", 
-				"une tartine de nutella", "tu le peux le voir ;)", "tout ce que tu peux croire", 
-			"un fou", "jamais", "toujours", "la vie", "hier", "demain", "tout ce que je ne suis pas", "c'est pas permis", "je respire", "je t'aimerais toujours", 
-			"tu es belle", "je t'aime", "ça", "tu es", "pleins d'autres choses encore", "... comme ... commme ...", "..."],
-			l1, l2, see, hide,
-			previous = 0;
-		window.onload = function(){
-			see = l1 = document.getElementById("l1");
-			hide = l2 = document.getElementById("l2");
-		}
-		function change(){
-			hide.innerHTML = rand();
-			hide.classList.remove("hide");
-			
-			see.style.top = "1em";
-			see.classList.add("hide");
-			
-			var t = see;
-			see = hide;
-			hide = t;
-			
-			setTimeout(function(){
-				hide.style.top = "";
-			}, 300);
-		}
-		setInterval(change, 2500);
-		
-		function rand(){
-			var x;
-			do{
-				x = (Math.random()*love.length)<<0;
-			} while(x == previous);
-			previous = x;
-			
-			return love[x];
-		}
-	</script>
-</head>
-<body>
-	<section id="center">
-		<img src="http://i.imgur.com/KkpbmFu.gif"/>
-		<h1>Je t'aime comme&nbsp;<span id="l1">tout</span><span id="l2" class="hide"></span></h1>
-	</section>
-</body>
+    <head>
+        <title>Bonne St Valentin</title>
+        <style>
+            html{
+                height: 100%;
+            }
+            body{
+                background: #DC144B;
+                margin: 0;
+                box-shadow: 0 0 60px -10px #000 inset;
+                height: 100%;
+            }
+            #center{
+                color: #FFF;
+                text-align: center;
+            }
+            #center img{
+                box-shadow: 0 0 4px #333,
+                    0 10px 50px #8E0205;
+                height: 360px;
+                margin: 80px;
+            }
+            #center h1{
+                position: relative;
+                font-size: 50px;
+                text-shadow: 1px 1px 3px #111;
+                text-align: left;
+                padding-left: calc(50% - 260px);
+                font-family: times;
+            }
+            span{
+                position: absolute;
+                opacity: 1;
+                top: 0;
+                transition: all .2s linear;
+            }
+            span.hide{
+                opacity: 0;
+                top: -1em;
+            }
+        </style>
+        <script>
+            var love = [
+                "un drop exo sur un skrit", "un code bien commentÃ©", "... ooooh j'ai plus d'idÃ©es",
+                "un rÃ©veil Ã  midi", "une profiterole au chocolat", "une soirÃ©e au resto", "un aprÃ¨m sous la couette", "un bisou dans le cou", "tes sourires",
+                "une tartine de nutella", "tu le peux le voir ;)", "tout ce que tu peux croire",
+                "un fou", "jamais", "toujours", "la vie", "hier", "demain", "tout ce que je ne suis pas", "c'est pas permis", "je respire", "je t'aimerais toujours",
+                "tu es belle", "je t'aime", "Ã§a", "tu es", "pleins d'autres choses encore", "... comme ... commme ...", "..."],
+                l1, l2, see, hide,
+                previous = 0;
+            window.onload = function(){
+                see = l1 = document.getElementById("l1");
+                hide = l2 = document.getElementById("l2");
+            };
+            function change(){
+                hide.innerHTML = rand();
+                hide.classList.remove("hide");
+
+                see.style.top = "1em";
+                see.classList.add("hide");
+
+                var t = see;
+                see = hide;
+                hide = t;
+
+                setTimeout(function(){
+                    hide.style.top = "";
+                }, 300);
+            }
+            setInterval(change, 2500);
+
+            function rand(){
+                var x;
+                do{
+                    x = (Math.random() * love.length) << 0;
+                } while(x == previous);
+                previous = x;
+
+                return love[x];
+            }
+        </script>
+    </head>
+    <body>
+        <section id="center">
+            <img src="http://i.imgur.com/KkpbmFu.gif"/>
+            <h1>Je t'aime comme&nbsp;<span id="l1">tout</span><span id="l2" class="hide"></span></h1>
+        </section>
+    </body>
 </html>
