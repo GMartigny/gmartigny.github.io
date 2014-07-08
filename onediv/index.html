@@ -1,185 +1,187 @@
-<title>One-Div generator</title>
-<style>
-    #main{
-        position : relative;
-        background : #F5F5F5;
-        width : 900px;
-        margin : 20px auto;
-        overflow : hidden;
-        box-shadow : 0 0 10px grey;
-        padding : 10px;
-    }
-    fieldset{
-        background : #fff;
-        float : left;
-        clear : both;
-        border : 1px solid #333;
-        width : 100%;
-        max-width : 55%;
-        padding : 5px;
-        padding-top : 0;
-        overflow : hidden;
-    }
-    legend{
-        background : -moz-linear-gradient(rgba(255, 255, 255, 0) 0%, #fff 100%);
-        background : -webkit-linear-gradient(rgba(255, 255, 255, 0) 0%, #fff 100%);
-    }
-    .hider{
-        display: none;
-    }
-    textarea{
-        padding : 0;
-        border : none;
-        width : 100%;
-        max-width : 495px;
-        height : 120px;
-        -moz-transition : height 0.2s;
-        -webkit-transition : height 0.2s;
-    }
-    .hider:checked + textarea{
-        height: 0px !important;
-    }
-    textarea:focus{
-        outline : none;
-        background : -moz-radial-gradient(#F9FAC9 10%, #FFF 80%);
-        background : -webkit-radial-gradient(#F9FAC9 10%, #FFF 80%);
-    }
-    #holder{
-        position : absolute;
-        background : url(noise.png);
-        box-shadow : 0 0 8px grey inset;
-        text-align : center;
-        width : 40%;
-        height : 80%;
-        top : 10%;
-        right : 20px;
-        overflow : hidden;
-    }
-    #holder:before{
-        content: '';
-        display: inline-block;
-        height: 100%;
-        vertical-align: middle;
-        margin-right: -0.5em;
-    }
-    #theone{
-        display : inline-block;
-    }
-    #reset{
-        float : left;
-        clear : both;
-        margin-top : 10px;
-    }
-</style>
-<style id="input"></style>
-<div id="main">
-    <fieldset><legend><label for="cbxbefore">Before :</label></legend>
-        <input type="checkbox" class="hider" id="cbxbefore"/>
-        <textarea id="before">content : "X";
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>One-Div generator</title>
+        <style>
+            #main{
+                position : relative;
+                background : #F5F5F5;
+                width : 900px;
+                margin : 20px auto;
+                overflow : hidden;
+                box-shadow : 0 0 10px grey;
+                padding : 10px;
+            }
+            fieldset{
+                background : #fff;
+                float : left;
+                clear : both;
+                border : 1px solid #333;
+                width : 100%;
+                max-width : 55%;
+                padding : 5px;
+                padding-top : 0;
+                overflow : hidden;
+            }
+            legend{
+                background : -moz-linear-gradient(rgba(255, 255, 255, 0) 0%, #fff 100%);
+                background : -webkit-linear-gradient(rgba(255, 255, 255, 0) 0%, #fff 100%);
+            }
+            .hider{
+                display: none;
+            }
+            textarea{
+                padding : 0;
+                border : none;
+                width : 100%;
+                max-width : 495px;
+                height : 120px;
+                -moz-transition : height 0.2s;
+                -webkit-transition : height 0.2s;
+            }
+            .hider:checked + textarea{
+                height: 0px !important;
+            }
+            textarea:focus{
+                outline : none;
+                background : -moz-radial-gradient(#F9FAC9 10%, #FFF 80%);
+                background : -webkit-radial-gradient(#F9FAC9 10%, #FFF 80%);
+            }
+            #holder{
+                position : absolute;
+                background : url(noise.png);
+                box-shadow : 0 0 8px grey inset;
+                text-align : center;
+                width : 40%;
+                height : 80%;
+                top : 10%;
+                right : 20px;
+                overflow : hidden;
+            }
+            #holder:before{
+                content: '';
+                display: inline-block;
+                height: 100%;
+                vertical-align: middle;
+                margin-right: -0.5em;
+            }
+            #theone{
+                display : inline-block;
+            }
+            #reset{
+                float : left;
+                clear : both;
+                margin-top : 10px;
+            }
+            #copyright{
+                float: right;
+            }
+        </style>
+    </head>
+    <body>
+        <style id="input"></style>
+        <div id="main">
+            <fieldset><legend><label for="cbxbefore">Before :</label></legend>
+                <input type="checkbox" class="hider" id="cbxbefore"/>
+                <textarea id="before">content : "X";
 color: #FFF;</textarea>
-    </fieldset>
-    <fieldset><legend><label for="cbxdiv">Div :</label></legend>
-        <input type="checkbox" class="hider" id="cbxdiv"/>
-        <textarea id="div">width : 2em;
+            </fieldset>
+            <fieldset><legend><label for="cbxdiv">Div :</label></legend>
+                <input type="checkbox" class="hider" id="cbxdiv"/>
+                <textarea id="div">width : 2em;
 height : 2em;
 background : black;</textarea>
-    </fieldset>
-    <fieldset><legend><label for="cbxafter">After :</label></legend>
-        <input type="checkbox" class="hider" id="cbxafter"/>
-        <textarea id="after">content : "";</textarea>
-    </fieldset>
-    <fieldset><legend><label for="cbxkeyframes">Keyframes :</label></legend>
-        <input type="checkbox" class="hider" id="cbxkeyframes"/>
-        <textarea id="keyframes">@keyframes anim{
+            </fieldset>
+            <fieldset><legend><label for="cbxafter">After :</label></legend>
+                <input type="checkbox" class="hider" id="cbxafter"/>
+                <textarea id="after">content : "";</textarea>
+            </fieldset>
+            <fieldset><legend><label for="cbxkeyframes">Keyframes :</label></legend>
+                <input type="checkbox" class="hider" id="cbxkeyframes"/>
+                <textarea id="keyframes">@keyframes anim{
 
 }</textarea>
-    </fieldset>
-    <div id="holder"><div id="theone"></div></div>
-    <input type="button" value="Reset" onclick="swip()" id="reset"/>
-</div>
-<script>
-    var texts = {};
-    var style = document.getElementById("input");
+            </fieldset>
+            <div id="holder"><div id="theone"></div></div>
+            <input type="button" value="Reset" onclick="swip()" id="reset"/>
+            <p id="copyright">made based on the idea of <a href="http://one-div.com/">&lt;&gt;ne Div</a></p>
+        </div>
+        <script>
+            var texts = {};
+            var style = document.getElementById("input");
 
-    var chks = document.getElementsByClassName("hider");
-    var list = document.getElementsByTagName("textarea");
-    for(var i = 0; i < list.length; ++i){
-        texts[list[i].id] = list[i];
+            var chks = document.getElementsByClassName("hider");
+            var list = document.getElementsByTagName("textarea");
+            for(var i = 0; i < list.length; ++i){
+                texts[list[i].id] = list[i];
 
-        list[i].onkeyup = function(){
-            stylish(this.id);
-        };
+                list[i].onkeyup = function(){
+                    stylish(this.id);
+                };
 
-        if(localStorage[list[i].id])
-            list[i].value = localStorage[list[i].id];
-        if(localStorage["show" + list[i].id] == "true"){
-            chks[i].checked = true;
-            list[i].style.height = "150px";
-        }
+                if(localStorage[list[i].id]) list[i].value = localStorage[list[i].id];
+                if(localStorage["show" + list[i].id] == "true"){
+                    chks[i].checked = true;
+                    list[i].style.height = "150px";
+                }
 
-        chks[i].onclick = function(){
-            localStorage["show" + this.id.substring(3)] = this.checked;
-        };
-    }
-
-    var test = ["animation", "transition", "transform"];
-
-    function stylish(id){
-        var s = "#theone{" + cb(texts.div.value) + "}\n";
-        s += "#theone:before{" + cb(texts.before.value) + "}\n";
-        s += "#theone:after{" + cb(texts.after.value) + "}\n";
-
-        var k = texts.keyframes.value;
-        var r = /keyframes/g;
-        if(r.test(k) && !window.CSSRule.KEYFRAMES_RULE){
-            if(window.CSSRule.WEBKIT_KEYFRAMES_RULE !== undefined)
-                k = k.replace(r, "-webkit-keyframes");
-            else if(window.CSSRule.MOZ_KEYFRAMES_RULE !== undefined)
-                k = k.replace(r, "-moz-keyframes");
-            else if(window.CSSRule.MS_KEYFRAMES_RULE !== undefined)
-                k = k.replace(r, "-ms-keyframes");
-            else if(window.CSSRule.O_KEYFRAMES_RULE !== undefined)
-                k = k.replace(r, "-o-keyframes");
-        }
-        s += cb(k);
-
-        style.innerHTML = s;
-
-        if(id)
-            localStorage[id] = texts[id].value;
-    }
-
-    function cb(s){
-        var o = "";
-        var r;
-        for(var i = 0; i < test.length; ++i){
-            r = new RegExp(test[i], "g");
-            o = test[i].substr(0, 1).toUpperCase() + test[i].slice(1);
-            if(r.test(s) && !div.style[test[i]]){
-                if(div.style["webkit" + o] !== undefined)
-                    s = s.replace(r, "-webkit-" + test[i]);
-                else if(div.style["moz" + o] !== undefined)
-                    s = s.replace(r, "-moz-" + test[i]);
-                else if(div.style["ms" + o] !== undefined)
-                    s = s.replace(r, "-ms-" + test[i]);
-                else if(div.style["o" + o] !== undefined)
-                    s = s.replace(r, "-o-" + test[i]);
+                chks[i].onclick = function(){
+                    localStorage["show" + this.id.substring(3)] = this.checked;
+                };
             }
-        }
-        return s;
-    }
 
-    function swip(){
-        localStorage.removeItem("before");
-        localStorage.removeItem("div");
-        localStorage.removeItem("after");
-        localStorage.removeItem("keyframes");
+            var test = ["animation", "transition", "transform"];
 
-        for(var i = 0; i < list.length; ++i){
-            localStorage["show" + chks[i].id.substring(3)] = chks[i].checked = false;
-            list[i].value = list[i].innerHTML;
-        }
-        stylish();
-    }
-    stylish();
-</script>
+            function stylish(id){
+                var s = "#theone{" + cb(texts.div.value) + "}\n";
+                s += "#theone:before{" + cb(texts.before.value) + "}\n";
+                s += "#theone:after{" + cb(texts.after.value) + "}\n";
+
+                var k = texts.keyframes.value,
+                    r = /keyframes/g;
+                if(r.test(k) && !window.CSSRule.KEYFRAMES_RULE){
+                    if(window.CSSRule.WEBKIT_KEYFRAMES_RULE !== undefined) k = k.replace(r, "-webkit-keyframes");
+                    else if(window.CSSRule.MOZ_KEYFRAMES_RULE !== undefined) k = k.replace(r, "-moz-keyframes");
+                    else if(window.CSSRule.MS_KEYFRAMES_RULE !== undefined) k = k.replace(r, "-ms-keyframes");
+                    else if(window.CSSRule.O_KEYFRAMES_RULE !== undefined) k = k.replace(r, "-o-keyframes");
+                }
+                s += cb(k);
+
+                style.innerHTML = s;
+
+                if(id) localStorage[id] = texts[id].value;
+            }
+
+            function cb(s){
+                var o = "", r;
+                for(var i = 0; i < test.length; ++i){
+                    r = new RegExp(test[i], "g");
+                    o = test[i].substr(0, 1).toUpperCase() + test[i].slice(1);
+                    if(r.test(s) && !div.style[test[i]]){
+                        if(div.style["webkit" + o] !== undefined) s = s.replace(r, "-webkit-" + test[i]);
+                        else if(div.style["moz" + o] !== undefined) s = s.replace(r, "-moz-" + test[i]);
+                        else if(div.style["ms" + o] !== undefined) s = s.replace(r, "-ms-" + test[i]);
+                        else if(div.style["o" + o] !== undefined) s = s.replace(r, "-o-" + test[i]);
+                    }
+                }
+                return s;
+            }
+
+            function swip(){
+                localStorage.removeItem("before");
+                localStorage.removeItem("div");
+                localStorage.removeItem("after");
+                localStorage.removeItem("keyframes");
+
+                for(var i = 0; i < list.length; ++i){
+                    localStorage["show" + chks[i].id.substring(3)] = chks[i].checked = false;
+                    list[i].value = list[i].innerHTML;
+                }
+                stylish();
+            }
+            stylish();
+        </script>
+    </body>
+</html>
+
