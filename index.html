@@ -27,29 +27,28 @@
 </style>
 <body>
     <ul>
-        <?php
-        $dir = './';
-        $ds = array();
-        $fs = array();
-        $hidden = array('.', '..', 'index.php', '.gitignore', 'README.md', 'loveU', 'hide');
-
-        // Open a known directory, and proceed to read its contents
-        if ($dh = opendir($dir)) {
-            while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, $hidden)) {
-                    if (filetype($dir . $file) == 'dir') $ds[] = $file;
-                    if (filetype($dir . $file) == 'file') $fs[] = $file;
-                }
-            }
-            closedir($dh);
-        }
-        sort($ds);
-        sort($fs);
-        foreach ($ds as $e)
-            echo "<li class='dir'><a href='$e'>$e</a></li>";
+        <li class='dir'><a href='/animation-imie'>animation-imie</a></li>
+        <li class='dir'><a href='/autres'>autres</a></li>
+        <li class='dir'><a href='/badges'>badges</a></li>
+        <li class='dir'><a href='/bigbang'>bigbang</a></li>
+        <li class='dir'><a href='/css-dropdown'>css-dropdown</a></li>
+        <li class='dir'><a href='/draw'>draw</a></li>
+        <li class='dir'><a href='/easy-slider'>easy-slider</a></li>
+        <li class='dir'><a href='/extract'>extract</a></li>
+        <li class='dir'><a href='/findIT'>findIT</a></li>
+        <li class='dir'><a href='/fun-load'>fun-load</a></li>
+        <li class='dir'><a href='/map-to-json'>map-to-json</a></li>
+        <li class='dir'><a href='/media-table'>media-table</a></li>
+        <li class='dir'><a href='/onediv'>onediv</a></li>
+        <li class='dir'><a href='/paralax'>paralax</a></li>
+        <li class='dir'><a href='/power-text'>power-text</a></li>
         
-        foreach ($fs as $e)
-            echo "<li class='file'><a href='$e'>$e</a></li>";
-        ?>
+        <li class='file'><a href='dongo.html'>dongo.html</a></li>
+        <li class='file'><a href='fizzle.html'>fizzle.html</a></li>
+        <li class='file'><a href='hexagon.html'>hexagon.html</a></li>
+        <li class='file'><a href='loading.html'>loading.html</a></li>
+        <li class='file'><a href='pixelSand.html'>pixelSand.html</a></li>
+        <li class='file'><a href='size.html'>size.html</a></li>
+        <li class='file'><a href='unfold.html'>unfold.html</a></li>
     </ul>
 </body>
