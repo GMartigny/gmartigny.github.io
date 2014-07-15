@@ -65,9 +65,10 @@
     </div>
     <script>
         //- Variables à modifier (en seconde) -//
-        var tempsMin = 4;
-        var tempsMax = 7;
-        var delaiMax = 2;
+        var tempsMin = 4,
+            tempsMax = 7,
+            delaiMax = 2,
+            texteFini = "Ok !";
         //-------------------------------------//
 
         var loaders = [];
@@ -90,7 +91,7 @@
                 if(prct > 0) loaders[i].firstChild.data = prct + "%"; // affichage des pourcentage
                 if(prct >= 100){
                     loaders[i].children[0].style.background = "linear-gradient(white -10%, lightgreen 70%)"; // mise en vert
-                    loaders[i].firstChild.data = "Ok !"; // message en fin de "téléchargement"
+                    loaders[i].firstChild.data = texteFini; // message en fin de "téléchargement"
                     loaders[i].children[0].innerHTML = ""; // suppression de l'animation
                 }
             }
