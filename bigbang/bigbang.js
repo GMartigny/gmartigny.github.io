@@ -145,31 +145,11 @@ window.onload = function(){
 }
 
 // affiche un message à la con aléatoire
+mess = ["You really surf that slow ?", "Not gonna be long.", "Nearly there !!", "Almost ...",
+        "When it's done, you gonna love it.", "Thankfully, it worth to wait."];
 function troll(){
-	var mess = "";
-	var tirage = rand(5);
-	
-	switch(tirage){
-		case 0:
-			mess = "56K powaa";
-			break;
-		case 1:
-			mess = "Et t'arrives à naviguer avec ça ?";
-			break;
-		case 2:
-			mess = "Ca va pas tarder.";
-			break;
-		case 3:
-			mess = "Ca y est presque !!";
-			break;
-		case 4:
-			mess = "Quand ce sera fini, tu vas adorer.";
-			break;
-		case 5:
-			mess = "Heureusement que ça vaut le coup d'attendre.";
-			break;
-	}
-	document.getElementById("mess").innerHTML = mess;
+	var tirage = rand(mess.length-1);
+	document.getElementById("mess").innerHTML = mess[tirage];
 }
 
 function efface(alpha){

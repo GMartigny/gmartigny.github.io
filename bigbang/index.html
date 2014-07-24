@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" >
 <head>
 	<title>JS Big Bang</title>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta charset="UTF-8"/>
 	<link href="favicon.png" type="image/png" rel="icon" />
 	<script src="bigbang.js" type="text/javascript"></script>
 	<style type="text/css">
@@ -87,26 +87,26 @@
 </head>
 <body>
 	<div id="loading">
-		<span>Un peu de patience ...</span><br/>
+		<span>Hold on please ...</span><br/>
 		<img src="loader.gif" alt="chargement" title="Ca charge" width="31" height="31"/><br/>
 		<span id="mess"></span><br/>
 		<p>
-			Vous pouvez changer la gravité, le nombre de planètes générées et la persistence de l'image.
-			Le clic-droit permet de faire un instantané de votre univers.
-			De plus, avec la persistance au maximum, l'instantané est automatique.
+            You can change gravity, number of generated planets or image persistence.
+            Right-click allow you to make a snapshot of your univers.
+            Moreover, with maximum persistence, snapshot are automatic on big-crunch.
 		</p>
 	</div>
 	<canvas id="can" style="display:none;">
-		Votre navigateur ne gère pas le HTML5 et donc les canvas. Pour voir cette animation, il vous faut soit
-		<a href="http://www.mozilla-europe.org/fr/">FireFox</a>, soit
-		<a href="http://www.google.com/chrome?hl=fr">Chrome</a>, soit
+        Your browser doesn't support HTML5 canvas. In order to view this animation, you need either 
+		<a href="http://www.mozilla-europe.org/">FireFox</a>, or
+		<a href="http://www.google.com/chrome">Chrome</a>, or
 		<a href="http://www.opera.com/">Opéra</a><br/>
 	</canvas>
 	<div id="change" class="menu">
-		<label for="nb">Nombres de Planètes</label> : <input type="text" id="nb" value="50"/><br/>
-		<label for="grav">Constante de gravité</label> : <input type="text" id="grav" value="0.1"/><br/>
-		<label for="traine">Longueur des trainées</label> : <span id="trContainer"><span id="trSlider" style="margin-left : 0px;"></span></span><br/>
-		Le <a href="bigbang.js" title="le script">code javascript</a> (<span id="fps">0</span>fps)
+		<label for="nb">Number of planets</label> : <input type="text" id="nb" value="50"/><br/>
+		<label for="grav">Gravity constant</label> : <input type="text" id="grav" value="0.1"/><br/>
+		<label for="traine">Image persistence</label> : <span id="trContainer"><span id="trSlider" style="margin-left : 0px;"></span></span><br/>
+		<a href="bigbang.js" title="le script">javascript code</a> (<span id="fps">0</span>fps)
 	</div>
 	<div id="screen" class="menu">
 		<img src="" alt="vide" id="imgScreen"/>
