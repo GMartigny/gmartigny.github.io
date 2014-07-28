@@ -132,13 +132,12 @@
                 a.firstChild.src = "res/img/"+a.getAttribute("href")+".png";
                 a.onclick = function() {
                     if (!this.parentNode.classList.contains("current")) {
-                        currentEl.classList.remove("current");
-                        currentEl = this.parentNode;
-                        currentEl.classList.add("current");
-                        var oldCur = current;
-                        current = Array.prototype.indexOf.call(elems, currentEl);
-                        stream  = current - oldCur;
-                        makeRotate(current);
+                        var cur = Array.prototype.indexOf.call(elems, this.parentNode),
+                            dif = cur - current;
+                        if(dif > elems.length/2) dif = dif - elems.length;
+                        else if(dif < -elems.length/2) dif = dif + elems.length;
+                        console.log(dif);
+                        updateCurrent(dif);
                         return false;
                     }
                     else activate();
