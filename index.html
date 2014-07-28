@@ -1,54 +1,288 @@
-<style>
-    ul{
-        position: absolute;
-        list-style: none;
-    }
-    a{
-        text-decoration: none;
-        display: inline-block;
-        width: 100%;
-    }
-    li{
-        padding: 1px 5px;
-        border: 1px solid transparent;
-        width: 300px;
-    }
-    .dir a{
-        color: #0A0;
-        font-weight: bold;
-    }
-    .file a{
-        color: #00A;
-    }
-    li:hover{
-        background: rgba(110, 190, 230, .3);
-        border: 1px solid #70C0E7;
-    }
-</style>
-<body>
-    <ul>
-        <li class='dir'><a href='/animation-imie'>animation-imie</a></li>
-        <li class='dir'><a href='/autres'>autres</a></li>
-        <li class='dir'><a href='/badges'>badges</a></li>
-        <li class='dir'><a href='/bigbang'>bigbang</a></li>
-        <li class='dir'><a href='/css-dropdown'>css-dropdown</a></li>
-        <li class='dir'><a href='/draw'>draw</a></li>
-        <li class='dir'><a href='/easy-slider'>easy-slider</a></li>
-        <li class='dir'><a href='/extract'>extract</a></li>
-        <li class='dir'><a href='/findIT'>findIT</a></li>
-        <li class='dir'><a href='/fun-load'>fun-load</a></li>
-        <li class='dir'><a href='/map-to-json'>map-to-json</a></li>
-        <li class='dir'><a href='/media-table'>media-table</a></li>
-        <li class='dir'><a href='/onediv'>onediv</a></li>
-        <li class='dir'><a href='/paralax'>paralax</a></li>
-        <li class='dir'><a href='/power-text'>power-text</a></li>
-        
-        <li class='file'><a href='dongo.html'>dongo.html</a></li>
-        <li class='file'><a href='fizzle.html'>fizzle.html</a></li>
-        <li class='file'><a href='hexagon.html'>hexagon.html</a></li>
-        <li class='file'><a href='loading.html'>loading.html</a></li>
-        <li class='file'><a href='pixelSand.html'>pixelSand.html</a></li>
-        <li class='file'><a href='size.html'>size.html</a></li>
-        <li class='file'><a href='unfold.html'>unfold.html</a></li>
-    </ul>
-</body>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title>All of my humble creations</title>
+        <style>
+            body, html{
+                margin: 0;
+                height: 100%;
+                overflow: hidden;
+            }
+            
+            #wheel{
+                position: fixed;
+                width: 100%;
+                top: 100%;
+                padding: 0;
+                transition: all linear .4s;
+            }
+            
+            #wheel li{
+                position: relative;
+                display: block;
+                width: 400px;
+                height: 400px;
+                margin: 0 auto -400px;
+                transform-origin: 50% 400%;
+                -webkit-transform-origin: 50% 380%;
+                transition: all linear .3s;
+                z-index: -1;
+                opacity: 1;
+            }
+            #wheel.active li{
+                opacity: .1;
+                transform-origin: 50% 100%;
+                -webkit-transform-origin: 50% 100%;
+            }
+            #wheel li.current{
+                z-index: 1000;
+            }
+            #wheel.active li.current{
+                opacity: 1;
+            }
+            
+            #wheel li a{
+                position: relative;
+                left: 0;
+                top: 0;
+                display: block;
+                width: 100%;
+                height: 100%;
+                background: #77D;
+                box-shadow: 0 0 10px #333;
+                transition: all linear .2s;
+                color: #FFF;
+                text-decoration: none;
+            }
+            #wheel li.current a{
+                background: #933;
+                width: 150%;
+                height: 150%;
+                left: -25%;
+                top: -50%;
+            }
+            #wheel.active li.current a{
+                width: 600%;
+                height: 600%;
+                left: -250%;
+                top: -150%;
+            }
+            
+            #wheel li img{
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+            
+            #can{
+                background: linear-gradient(170deg, rgba(135,224,253,1) 0%,rgba(83,203,241,1) 34%,rgba(5,171,224,1) 100%);
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="can"></canvas>
+        <ul id="wheel">
+            <!--<li><a href="autres/" title="Other ... hum ... things =/"><img src="" alt=""/></a></li>-->
+            <!-- Tooo old -->
+            <!--<li><a href="findIT" title="Will you find IT ?"><img src="" alt="findIT thumbnail"/></a></li>-->
+            <!-- Not that good -->
+            <!--<li><a href="badges" title="CSS rotating badges"><img src="" alt="badges thumbnail"/></a></li>-->
+            <!--<li><a href="hexagon.html" title="CSS hexagon"><img src="" alt="aperçu animation imie"/></a></li>-->
+            <!-- Canvas -->
+            <li><a href="extract" title="My first web arcade game"><img src="" alt="extract game thumbnail"/></a></li>
+            <li><a href="fizzle" title="Turn your text into little fizzle bubble =)"><img src="" alt="bubble fizzle thumbnail"/></a></li>
+            <li><a href="draw" title="You can now draw on your browser"><img src="" alt="draw tool thumbnail"/></a></li>
+            <li><a href="bigbang" title="Big-bang simulation"><img src="" alt="big-bang thumbnail"/></a></li>
+            <li><a href="pixelSand.html" title="Experiment with a lot of particules"><img src="" alt="sand simulation thumbnail"/></a></li>
+            <li><a href="constellation.html" title="Display fake constellation as you mouse over"><img src="" alt="constellation animation thumbnail"/></a></li>
+            
+            <!-- CSS -->
+            <li><a href="css-dropdown" title="A CSS only beautifull dropdown menu"><img src="" alt="CSS dropdown thumbnail"/></a></li>
+            <li><a href="animation-imie" title="An web animation I had to do at my school"><img src="" alt="IMIE animation thumbnail"/></a></li>
+            <li><a href="easy-slider" title="A developer-friendly way to make carrousel"><img src="" alt="easy-slider thumbnail"/></a></li>
+            <li><a href="fun-load" title="Some CSS loading animation"><img src="" alt="cool loader thumbnail"/></a></li>
+            <li><a href="onediv" title="A tool to try the one div challenge"><img src="" alt="one-div generator thumbnail"/></a></li>
+            <li><a href="power-text" title="Some CSS enhanced font"><img src="" alt="cool text thumbnail"/></a></li>
+            <li><a href="dongo.html" title="A little animated friend"><img src="" alt="CSS animated dongo thumbnail"/></a></li>
+            <li><a href="loading.html" title="A basic and customizable loader"><img src="" alt="customizable loader thumbnail"/></a></li>
+            <li><a href="unfold.html" title="An unfold look alike menu"><img src="" alt="unfold menu thumbnail"/></a></li>
+            
+            <li><a href="paralax" title="My try at paralax"><img src="" alt="my paralax thumbnail"/></a></li>
+            <li><a href="size.html" title="An easy way to see and convert size unit"><img src="" alt="screen rule thumbnail"/></a></li>
+            <li><a href="map-to-json" title="An easy way to make your json map"><img src="" alt="json creator thumbnail"/></a></li>
+            <li><a href="media-table" title=""><img src="" alt="media-table thumbnail"/></a></li>
+        </ul>
+        <script>
+            var wheel = document.getElementById("wheel"),
+                elems = wheel.getElementsByTagName("li"),
+                shift = 360 / elems.length,
+                current = 0,
+                currentEl = elems[current];
+
+            for (var i = 0; i < elems.length; ++i) {
+                var a = elems[i].firstChild;
+                a.firstChild.src = "res/img/"+a.getAttribute("href")+".png";
+                a.onclick = function() {
+                    if (!this.parentNode.classList.contains("current")) {
+                        currentEl.classList.remove("current");
+                        currentEl = this.parentNode;
+                        currentEl.classList.add("current");
+                        var oldCur = current;
+                        current = Array.prototype.indexOf.call(elems, currentEl);
+                        stream  = current - oldCur;
+                        makeRotate(current);
+                        return false;
+                    }
+                    else activate();
+                };
+            }
+            window.onload = function() {
+                wheel.style.top = "calc(50% - 110px)";
+                setTimeout(function() {
+                    currentEl.classList.add("current");
+                }, 200);
+            };
+
+            function updateCurrent(mod) {
+                current += mod;
+                var n = getN(current);
+                
+                stream = mod;
+
+                currentEl.classList.remove("current");
+                currentEl = elems[n];
+                currentEl.classList.add("current");
+                return makeRotate();
+            }
+            function makeRotate() {
+                var from = current;
+                for (var i = 0; i < elems.length; ++i) {
+                    elems[i].style.transform = "rotate(" + shift * (i - from) + "deg)";
+                    elems[i].style.WebkitTransform = "rotate(" + shift * (i - from) + "deg)";
+                }
+                return from;
+            }
+            function getN(c) {
+                if (c < 0)
+                    return getN(c + elems.length);
+                else
+                    return c % elems.length;
+            }
+            makeRotate();
+
+            function activate() {
+                currentEl.parentNode.classList.add("active");
+                window.onwheel = window.onkeydown = null;
+                setTimeout(function() {
+                    currentEl.firstChild.click();
+                }, 400);
+            }
+
+            window.onwheel = function(e) {
+                if (e.wheelDelta == 120) // up
+                    updateCurrent(-1);
+                else if (e.wheelDelta == -120) // down
+                    updateCurrent(+1);
+            };
+            window.onkeydown = function(e) {
+                //            console.log(e.keyCode);
+                if (e.keyCode == 39) // right
+                    updateCurrent(+1);
+                else if (e.keyCode == 37) // left
+                    updateCurrent(-1);
+                else if (e.keyCode == 38)
+                    activate();
+            };
+        </script>
+        <script>
+            var can = document.getElementById("can"),
+                ctx = can.getContext("2d"),
+                bubbles = [],
+                stream = 0,
+                PI2 = Math.PI*2,
+                r = Math.random;
+            
+            (function start(){
+                
+                can.width = document.body.offsetWidth;
+                can.height = document.body.offsetHeight;
+                
+                for(var i=0;i<30;++i){
+                    bubbles.push(new Bubble(rand(0, can.width), rand(0, can.height), rand(0.1, 1)));
+                }
+                
+                ctx.strokeStyle = "#FFF";
+                ctx.lineWidth = 2;
+                
+                draw();
+            })();
+            
+            function draw(){
+                requestAnimationFrame(draw);
+                ctx.clearRect(0, 0, can.width, can.height);
+                
+                var popped = 0;
+                for(var i=0;i<bubbles.length;++i){
+                    if(bubbles[i].render()){
+                        bubbles.splice(i, 1);
+                        ++popped;
+                    }
+                }
+                for(var i=0;i<popped;++i){
+                    bubbles.push(new Bubble(rand(0, can.width), can.height+20, rand(0.1, 1)));
+                }
+                stream /= 1.07;
+            }
+            
+            function Bubble(x, y, z){
+                this.pos = {
+                    x: x,
+                    y: y,
+                    z: z
+                };
+                this.vit = {
+                    x: 0,
+                    y: -rand(1, 1.2)
+                };
+                this.radius = rand(7, 20);
+                
+                this.render = function(){
+                    ctx.beginPath();
+                    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 1);
+                    ctx.moveTo(this.pos.x, this.pos.y-this.radius*0.7);
+                    ctx.arc(this.pos.x, this.pos.y, this.radius*0.7, -1.4, 3.3, 1);
+                    ctx.stroke();
+                    ctx.closePath();
+                    return this.move();
+                };
+                this.move = function(){
+                    this.pos.x += this.vit.x*this.pos.z;
+                    this.pos.y += this.vit.y*this.pos.z;
+                    
+                    this.vit.x += -1*stream;
+                    this.vit.x /= 1.08;
+                    
+                    var pop = 0;
+                    if(this.pos.y + this.radius+2 < 0) pop = 1;
+                    if(this.pos.x + this.radius+100 < 0) pop = 1;
+                    else if(this.pos.x - this.radius-100 > can.width) pop = 1;
+                    
+                    return pop;
+                };
+            }
+            
+            function rand(f, t){
+                return (r()*(t-f)+f);
+            }
+            
+            window.onresize = function(){
+                can.width = document.body.offsetWidth;
+                can.height = document.body.offsetHeight;
+                
+                ctx.strokeStyle = "#FFF";
+                ctx.lineWidth = 2;
+            }
+        </script>
+    </body>
+</html>
