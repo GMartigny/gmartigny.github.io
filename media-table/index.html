@@ -1,8 +1,9 @@
 <!-- Media Table v0.8 -->
 <!DOCTYPE html>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <html>
 <head>
+    <title>Media Table</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<style>
 		html, body{
 			height : 100%;
@@ -150,11 +151,11 @@
 	<div id="holder"></div>
 	<div id="classic">
 		<input type="file" id="fileInput" multiple />
-		<input type="button" value="Parcourir" onclick="openBrowser();"/>
+		<input type="button" value="Browse" onclick="openBrowser();"/>
 	</div>
-	<div id="empty">Glisser vos fichiers ici pour les afficher</div>
+	<div id="empty">Drag'n'drop file here to display them</div>
 	<div id="cache"></div>
-	<div id="bubble" class="hided">Rien à dire =)</div>
+	<div id="bubble" class="hided">Nothing to say =)</div>
 	<script>
 		var maxHeight = document.getElementById("maxHeight");
 		var holder = document.getElementById("holder");
@@ -183,7 +184,7 @@
 			}
 		};
 		var bubbleHiding = 0;
-		window.addEventListener("resize", function(ev){
+		window.addEventListener("resize", function(){
 			setMaxHeight();
 		});
 		setMaxHeight();
@@ -196,7 +197,7 @@
 				enbiged = false;
 			}
 		});
-		// ne fonctionne pas avec les event listener (??)
+		// don't work with event listener (??)
 		window.ondragover = function(){ holder.className = "hovered"; return false; };
 		window.ondragleave = function(){ holder.className = ""; return false; };
 		window.ondragend = function(){ holder.className = ""; return false; };
@@ -221,12 +222,12 @@
 			clearTimeout(bubbleHiding);
 		});
 		bubble.addEventListener("mouseout", function(){
-			
+			bubbleHiding();
 		});
 		
-		var n = 0;
-		var enbiged = false;
-		var Media = function(file){
+		var n = 0,
+            enbiged = 0;
+		function Media(file){
 			this.name = file.name;
 			this.type = file.type;
 			try{
@@ -310,7 +311,7 @@
 				polaroid.style.top = rand(holder.clientHeight-polaroid.clientHeight-20)+"px";
 				polaroid.style.left = rand(holder.clientWidth-polaroid.clientWidth-20)+"px";
 				++n;
-			}
+			};
 		}
 		
 		function prepareHTML(file){
@@ -333,7 +334,7 @@
 				case "text":
 					elem = document.createElement("pre");
 			}
-			if(!elem){ // gestion des mime incorrecte
+			if(!elem){ // handle unreadable mime
 				switch(ext){
 					case "png":
 					case "jpeg":
@@ -363,6 +364,7 @@
 						elem.onclick = function(e){ e.stopPropagation(); };
 						break;
 					case "txt":
+                    case "log":
 					case "js":
 					case "xml":
 					case "htm":
@@ -376,8 +378,8 @@
 				}
 			}
 			else elem.type = type;
-			if(!elem) throw "Ce format n'est pas supporté (" + file.type + ")";
-			else if(file.type == "application/octet-stream") throw "Ce fichier essai de se faire passer pour ce qu'il n'est pas !";
+			if(!elem) throw "Unsuported format (" + file.type + ")";
+			else if(file.type == "application/octet-stream") throw "This file pretend to be another format !";
 			return elem;
 		}
 		
