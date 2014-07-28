@@ -146,8 +146,10 @@
             }
             window.onload = function(){
                 var id = window.location.hash.substr(1);
-                currentEl = document.getElementById(id);
-                current = Array.prototype.indexOf.call(elems, currentEl);
+                if(id){
+                    currentEl = document.getElementById(id);
+                    current = Array.prototype.indexOf.call(elems, currentEl);
+                }
                 
                 makeRotate();
                 
@@ -296,7 +298,7 @@
                 
                 ctx.strokeStyle = "#FFF";
                 ctx.lineWidth = 2;
-            }
+            };
         </script>
     </body>
 </html>
