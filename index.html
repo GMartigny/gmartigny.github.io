@@ -15,7 +15,10 @@
                 width: 100%;
                 top: 100%;
                 padding: 0;
+            }
+            #wheel.ready{
                 transition: all linear .4s;
+                top: calc(50% - 110px);
             }
             
             #wheel li{
@@ -26,9 +29,11 @@
                 margin: 0 auto -400px;
                 transform-origin: 50% 400%;
                 -webkit-transform-origin: 50% 380%;
-                transition: all linear .3s;
                 z-index: -1;
                 opacity: 1;
+            }
+            #wheel.ready li{
+                transition: all linear .3s;
             }
             #wheel.active li{
                 opacity: .1;
@@ -89,29 +94,31 @@
             <!-- Not that good -->
             <!--<li><a href="badges" title="CSS rotating badges"><img src="" alt="badges thumbnail"/></a></li>-->
             <!--<li><a href="hexagon.html" title="CSS hexagon"><img src="" alt="aperçu animation imie"/></a></li>-->
+            
             <!-- Canvas -->
-            <li><a href="extract" title="My first web arcade game"><img src="" alt="extract game thumbnail"/></a></li>
-            <li><a href="fizzle" title="Turn your text into little fizzle bubble =)"><img src="" alt="bubble fizzle thumbnail"/></a></li>
-            <li><a href="draw" title="You can now draw on your browser"><img src="" alt="draw tool thumbnail"/></a></li>
-            <li><a href="bigbang" title="Big-bang simulation"><img src="" alt="big-bang thumbnail"/></a></li>
-            <li><a href="pixelSand.html" title="Experiment with a lot of particules"><img src="" alt="sand simulation thumbnail"/></a></li>
-            <li><a href="constellation.html" title="Display fake constellation as you mouse over"><img src="" alt="constellation animation thumbnail"/></a></li>
+            <li id="extract"><a href="extract" title="My first web arcade game"><img src="" alt="extract game thumbnail"/></a></li>
+            <li id="fizzle"><a href="fizzle" title="Turn your text into little fizzle bubble =)"><img src="" alt="bubble fizzle thumbnail"/></a></li>
+            <li id="draw"><a href="draw" title="You can now draw on your browser"><img src="" alt="draw tool thumbnail"/></a></li>
+            <li id="bigbang"><a href="bigbang" title="Big-bang simulation"><img src="" alt="big-bang thumbnail"/></a></li>
+            <li id="pixelsand"><a href="pixelSand.html" title="Experiment with a lot of particules"><img src="" alt="sand simulation thumbnail"/></a></li>
+            <li id="constellation"><a href="constellation.html" title="Display fake constellation as you mouse over"><img src="" alt="constellation animation thumbnail"/></a></li>
             
             <!-- CSS -->
-            <li><a href="css-dropdown" title="A CSS only beautifull dropdown menu"><img src="" alt="CSS dropdown thumbnail"/></a></li>
-            <li><a href="animation-imie" title="An web animation I had to do at my school"><img src="" alt="IMIE animation thumbnail"/></a></li>
-            <li><a href="easy-slider" title="A developer-friendly way to make carrousel"><img src="" alt="easy-slider thumbnail"/></a></li>
-            <li><a href="fun-load" title="Some CSS loading animation"><img src="" alt="cool loader thumbnail"/></a></li>
-            <li><a href="onediv" title="A tool to try the one div challenge"><img src="" alt="one-div generator thumbnail"/></a></li>
-            <li><a href="power-text" title="Some CSS enhanced font"><img src="" alt="cool text thumbnail"/></a></li>
-            <li><a href="dongo.html" title="A little animated friend"><img src="" alt="CSS animated dongo thumbnail"/></a></li>
-            <li><a href="loading.html" title="A basic and customizable loader"><img src="" alt="customizable loader thumbnail"/></a></li>
-            <li><a href="unfold.html" title="An unfold look alike menu"><img src="" alt="unfold menu thumbnail"/></a></li>
+            <li id="dropdown"><a href="css-dropdown" title="A CSS only beautifull dropdown menu"><img src="" alt="CSS dropdown thumbnail"/></a></li>
+            <!--<li id="imie"><a href="animation-imie" title="An web animation I had to do at my school"><img src="" alt="IMIE animation thumbnail"/></a></li>-->
+            <li id="slider"><a href="easy-slider" title="A developer-friendly way to make carrousel"><img src="" alt="easy-slider thumbnail"/></a></li>
+            <li id="loader"><a href="fun-load" title="Some CSS loading animation"><img src="" alt="cool loader thumbnail"/></a></li>
+            <li id="onediv"><a href="onediv" title="A tool to try the one div challenge"><img src="" alt="one-div generator thumbnail"/></a></li>
+            <li id="powertext"><a href="power-text" title="Some CSS enhanced font"><img src="" alt="cool text thumbnail"/></a></li>
+            <li id="dongo"><a href="dongo.html" title="A little animated friend"><img src="" alt="CSS animated dongo thumbnail"/></a></li>
+            <li id="loading"><a href="loading.html" title="A basic and customizable loader"><img src="" alt="customizable loader thumbnail"/></a></li>
+            <li id="unfold"><a href="unfold.html" title="An unfold look alike menu"><img src="" alt="unfold menu thumbnail"/></a></li>
             
-            <li><a href="paralax" title="My try at paralax"><img src="" alt="my paralax thumbnail"/></a></li>
-            <li><a href="size.html" title="An easy way to see and convert size unit"><img src="" alt="screen rule thumbnail"/></a></li>
-            <li><a href="map-to-json" title="An easy way to make your json map"><img src="" alt="json creator thumbnail"/></a></li>
-            <li><a href="media-table" title=""><img src="" alt="media-table thumbnail"/></a></li>
+            <!-- Others -->
+            <li id="paralax"><a href="paralax" title="My try at paralax"><img src="" alt="my paralax thumbnail"/></a></li>
+            <li id="rule"><a href="size.html" title="An easy way to see and convert size unit"><img src="" alt="screen rule thumbnail"/></a></li>
+            <li id="jsonmap"><a href="map-to-json" title="An easy way to make your json map"><img src="" alt="json creator thumbnail"/></a></li>
+            <li id="mediatable"><a href="media-table" title=""><img src="" alt="media-table thumbnail"/></a></li>
         </ul>
         <script>
             var wheel = document.getElementById("wheel"),
@@ -137,9 +144,15 @@
                     else activate();
                 };
             }
-            window.onload = function() {
-                wheel.style.top = "calc(50% - 110px)";
+            window.onload = function(){
+                var id = window.location.hash.substr(1);
+                currentEl = document.getElementById(id);
+                current = Array.prototype.indexOf.call(elems, currentEl);
+                
+                makeRotate();
+                
                 setTimeout(function() {
+                    wheel.classList.add("ready");
                     currentEl.classList.add("current");
                 }, 200);
             };
@@ -153,6 +166,7 @@
                 currentEl.classList.remove("current");
                 currentEl = elems[n];
                 currentEl.classList.add("current");
+                window.location.hash = currentEl.id;
                 return makeRotate();
             }
             function makeRotate() {
