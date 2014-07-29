@@ -1,451 +1,457 @@
 <head>
-	<script src="lib.js"></script>
-	<style>
-		#menu{
-			position : absolute;
-			top : -5px;
-			left : 0;
-			padding : 5px;
-			background : #A7E2BE;
-			border : 2px outset lightgrey;;
-			border-radius : 5px;
-		}
-		.a{
-			padding : 0 20px;
-			color : #808080;
-			font-weight : bold;
-			cursor : default;
-		}
-		.active{
-			color : #286BD0;
-			cursor : pointer;
-		}
-		.active:hover{
-			color : orange;
-		}
-		.active:active{
-			color : red;
-		}
-		#current{
-			background : orange;
-			opacity : 0.4;
-		}
-		table{
-			border-collapse : collapse;
-		}
-		#canva{
-			margin : 30px 0;
-			display : inline-block;
-			border-bottom : 6px groove lightgrey;
-			border-right : 6px groove lightgrey;
-		}
-		.cell{
-			height : 32px;
-			width : 32px;
-			padding : 0;
-			background : url(base.png);
-			cursor : pointer;
-			background-position : 0 -128px;
-		}
-		#tools{
-			position : absolute;
-			top : 50px;
-			left : 700px;
-			background : #A7E2BE;
-			padding : 5px;
-			border : 2px outset lightgrey;
-			border-radius : 5px;
-			cursor : move;
-		}
-		#messError{
-			position : absolute;
-			width : 100%;
-			z-index : -1;
-			text-align : center;
-		}
-		#picker{
-			background : url(base.png) no-repeat;
-			cursor : pointer;
-		}
-		#picker td{
-			height : 32px;
-			width : 32px;
-			padding : 0;
-		}
-		#sizer table{
-			border : 1px solid grey;
-			cursor : default;
-		}
-		.expander{
-			background : red;
-			padding : 0;
-		}
-		#rightExp{
-			cursor : e-resize;
-			width : 5px;
-		}
-		#bottomExp{
-			cursor : n-resize;
-			height : 5px;
-		}
-		
-		#tab .t0{ background-position : 0 0;}
-		#tab .t1{ background-position : -32px 0;}
-		#tab .t2{ background-position : -64px 0;}
-		#tab .t3{ background-position : -96px 0;}
-		#tab .t4{ background-position : 0 -32px;}
-		#tab .t5{ background-position : -32px -32px;}
-		#tab .t6{ background-position : -64px -32px;}
-		#tab .t7{ background-position : -96px -32px;}
-		#tab .t8{ background-position : 0 -64px;}
-		#tab .t9{ background-position : -32px -64px;}
-		#tab .t10{ background-position : -64px -64px;}
-		#tab .t11{ background-position : -96px -64px;}
-		#tab .t12{ background-position : 0 -96px;}
-		#tab .t13{ background-position : -32px -96px;}
-		#tab .t14{ background-position : -64px -96px;}
-		#tab .t15{ background-position : -96px -96px;}
-	</style>
-	<script>
-	var tab;
-		var save;
-		var load;
-		var clear;
-	var cur = 0;
-	var holdPaint = false;
-	var holdResize = false;
-	var holdMoveTools = false;
-	var startResize = {
-		x : 0,
-		y : 0
-	};
-	var resizeDir = "";
-	var startMoveTools = {
-		x : 0,
-		y : 0
-	};
-	var needed = {
-		col : 5,
-		lig : 5
-	};
-	var size = {
-		col : 0,
-		lig : 0
-	};
-	
-	window.onload = function(){
-		tab = getById("tab");
-		
-		save = getById("save");
-		load = getById("load");
-		clear = getById("clear");
-		
-		if(localStorage['json']){
-			clear.className = "a active";
-			clear.onclick = clearJson;
-		}
-		
-		pickerEvent();
-		expanderEvent();
-		sizerEvent();
-		toolsEvent();
-		implTab();
-	};
-	
-	window.onmouseup = function(){
-		holdPaint = false;
-		holdResize = false;
-		holdMoveTools = false;
-	};
-	window.onmousemove = function(e){
-		e.preventDefault();
-		if(holdResize){
-			if(resizeDir.indexOf("n") != -1){
-				if(e.clientY - startResize.y > 16){
-					++needed.lig;
-					startResize.y += 32;
-				}
-				else if(e.clientY - startResize.y < -16){
-					--needed.lig;
-					startResize.y -= 32;
-				}
-			}
-			if(resizeDir.indexOf("w") != -1){
-				if(e.clientX - startResize.x > 16){
-					++needed.col;
-					startResize.x += 32;
-				}
-				else if(e.clientX - startResize.x < -16){
-					--needed.col;
-					startResize.x -= 32;
-				}
-			}
-			if(needed.lig <= 0) needed.lig = 1;
-			if(needed.col <= 0) needed.col = 1;
-			implTab();
-		}
-		else if(holdMoveTools){
-			var tools = getById("tools");
-			tools.style.top = tools.offsetTop + e.clientY - startMoveTools.y;
-			tools.style.left = tools.offsetLeft + e.clientX - startMoveTools.x;
-			startMoveTools.y = e.clientY;
-			startMoveTools.x = e.clientX;
-		}
-	};
-	
-	function pickerEvent(){ // événement pour le choix de tile
-		var sels = getById("picker").getElementsByTagName("td");
-		for(var i=0;i<sels.length;++i){
-			sels[i].onclick = function(){
-				getById("current").id = "";
-				this.id = "current";
-				cur = this.parentNode.rowIndex * 4 + this.cellIndex;
-			};
-		}
-	}
-	
-	function expanderEvent(){ // événement pour les bords de resize
-		getById("canva").onmousemove = function(e){
-			if(!holdResize){
-				var brd = 6;
-				resizeDir = "";
-				if(e.clientY > this.offsetTop + this.offsetHeight - brd - window.scrollY){
-					resizeDir += "n";
-				}
-				if(e.clientX > this.offsetLeft + this.offsetWidth - brd - window.scrollX){
-					resizeDir += "w";
-				}
-				this.style.cursor = resizeDir + "-resize";
-			}
-		};
-		getById("canva").onmousedown = function(e){
-			e.preventDefault();
-			startResize.x = e.clientX;
-			startResize.y = e.clientY;
-			holdResize = true;
-		};
-	}
-	
-	function sizerEvent(){ // événement pour le formulaire de changement de taille
-		getById("sizer").onsubmit = function(){
-			needed.col = parseInt(getById("col").value);
-			needed.lig = parseInt(getById("lig").value);
-			console.log(needed);
-			implTab();
-			return false;
-		};
-	}
-	
-	function toolsEvent(){ // événement de déplacempent du bloc outils
-		getById("tools").onmousedown = function(e){
-			if(e.target.id == "tools"){
-				e.preventDefault();
-				startMoveTools.x = e.clientX;
-				startMoveTools.y = e.clientY;
-				holdMoveTools = true;
-			}
-			else{
-				e.stopPropagation();
-			}
-		};
-	}
+    <title>Map to JSON</title>
+    <script src="lib.js"></script>
+    <style>
+        #menu{
+            position : absolute;
+            top : -5px;
+            left : 0;
+            padding : 5px;
+            background : #A7E2BE;
+            border : 2px outset lightgrey;;
+            border-radius : 5px;
+        }
+        .a{
+            padding : 0 20px;
+            color : #808080;
+            font-weight : bold;
+            cursor : default;
+        }
+        .active{
+            color : #286BD0;
+            cursor : pointer;
+        }
+        .active:hover{
+            color : orange;
+        }
+        .active:active{
+            color : red;
+        }
+        #current{
+            background : orange;
+            opacity : 0.4;
+        }
+        table{
+            border-collapse : collapse;
+        }
+        #canva{
+            margin : 30px 0;
+            display : inline-block;
+            border-bottom : 6px groove lightgrey;
+            border-right : 6px groove lightgrey;
+        }
+        .cell{
+            height : 32px;
+            width : 32px;
+            padding : 0;
+            background : url(base.png);
+            cursor : pointer;
+            background-position : 0 -128px;
+        }
+        #tools{
+            position : absolute;
+            top : 50px;
+            left : 700px;
+            background : #A7E2BE;
+            padding : 5px;
+            border : 2px outset lightgrey;
+            border-radius : 5px;
+            cursor : move;
+        }
+        #messError{
+            position : absolute;
+            width : 100%;
+            z-index : -1;
+            text-align : center;
+        }
+        #picker{
+            background : url(base.png) no-repeat;
+            cursor : pointer;
+        }
+        #picker td{
+            height : 32px;
+            width : 32px;
+            padding : 0;
+        }
+        #sizer table{
+            border : 1px solid grey;
+            cursor : default;
+        }
+        .expander{
+            background : red;
+            padding : 0;
+        }
+        #rightExp{
+            cursor : e-resize;
+            width : 5px;
+        }
+        #bottomExp{
+            cursor : n-resize;
+            height : 5px;
+        }
 
-	function implTab(){ // création du tableau en fonction de needed
-		getById("output").style.height = (17.5 * (needed.lig + 5)) + "px";
-		getById("output").style.width = (245 + 28 * needed.col) + "px";
-		for(var i=0;i<Math.abs(needed.col - size.col);++i){ // ajout des collone
-			var boo = true;
-			if(needed.col - size.col < 0){
-				boo = false;
-			}
-			addColum(boo);
-		}
-		size.col = needed.col;
-		for(var i=0;i<Math.abs(needed.lig - size.lig);++i){ // ajout des lignes
-			var boo = true;
-			if(needed.lig - size.lig < 0){
-				boo = false;
-			}
-			addLine(boo);
-		}
-		size.lig = needed.lig;
-		exportJson();
-	}
-	
-	function addLine(add){ // ajout ou suppression de ligne
-		if(!add){ // suppression
-			tab.removeChild(tab.children[tab.children.length-1]);
-		}
-		else{ // ajout
-			var newL = create("tr");
-			var newC;
-			for(var c=0;c<needed.col;++c){
-				newC = createCell();
-				newL.appendChild(newC);
-			}
-			tab.appendChild(newL);
-		}
-	}
-	
-	function addColum(add){ // ajoute ou suppression de colonne
-		if(!add){ // suppression
-			for(var i=0;i<size.lig;++i){
-				tab.children[i].removeChild(tab.children[i].children[tab.children[i].children.length-1]);
-			}
-		}
-		else{ // ajout
-			var newC;
-			for(var i=0;i<size.lig;++i){
-				newC = createCell();
-				tab.children[i].appendChild(newC);
-			}
-		}
-	}
-	
-	function createCell(){
-		var newC = create("td");
-		newC.className = "cell t1";
-		newC.onmousedown = function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			holdPaint = true;
-			paint(this);
-		};
-		newC.onmouseover = function(){
-			if(holdPaint) paint(this);
-		}
-		newC.className = "cell t1";
-		return newC;
-	}
-	
-	function paint(cell, color){ // coloriage d'une celulle
-		var c = color || cur
-		cell.className = "cell t" + c;
-		exportJson();
-	}
-	
-	function exportJson(){ // écriture du json dans le textarea
-		getById("output").style.background = "";
-		var res = "{\n\t\"tileset\" : \"chemin.png\",\n\t\"terrain\" : [";
-		
-		for(var l=0;l<needed.lig;++l){
-			res += "\n\t\t[";
-			var cl = tab.children[l]
-			for(var c=0;c<needed.col;++c){
-				res += cl.children[c].className.substr(6);
-				if(c+1 < needed.col) res += ", ";
-			}
-			res += "]";
-			if(l+1 < needed.lig) res += ",";
-		}
-		
-		res += "\n\t]\n}";
-		getById("output").value = res;
-		
-		save.className = "a active";
-		save.onclick = saveJson;
-		if(localStorage['json']){
-			load.className = "a active";
-			load.onclick = loadJson;
-		}
-	}
-	
-	function saveJson(){ // sauvegarde en local
-		localStorage['json'] = getById("output").value;
-		save.className = "a";
-		save.onclick = null;
-		clear.className = "a active";
-		clear.onclick = clearJson;
-	}
-	
-	function loadJson(via){ // chargement des données local
-		var json = false;
-		if(via === "output"){
-			try{
-				json = JSON.parse(getById("output").value);
-			}
-			catch(e){
-				getById("output").style.background = "#FFaaaa";
-			}
-		}
-		else if(localStorage['json']){
-			json = JSON.parse(localStorage['json']);
-		}
-		
-		if(json){
-			getById("output").style.background = "";
-			needed.lig = json.terrain.length;
-			needed.col = json.terrain[0].length;
-			implTab();
-			for(var l=0;l<size.lig;++l){
-				for(var c=0;c<size.col;++c){
-					paint(tab.children[l].children[c], json.terrain[l][c]);
-				}
-			}
-		}
-		load.className = "a";
-		load.onclick = null;
-		save.className = "a";
-		save.onclick = null;
-	}
-	
-	function clearJson(){ // efface les données locale
-		if(confirm("Les données sauvegarder vont être perdue !")){
-			localStorage.clear();
-			load.className = "a";
-			load.onclick = null;
-			clear.className = "a";
-			clear.onclick = null;
-			save.className = "a active";
-			save.onclick = saveJson;
-		}
-	}
-	
-	function changeTileset(){ // permet de changer d'image de tileset
-		var url = prompt("Entrez l'url du tileset\nLaissez à vide pour restaurer celui par défaut.");
-		if(url !== null){
-			url = url || "base.png";
-		
-			getById("picker").style.backgroundImage = "url(" + url + ")";
-			
-			var cells = getByClass("cell");
-			for(var i=0;i<cells.length;++i){
-				cells[i].style.backgroundImage = "url(" + url + ")";
-			}
-		}
-	}
-	</script>
+        #tab .t0{ background-position : 0 0;}
+        #tab .t1{ background-position : -32px 0;}
+        #tab .t2{ background-position : -64px 0;}
+        #tab .t3{ background-position : -96px 0;}
+        #tab .t4{ background-position : 0 -32px;}
+        #tab .t5{ background-position : -32px -32px;}
+        #tab .t6{ background-position : -64px -32px;}
+        #tab .t7{ background-position : -96px -32px;}
+        #tab .t8{ background-position : 0 -64px;}
+        #tab .t9{ background-position : -32px -64px;}
+        #tab .t10{ background-position : -64px -64px;}
+        #tab .t11{ background-position : -96px -64px;}
+        #tab .t12{ background-position : 0 -96px;}
+        #tab .t13{ background-position : -32px -96px;}
+        #tab .t14{ background-position : -64px -96px;}
+        #tab .t15{ background-position : -96px -96px;}
+    </style>
+    <script>
+        var tab,
+            save,
+            load,
+            clear,
+            cur = 0,
+            holdPaint = false,
+            holdResize = false,
+            holdMoveTools = false,
+            startResize = {
+                x: 0,
+                y: 0
+            },
+            resizeDir = "",
+            startMoveTools = {
+                x: 0,
+                y: 0
+            },
+            needed = {
+                col: 5,
+                lig: 5
+            },
+            size = {
+                col: 0,
+                lig: 0
+            };
+
+        window.onload = function() {
+            tab = getById("tab");
+
+            save = getById("save");
+            load = getById("load");
+            clear = getById("clear");
+
+            if (localStorage['json']) {
+                clear.className = "a active";
+                clear.onclick = clearJson;
+            }
+
+            pickerEvent();
+            expanderEvent();
+            sizerEvent();
+            toolsEvent();
+            implTab();
+        };
+
+        window.onmouseup = function() {
+            holdPaint = false;
+            holdResize = false;
+            holdMoveTools = false;
+        };
+        window.onmousemove = function(e) {
+            e.preventDefault();
+            if (holdResize) {
+                if (resizeDir.indexOf("n") != -1) {
+                    if (e.clientY - startResize.y > 16) {
+                        ++needed.lig;
+                        startResize.y += 32;
+                    }
+                    else if (e.clientY - startResize.y < -16) {
+                        --needed.lig;
+                        startResize.y -= 32;
+                    }
+                }
+                if (resizeDir.indexOf("w") != -1) {
+                    if (e.clientX - startResize.x > 16) {
+                        ++needed.col;
+                        startResize.x += 32;
+                    }
+                    else if (e.clientX - startResize.x < -16) {
+                        --needed.col;
+                        startResize.x -= 32;
+                    }
+                }
+                if (needed.lig <= 0)
+                    needed.lig = 1;
+                if (needed.col <= 0)
+                    needed.col = 1;
+                implTab();
+            }
+            else if (holdMoveTools) {
+                var tools = getById("tools");
+                tools.style.top = tools.offsetTop + e.clientY - startMoveTools.y;
+                tools.style.left = tools.offsetLeft + e.clientX - startMoveTools.x;
+                startMoveTools.y = e.clientY;
+                startMoveTools.x = e.clientX;
+            }
+        };
+
+        function pickerEvent() { // choose tile event
+            var sels = getById("picker").getElementsByTagName("td");
+            for (var i = 0; i < sels.length; ++i) {
+                sels[i].onclick = function() {
+                    getById("current").id = "";
+                    this.id = "current";
+                    cur = this.parentNode.rowIndex * 4 + this.cellIndex;
+                };
+            }
+        }
+
+        function expanderEvent() { // drag resize event
+            getById("canva").onmousemove = function(e) {
+                if (!holdResize) {
+                    var brd = 6;
+                    resizeDir = "";
+                    if (e.clientY > this.offsetTop + this.offsetHeight - brd - window.scrollY) {
+                        resizeDir += "n";
+                    }
+                    if (e.clientX > this.offsetLeft + this.offsetWidth - brd - window.scrollX) {
+                        resizeDir += "w";
+                    }
+                    this.style.cursor = resizeDir + "-resize";
+                }
+            };
+            getById("canva").onmousedown = function(e) {
+                e.preventDefault();
+                startResize.x = e.clientX;
+                startResize.y = e.clientY;
+                holdResize = true;
+            };
+        }
+
+        function sizerEvent() { // choose size form event
+            getById("sizer").onsubmit = function() {
+                needed.col = parseInt(getById("col").value);
+                needed.lig = parseInt(getById("lig").value);
+                console.log(needed);
+                implTab();
+                return false;
+            };
+        }
+
+        function toolsEvent() { // drag tools block
+            getById("tools").onmousedown = function(e) {
+                if (e.target.id == "tools") {
+                    e.preventDefault();
+                    startMoveTools.x = e.clientX;
+                    startMoveTools.y = e.clientY;
+                    holdMoveTools = true;
+                }
+                else {
+                    e.stopPropagation();
+                }
+            };
+        }
+
+        function implTab() { // make a table
+            getById("output").style.height = (17.5 * (needed.lig + 5)) + "px";
+            getById("output").style.width = (245 + 28 * needed.col) + "px";
+            for (var i = 0; i < Math.abs(needed.col - size.col); ++i) { // ajout des collone
+                var boo = true;
+                if (needed.col - size.col < 0) {
+                    boo = false;
+                }
+                addColum(boo);
+            }
+            size.col = needed.col;
+            for (var i = 0; i < Math.abs(needed.lig - size.lig); ++i) { // ajout des lignes
+                var boo = true;
+                if (needed.lig - size.lig < 0) {
+                    boo = false;
+                }
+                addLine(boo);
+            }
+            size.lig = needed.lig;
+            exportJson();
+        }
+
+        function addLine(add) { // add or delete line
+            if (!add) { // delete
+                tab.removeChild(tab.children[tab.children.length - 1]);
+            }
+            else { // add
+                var newL = create("tr");
+                var newC;
+                for (var c = 0; c < needed.col; ++c) {
+                    newC = createCell();
+                    newL.appendChild(newC);
+                }
+                tab.appendChild(newL);
+            }
+        }
+
+        function addColum(add) { // add or delete column
+            if (!add) { // delete
+                for (var i = 0; i < size.lig; ++i) {
+                    tab.children[i].removeChild(tab.children[i].children[tab.children[i].children.length - 1]);
+                }
+            }
+            else { // add
+                var newC;
+                for (var i = 0; i < size.lig; ++i) {
+                    newC = createCell();
+                    tab.children[i].appendChild(newC);
+                }
+            }
+        }
+
+        function createCell() {
+            var newC = create("td");
+            newC.className = "cell t1";
+            newC.onmousedown = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                holdPaint = true;
+                paint(this);
+            };
+            newC.onmouseover = function() {
+                if (holdPaint)
+                    paint(this);
+            }
+            newC.className = "cell t1";
+            return newC;
+        }
+
+        function paint(cell, color) { // change a cell
+            var c = color || cur
+            cell.className = "cell t" + c;
+            exportJson();
+        }
+
+        function exportJson() { // json encode
+            getById("output").style.background = "";
+            var res = "{\n\t\"tileset\" : \"path.png\",\n\t\"data\" : [";
+
+            for (var l = 0; l < needed.lig; ++l) {
+                res += "\n\t\t[";
+                var cl = tab.children[l]
+                for (var c = 0; c < needed.col; ++c) {
+                    res += cl.children[c].className.substr(6);
+                    if (c + 1 < needed.col)
+                        res += ", ";
+                }
+                res += "]";
+                if (l + 1 < needed.lig)
+                    res += ",";
+            }
+
+            res += "\n\t]\n}";
+            getById("output").value = res;
+
+            save.className = "a active";
+            save.onclick = saveJson;
+            if (localStorage['json']) {
+                load.className = "a active";
+                load.onclick = loadJson;
+            }
+        }
+
+        function saveJson() { // local save
+            localStorage['json'] = getById("output").value;
+            save.className = "a";
+            save.onclick = null;
+            clear.className = "a active";
+            clear.onclick = clearJson;
+        }
+
+        function loadJson(via) { // load local save
+            var json = false;
+            if (via === "output") {
+                try {
+                    json = JSON.parse(getById("output").value);
+                }
+                catch (e) {
+                    getById("output").style.background = "#FFaaaa";
+                }
+            }
+            else if (localStorage['json']) {
+                json = JSON.parse(localStorage['json']);
+            }
+
+            if (json) {
+                getById("output").style.background = "";
+                needed.lig = json.data.length;
+                needed.col = json.data[0].length;
+                implTab();
+                for (var l = 0; l < size.lig; ++l) {
+                    for (var c = 0; c < size.col; ++c) {
+                        paint(tab.children[l].children[c], json.data[l][c]);
+                    }
+                }
+            }
+            load.className = "a";
+            load.onclick = null;
+            save.className = "a";
+            save.onclick = null;
+        }
+
+        function clearJson() { // clear local save
+            if (confirm("All local data will be lost !")) {
+                localStorage.clear();
+                load.className = "a";
+                load.onclick = null;
+                clear.className = "a";
+                clear.onclick = null;
+                save.className = "a active";
+                save.onclick = saveJson;
+            }
+        }
+
+        function changeTileset() { // change tileset image
+            var url = prompt("Enter a tileset URL.\nLeave empty to reset to default.");
+            if (url !== null) {
+                url = url || "base.png";
+
+                getById("picker").style.backgroundImage = "url(" + url + ")";
+
+                var cells = getByClass("cell");
+                for (var i = 0; i < cells.length; ++i) {
+                    cells[i].style.backgroundImage = "url(" + url + ")";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
-	<div id="menu">
-		<span id="save" class="a" title="Enregistre la carte actuelle en local">Sauver</span>
-		<span id="load" class="a" title="Charge la carte enregistrée précédemment">Charger</span>
-		<span id="clear" class="a" title="Supprime toutes les données enregistrées">Supprimer</span>
-	</div>
-	<div id="tools">
-		<input type="button" value="changer de tileset" onclick="changeTileset();"/>
-		<div id="messError">Chargement<br/> du<br/> tileset</div>
-		<table id="picker">
-			<tr><td id="current"></td><td></td><td></td><td></td></tr>
-			<tr><td></td><td></td><td></td><td></td></tr>
-			<tr><td></td><td></td><td></td><td></td></tr>
-			<tr><td></td><td></td><td></td><td></td></tr>
-		</table>
-		<form action="#" id="sizer">
-		<table>
-			<tr><td><label for="lig">ligne :</label></td><td><input type="text" id="lig" value="5" size="3"/></td></tr>
-			<tr><td><label for="col">colonne :</label></td><td><input type="text" id="col" value="5" size="3"/></td></tr>
-			<tr><td></td><td><input type="submit" value="Changer"/></td></tr>
-		</table>
-		</form>
-	</div>
-	<div id="canva">
-		<table>
-			<tbody id="tab">
-			</tbody>
-		</table>
-	</div>
-	<div>
-		<textarea id="output" onkeyup="loadJson('output');"></textarea>
-	</div>
+    <div id="menu">
+        <span id="save" class="a" title="Save the map in local data">Save</span>
+        <span id="load" class="a" title="Load a map from local data">Load</span>
+        <span id="clear" class="a" title="Delete all local data">Delete</span>
+    </div>
+    <div id="tools">
+        <input type="button" value="Change tileset" onclick="changeTileset();"/>
+        <div id="messError">Loading<br/> tileset</div>
+        <table id="picker">
+            <tr><td id="current"></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+        </table>
+        <form action="#" id="sizer">
+            <table>
+                <tr><td><label for="lig">ligne :</label></td><td><input type="text" id="lig" value="5" size="3"/></td></tr>
+                <tr><td><label for="col">colonne :</label></td><td><input type="text" id="col" value="5" size="3"/></td></tr>
+                <tr><td></td><td><input type="submit" value="Change"/></td></tr>
+            </table>
+        </form>
+    </div>
+    <div id="canva">
+        <table>
+            <tbody id="tab">
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <textarea id="output" onkeyup="loadJson('output');"></textarea>
+    </div>
 </body>

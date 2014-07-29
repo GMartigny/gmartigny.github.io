@@ -64,18 +64,18 @@
         <div class="inner"><div class="anim"></div></div>
     </div>
     <script>
-        //- Variables à modifier (en seconde) -//
-        var tempsMin = 4,
-            tempsMax = 7,
-            delaiMax = 2,
-            texteFini = "Ok !";
+        //- Customizable variables (in sec) -//
+        var minTime = 4,
+            maxTime = 7,
+            maxWait = 2,
+            endText = "Ok !";
         //-------------------------------------//
 
         var loaders = [];
         function loading(){
             loaders = document.getElementsByClassName("barre");
             for(var i = 0; i < loaders.length; ++i){
-                loaders[i].children[0].style.transition = "width linear " + (Math.random() * (tempsMax - tempsMin) + tempsMin) + "s " + Math.random() * delaiMax + "s";
+                loaders[i].children[0].style.transition = "width linear " + (Math.random() * (maxTime - minTime) + minTime) + "s " + Math.random() * maxWait + "s";
                 loaders[i].children[0].style.width = "100%";
             }
             setInterval(percent, 16);
@@ -88,11 +88,11 @@
         function percent(){
             for(var i = 0; i < loaders.length; ++i){
                 var prct = loaders[i].children[0].offsetWidth / 9 << 0;
-                if(prct > 0) loaders[i].firstChild.data = prct + "%"; // affichage des pourcentage
+                if(prct > 0) loaders[i].firstChild.data = prct + "%"; // display percent
                 if(prct >= 100){
-                    loaders[i].children[0].style.background = "linear-gradient(white -10%, lightgreen 70%)"; // mise en vert
-                    loaders[i].firstChild.data = texteFini; // message en fin de "téléchargement"
-                    loaders[i].children[0].innerHTML = ""; // suppression de l'animation
+                    loaders[i].children[0].style.background = "linear-gradient(white -10%, lightgreen 70%)"; // go green
+                    loaders[i].firstChild.data = endText; // display end text
+                    loaders[i].children[0].innerHTML = ""; // stop animation
                 }
             }
         }
