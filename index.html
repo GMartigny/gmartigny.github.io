@@ -219,6 +219,7 @@
                     onGoingTouchs.push({
                         id: t.identifier,
                         x: t.pageX,
+                        y: t.pageY,
                         t: now
                     });
                 });
@@ -234,6 +235,10 @@
                         }
                         else if(t.pageX < saved.x-swipeDist){
                             updateCurrent(+1);
+                            onGoingTouchs.splice(i, 1);
+                        }
+                        else if(t.pageY < saved.y-swipeDist){
+                            activate();
                             onGoingTouchs.splice(i, 1);
                         }
                     }
