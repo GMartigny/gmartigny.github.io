@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- v0.1.1 -->
+<html>
+    <head>
+        <title>Whool String</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                margin: 0;
+            }
+            #fps{
+                position: absolute;
+                left: calc(50% - 400px + 5px);
+                color: #FFF;
+            }
+            #can{
+                display: block;
+                width: 800px;
+                margin: 20px auto 0;
+                background: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="fps">0</div>
+        <canvas width="800" height="600" id="can"></canvas>
+        <script>
+            var can = document.getElementById("can"),
+                ctx = can.getContext("2d"),
+                cells = [],
+                mouse = {
+                    pos: {
+                        x: can.width/2, y: can.height/2
+                    }
+                },
+                PI2 = Math.PI*2,
+                pow = Math.pow,
+                sqrt = Math.sqrt,
+                fps = {
+                    prev: 0,
+                    delay: 300,
+                    count: 0,
+                    elem: document.getElementById("fps")
+                };
+            
+            (function(){
+                var c1 = new Cell(can.width/2, can.height/2);
+                
+                draw();
+            })();
+            function computeFps(){
+                var now = Date.now();
+                if(fps.count > fps.delay){
+                    fps.elem.innerHTML = 1000 / (now - fps.prev) << 0;
+                    
+                    fps.count = 0;
+                }
+                else
+                    fps.count += now - fps.prev;
+                fps.prev = now;
+            }
+            
+            function Cell(x, y, vx, vy){
+                this.pos = {
+                    x: x,
+                    y: y
+                };
+                this.vit = {
+                    x: vx || 0,
+                    y: vy || 0
+                };
+                this.links = [];
+                
+                Cell.all.push(this);
+            }
+            Cell.prototype.render = function(c){
+                c.beginPath();
+                c.arc(this.pos.x, this.pos.y, 6, 0, PI2, 1);
+                c.stroke();
+                c.closePath();
+
+                this.move();
+            };
+            Cell.prototype.move = function(){
+                this.pos.x += this.vit.x;
+                this.pos.y += this.vit.y;
+            };
+            Cell.all = [];
+            Cell.renderAll = function(c){
+                for(var i=0;i<Cell.all.length;++i){
+                    Cell.all[i].render(c);
+                }
+            };
+            
+            function Link(p1, p2, size, elastic, snap){
+                this.size = size;
+                this.elastic = elastic || 0;
+                this.snap = snap || 0;
+                
+                this.p1 = p1;
+                this.p2 = p2;
+                
+                this.render = function(c){
+                    c.beginPath();
+                    c.moveTo(p1.pos.x, p1.pos.y);
+                    c.lineTo(p2.pos.x, p2.pos.y);
+                    c.stroke();
+                    c.closePath();
+                };
+            }
+            
+            function pow2(x){
+                return pow(x, 2);
+            }
+            function distance(p1, p2){
+                return sqrt(pow2(p2.pos.x - p1.pos.x) + pow2(p2.pos.y - p1.pos.y));
+            }
+            
+            function draw(){
+                window.requestAnimationFrame(draw);
+                computeFps();
+                ctx.clearRect(0, 0, can.width, can.height);
+                
+                ctx.strokeStyle = "#11F";
+                ctx.beginPath();
+                ctx.arc(mouse.pos.x, mouse.pos.y, 6, 0, PI2, 1);
+                ctx.stroke();
+                ctx.closePath();
+                
+                ctx.strokeStyle = "#D11";
+//                Cell.renderAll(ctx);
+                
+            }
+            
+            window.onmousemove = function(e){
+                mouse.pos.x = e.clientX-can.offsetLeft;
+                mouse.pos.y = e.clientY-can.offsetTop;
+            };
+        </script>
+    </body>
+</html>
