@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Protein</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            *{
+                box-sizing: border-box;
+                margin: 0 -1px;
+                padding: 0;
+                border: none;
+            }
+            .holder{
+                width: 400px;
+                margin: 20px auto 0;
+            }
+            #can{
+                display: block;
+                background: linear-gradient(to right, #BBB 0, #EEE 40%, #EEE 60%, #BBB 100%);
+                box-shadow: 0 0 10px #333;
+                margin-bottom: 10px;
+            }
+            .switch{
+                display: inline-block;
+                width: 50%;
+                text-align: center;
+                cursor: pointer;
+                padding: 8px 10px;
+                background-image: linear-gradient(#EEE 0, #FFF 25%, #EEE 100%);
+                color: #666;
+                font-weight: bold;
+                font-family: monospace;
+                /*text-shadow: -1px -1px 0 #666;*/
+                border: 1px solid #DDD;
+                border-radius: 5px;
+            }
+            .switch.on{
+                color: #cccc00;
+                background-position-y: .5em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <canvas id="can" width="400" height="600">Unsupported canvas</canvas>
+            <div class="switch" data-var="drawLine">Draw connections</div>
+            <div class="switch" data-var="drawAtom">Draw atoms</div>
+        </div>
+        <script>
+            var drawLine = true;
+            var drawAtom = false;
+            
+            var swts = document.getElementsByClassName("switch");
+            for(var i=0;i<swts.length;++i){
+                var s = swts[i];
+                s.onclick = function(){
+                    this.classList.toggle("on");
+                    window[this.getAttribute("data-var")] = this.classList.contains("on");
+                };
+                if(window[s.getAttribute("data-var")]) s.classList.add("on");
+            }
+        </script>
+        <script src="spline.js"></script>
+        <script>
+            var can = document.getElementById("can"),
+                ctx = can.getContext("2d"),
+                links = [],
+                bounds = {
+                    minX: 25*can.width/100,
+                    maxX: 75*can.width/100
+                };
+                PI2 = Math.PI*2,
+                r = Math.random,
+                sqrt = Math.sqrt,
+                pow = Math.pow;
+            
+            function Link(){
+                this.atoms = [];
+                var nbAtom = rand(5, 9);
+                for(var i=0;i<nbAtom+2;++i)
+                    this.atoms.push( new Atom( rand(bounds.minX, bounds.maxX), can.height/(nbAtom-1)*(i-1), rand(0, 2)-1, 0));
+            }
+            Link.prototype.render = function(c){
+                var allPos = [];
+                
+                for(var i=0;i<this.atoms.length;++i){
+                    var at = this.atoms[i];
+                    at.render(c);
+                    allPos.push(at.pos.x, at.pos.y);
+                }
+                
+                if(drawLine){
+                    c.strokeStyle = "#FFF";
+                    c.beginPath();
+                    c.splineThrought(allPos, 0.7);
+                    c.stroke();
+                    c.closePath();
+                }
+            };
+            
+            function Atom(x, y, vx, vy){
+                this.r = 8;
+                this.pos = {
+                    x: x,
+                    y: y
+                };
+                this.vit = {
+                    x: vx,
+                    y: vy
+                };
+                this.acc = {
+                    x: 0,
+                    y: 0
+                };
+            }
+            Atom.prototype.render = function(c){
+                
+                if(drawAtom){
+                    c.beginPath();
+                    c.arc(this.pos.x, this.pos.y, this.r, 0, PI2, 0);
+                    c.stroke();
+                    c.closePath();
+                }
+                
+                this.move();
+            };
+            Atom.prototype.move = function(){
+                this.pos.x += this.vit.x;
+                this.pos.y += this.vit.y;
+                this.vit.x += this.acc.x;
+                this.vit.y += this.acc.y;
+                this.acc.x /= 1.05;
+                this.acc.y /= 1.05;
+                
+                if(this.pos.x < bounds.minX && this.vit.x < 0) this.acc.x = 0.04;
+                if(this.pos.x > bounds.maxX && this.vit.x > 0) this.acc.x = -0.04;
+            };
+            
+            (function(){
+                ctx.strokeStyle = "#FFF";
+                ctx.lineWidth = 5;
+                
+                var ite = 5;
+                for(var i=0;i<ite;++i){
+                    links.push(new Link());
+                }
+                
+                draw();
+            })();
+            
+            function draw(){
+                window.requestAnimationFrame(draw);
+                ctx.clearRect(0, 0, can.width, can.height);
+                
+                for(var i=0;i<links.length;++i){
+                    links[i].render(ctx);
+                }
+            }
+            
+            function rand(f, t){
+                return (r()*(t-f)+f);
+            }
+            function dist(f, t){
+                return sqrt(sq(f.x-t.x) + sq(f.y-t.y));
+            }
+        </script>
+    </body>
+</html>
