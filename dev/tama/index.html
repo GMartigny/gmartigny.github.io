@@ -1,290 +1,307 @@
 <style>
-#tamago{
-	width : 280px;
-	margin : 20px auto 0;
-	padding : 40px 30px 30px;
-	background : -moz-radial-gradient(top left, #FFF -10%, #2FCE00 50%, #2FCE00 60%, #000 140%);
-	background : -webkit-radial-gradient(top left, #FFF -10%, #2FCE00 50%, #2FCE00 60%, #000 140%);
-	box-shadow : 5px 5px 8px grey;
-	border-radius : 120px 120px 30px 30px;
-}
+    #tamago{
+        width : 280px;
+        margin : 20px auto 0;
+        padding : 40px 30px 30px;
+        background : -moz-radial-gradient(top left, #FFF -10%, #2FCE00 50%, #2FCE00 60%, #000 140%);
+        background : -webkit-radial-gradient(top left, #FFF -10%, #2FCE00 50%, #2FCE00 60%, #000 140%);
+        box-shadow : 5px 5px 8px grey;
+        border-radius : 120px 120px 30px 30px;
+    }
 
-#screen{
-	position : relative;
-	border-radius : 3px;
-	width : 200px;
-	height : 150px;
-	margin : 0 auto;
-	border : 3px inset #B8F400;
-	background : #6F8820;
-}
-#can{
-	position : absolute;
-	width : 100%;
-	height : 100%;
-}
-#buttons{
-	width : 200px;
-	margin : 20px auto 0;
-}
-#buttons .press{
-	margin : 0 6%;
-	width : 19.5%;
-	border-radius : 100%;
-	font-weight : bold;
-}
-#menu{
-	position : absolute;
-	width : 100%;
-	text-align : center;
-	bottom : 1px;
-}
+    #screen{
+        position : relative;
+        border-radius : 3px;
+        width : 200px;
+        height : 150px;
+        margin : 0 auto;
+        border : 3px inset #B8F400;
+        background : #6F8820;
+    }
+    #can{
+        position : absolute;
+        width : 100%;
+        height : 100%;
+    }
+    #buttons{
+        width : 200px;
+        margin : 20px auto 0;
+    }
+    #buttons .press{
+        margin : 0 6%;
+        width : 19.5%;
+        border-radius : 100%;
+        font-weight : bold;
+    }
+    #menu{
+        position : absolute;
+        width : 100%;
+        text-align : center;
+        bottom : 1px;
+    }
 </style>
 <div id="tamago">
-	<div id="screen">
-		<span id="menu"></span>
-		<canvas id="can" width="16" height="13"></canvas>
-	</div>
-	<div id="buttons">
-		<input type="button" class="press" value="<"/>
-		<input type="button" class="press" value="Ok"/>
-		<input type="button" class="press" value=">"/>
-	</div>
+    <div id="screen">
+        <span id="menu"></span>
+        <canvas id="can" width="16" height="13"></canvas>
+    </div>
+    <div id="buttons">
+        <input type="button" class="press" value="<"/>
+        <input type="button" class="press" value="Ok"/>
+        <input type="button" class="press" value=">"/>
+    </div>
 </div>
 <script>
-var day = 86400000;
-var hur = 3600000;
-var min = 60000;
-var sec = 1000;
+    var sec = 1000,
+        min = 60*sec,
+        hor = 60*min,
+        day = 24*hor;
 
-var pixels;
-var xhr = new XMLHttpRequest();
-xhr.open("GET", "pixelate.json");
-xhr.onload = function(){
-	pixels = JSON.parse(xhr.responseText);
-};
-xhr.send();
+    var pixels;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "pixelate.json");
+    xhr.onload = function() {
+        pixels = JSON.parse(xhr.responseText);
+    };
+    xhr.send();
 
-var tama = (localStorage.tama)? new Tama(JSON.parse(localStorage.tama)) : new Tama({});
-var timer = Date.now();;
+    var tama = (localStorage.tama) ? new Tama(JSON.parse(localStorage.tama)) : new Tama({});
+    var timer = Date.now();
 
-var menu = document.getElementById("menu");
-var actions = ["sleep", "eat", "drink", "exercise", "read", "run", "pet"];
-var pointer = 0;
+    var menu = document.getElementById("menu");
+    var actions = ["sleep", "eat", "drink", "exercise", "read", "run", "pet"];
+    var pointer = 0;
 
-var buttons = document.getElementsByClassName("press");
-for(var i=0;i<buttons.length;++i){
-	buttons[i].index = i;
-	buttons[i].onclick = function(){
-		pressed(this.index-1);
-	};
-}
-window.onkeydown = function(e){
-	switch(e.keyCode){
-		case 37: pressed(-1);
-		break;
-		case 39: pressed(1);
-		break;
-		case 13:
-		case 32:
-		pressed(0);
-	}
-};
-
-function pressed(n){
-	if(n){
-		pointer += n;
-		if(pointer < 0) pointer = actions.length-1;
-		else if(actions.length-1 < pointer) pointer = 0;
-	}
-	else{
-		if(tama.sleepin) tama.sleep();
-		else if(tama.state == "exercisin" || tama.state == "readin" || tama.state == "runnin") tama.stop();
-		else tama[actions[pointer]]();
-	}
-}
-
-var raf = 	window.requestAnimationFrame ||
-			window.mozRequestAnimationFrame ||
-			window.webkitRequestAnimationFrame;
-
-var can = document.getElementById("can");
-var ctx = can.getContext("2d");
-
-function draw(){
-	raf(draw);
-	ctx.clearRect(0, 0, can.width, can.height);
-	if(pixels) tama.render(ctx);
-	if(sec < Date.now() - timer){
-		tama.update();
-		timer = Date.now();
-	}
-	var act = "";
-	switch(tama.state){
-		case "sleepin" : act = "wake up";
-		break;
-		case "exercisin" :
-		case "readin" :
-		case "runnin": act = "stop";
-		break;
-		default : act = actions[pointer];
-	}
-	menu.innerHTML = act;
-}
-draw();
-
-function Tama(save){
-	this.bornAt = save.bornAt || Date.now()+10000;
-	this.lastVisited = save.lastVisited || this.bornAt;
-	
-	this.age = save.age || 0;
-	this.hunger = save.hunger || 0;
-	this.thirt = save.thirt || 0;
-	this.tiredness = save.tiredness || -1;
-    this.love = save.love || 0;
-	this.sleepin = save.sleepin || false;
-	
-	this.state = save.state || Tama.egg;
-	this.return = save.return || false;
-	this.anim = 0;
-	
-	this.stats = save.stats || {
-		strength : 0,
-		magic : 0,
-		quickness : 0
-	};
-	this.happy = save.happy || 0;
-	
-	this.update = function(){
-		var now = Date.now();
-		this.age = (now - this.bornAt)/day;
-		if(0 < this.age){
-			var timeSince = now - this.lastVisited;
-			this.hunger += timeSince/min;
-			this.thirt += timeSince/min*2;
-			
-			this.tiredness += timeSince/min*(-2.5*this.sleepin+1);
-			if(this.tiredness < 0){
-				this.tiredness = 0;
-				this.state = Tama.waitin;
-				this.sleepin = false;
-				this.return = false;
-			}
-			else if(100 < this.tiredness && !this.sleepin){
-				if(this.state == "waitin") this.state = "exhausted";
-				else this.return = "exhausted";
-			}
-			
-			this.lastVisited = now;
-		}
-		else{
-			this.state = Tama.egg;
-		}
-		
-		localStorage.tama = JSON.stringify(tama);
-	};
-	
-	this.sleep = function(){
-		if(this.sleepin){
-			this.anim = 0;
-			this.sleepin = false;
-			this.return = false;
-			this.state = Tame.waitin;
-		}
-		else{
-			if(50 < this.tiredness){
-				this.anim = 0;
-				this.sleepin = true;
-				this.return = false;
-				this.state = Tama.sleepin;
-			}
-			else this.nod();
-		}
-	};
-	this.eat = function(){
-		if(60 < this.hunger){
-			this.anim = 0;
-			this.hunger -= 60;
-			this.return = this.state;
-			this.state = Tama.eatin;
-		}
-		else this.nod();
-	};
-	this.drink = function(){
-		if(30 < this.thirt){
-			this.anim = 0;
-			this.thirt -= 30;
-			this.return = this.state;
-			this.state = Tama.drinkin;
-		}
-		else this.nod();
-	};
-	this.exercise = function(){
-		if(this.state == Tama.exhausted)
-			this.state = Tama.noddin;
-		else{
-			this.return = false;
-			this.state = Tama.exercisin;
-		}
-	};
-	this.read = function(){
-		if(this.state == Tama.exhausted)
-			this.state = Tama.noddin;
-		else{
-			this.return = false;
-			this.state = Tama.readin;
-		}
-	};
-	this.stop = function(){
-		this.anim = 0;
-		this.return = false;
-		this.state = Tame.waitin;
-	}
-	this.pet = function(){
-		if(this.state == Tama.waitin && this.state != Tama.exhausted){
-            this.return = Tama.waitin;
-            this.state = Tama.pettin;
-            this.love++;
+    var buttons = document.getElementsByClassName("press");
+    for (var i = 0; i < buttons.length; ++i) {
+        buttons[i].index = i;
+        buttons[i].onclick = function() {
+            pressed(this.index - 1);
+        };
+    }
+    window.onkeydown = function(e) {
+        switch (e.keyCode) {
+            case 37:
+                pressed(-1);
+                break;
+            case 39:
+                pressed(1);
+                break;
+            case 13:
+            case 32:
+                pressed(0);
         }
-	};
-	
-	this.nod = function(){
-		if(this.state != Tama.noddin && 0 < this.age){
-			this.return = this.state;
-			this.state = Tama.noddin;
-		}
-		this.anim = 0;
-	};
-	
-	this.render = function(ctx){
-		ctx.fillStyle = "#004400";
-		for(var j=0;j<pixels[this.state][this.anim<<0].length;++j){
-			for(var i=0;i<pixels[this.state][this.anim<<0][j].length;++i){
-				if(pixels[this.state][this.anim<<0][j][i]) ctx.fillRect(i, j, 1, 1);
-			}
-		}
-		this.anim += 0.015*pixels[this.state].length/(this.tiredness/100+1);
-		if(pixels[this.state].length < this.anim){
-			this.anim = 0;
-			if(this.return){
-				this.state = this.return;
-				this.return = false;
-			}
-		}
-	};
-	
-	this.save = function(){
-		localStorage.tama = JSON.stringify(this);
-	};
-}
-Tama.egg = "egg";
-Tama.waitin = "wait";
-Tama.sleepin = "slp";
-Tama.eatin = "eat";
-Tama.drinkin = "drk";
-Tama.noddin = "nod";
-Tama.exhausted = "exst";
-Tama.exercisin = "excs";
-Tama.pettin = "pet";
-Tama.readin = "read";
+    };
+
+    function pressed(n) {
+        if (n) {
+            pointer += n;
+            if (pointer < 0)
+                pointer = actions.length - 1;
+            else if (actions.length - 1 < pointer)
+                pointer = 0;
+        }
+        else {
+            if (tama.sleepin)
+                tama.sleep();
+            else if (tama.state == "exercisin" || tama.state == "readin" || tama.state == "runnin")
+                tama.stop();
+            else
+                tama[actions[pointer]]();
+        }
+    }
+
+    var raf = window.requestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame;
+
+    var can = document.getElementById("can");
+    var ctx = can.getContext("2d");
+
+    function draw() {
+        raf(draw);
+        ctx.clearRect(0, 0, can.width, can.height);
+        if (pixels)
+            tama.render(ctx);
+        if (sec < Date.now() - timer) {
+            tama.update();
+            timer = Date.now();
+        }
+        var act = "";
+        switch (tama.state) {
+            case "sleepin" :
+                act = "wake up";
+                break;
+            case "exercisin" :
+            case "readin" :
+            case "runnin":
+                act = "stop";
+                break;
+            default :
+                act = actions[pointer];
+        }
+        menu.innerHTML = act;
+    }
+    draw();
+
+    function Tama(save) {
+        this.bornAt = save.bornAt || Date.now() + 10000;
+        this.lastVisited = save.lastVisited || this.bornAt;
+
+        this.age = save.age || 0;
+        this.hunger = save.hunger || 0;
+        this.thirt = save.thirt || 0;
+        this.tiredness = save.tiredness || -1;
+        this.love = save.love || 0;
+        this.sleepin = save.sleepin || false;
+
+        this.state = save.state || Tama.egg;
+        this.return = save.return || false;
+        this.anim = 0;
+
+        this.stats = save.stats || {
+            strength: 0,
+            magic: 0,
+            quickness: 0
+        };
+        this.happy = save.happy || 0;
+
+        this.update = function() {
+            var now = Date.now();
+            this.age = (now - this.bornAt) / day;
+            if (0 < this.age) {
+                var timeSince = now - this.lastVisited;
+                this.hunger += timeSince / min;
+                this.thirt += timeSince / min * 2;
+
+                this.tiredness += timeSince / min * (-2.5 * this.sleepin + 1);
+                if (this.tiredness < 0) {
+                    this.tiredness = 0;
+                    this.state = Tama.waitin;
+                    this.sleepin = false;
+                    this.return = false;
+                }
+                else if (100 < this.tiredness && !this.sleepin) {
+                    if (this.state == "waitin")
+                        this.state = "exhausted";
+                    else
+                        this.return = "exhausted";
+                }
+
+                this.lastVisited = now;
+            }
+            else {
+                this.state = Tama.egg;
+            }
+
+            localStorage.tama = JSON.stringify(tama);
+        };
+
+        this.sleep = function() {
+            if (this.sleepin) {
+                this.anim = 0;
+                this.sleepin = false;
+                this.return = false;
+                this.state = Tame.waitin;
+            }
+            else {
+                if (50 < this.tiredness) {
+                    this.anim = 0;
+                    this.sleepin = true;
+                    this.return = false;
+                    this.state = Tama.sleepin;
+                }
+                else
+                    this.nod();
+            }
+        };
+        this.eat = function() {
+            if (60 < this.hunger) {
+                this.anim = 0;
+                this.hunger -= 60;
+                this.return = this.state;
+                this.state = Tama.eatin;
+            }
+            else
+                this.nod();
+        };
+        this.drink = function() {
+            if (30 < this.thirt) {
+                this.anim = 0;
+                this.thirt -= 30;
+                this.return = this.state;
+                this.state = Tama.drinkin;
+            }
+            else
+                this.nod();
+        };
+        this.exercise = function() {
+            if (this.state == Tama.exhausted)
+                this.state = Tama.noddin;
+            else {
+                this.return = false;
+                this.state = Tama.exercisin;
+            }
+        };
+        this.read = function() {
+            if (this.state == Tama.exhausted)
+                this.state = Tama.noddin;
+            else {
+                this.return = false;
+                this.state = Tama.readin;
+            }
+        };
+        this.stop = function() {
+            this.anim = 0;
+            this.return = false;
+            this.state = Tame.waitin;
+        }
+        this.pet = function() {
+            if (this.state == Tama.waitin && this.state != Tama.exhausted) {
+                this.return = Tama.waitin;
+                this.state = Tama.pettin;
+                this.love++;
+            }
+        };
+
+        this.nod = function() {
+            if (this.state != Tama.noddin && 0 < this.age) {
+                this.return = this.state;
+                this.state = Tama.noddin;
+            }
+            this.anim = 0;
+        };
+
+        this.render = function(ctx) {
+            ctx.fillStyle = "#004400";
+            for (var j = 0; j < pixels[this.state][this.anim << 0].length; ++j) {
+                for (var i = 0; i < pixels[this.state][this.anim << 0][j].length; ++i) {
+                    if (pixels[this.state][this.anim << 0][j][i])
+                        ctx.fillRect(i, j, 1, 1);
+                }
+            }
+            this.anim += 0.015 * pixels[this.state].length / (this.tiredness / 100 + 1);
+            if (pixels[this.state].length < this.anim) {
+                this.anim = 0;
+                if (this.return) {
+                    this.state = this.return;
+                    this.return = false;
+                }
+            }
+        };
+
+        this.save = function() {
+            localStorage.tama = JSON.stringify(this);
+        };
+    }
+    Tama.egg = "egg";
+    Tama.waitin = "wait";
+    Tama.sleepin = "slp";
+    Tama.eatin = "eat";
+    Tama.drinkin = "drk";
+    Tama.noddin = "nod";
+    Tama.exhausted = "exst";
+    Tama.exercisin = "excs";
+    Tama.pettin = "pet";
+    Tama.readin = "read";
 </script>

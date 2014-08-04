@@ -10,7 +10,8 @@ var sqrt = Math.sqrt,
 CanvasRenderingContext2D.prototype.splineThrought = function(dots, tension, closed){
     tension = tension || 0.5;
     closed = closed || false;
-    if(dots.length > 4){
+    
+    if(dots.length >= 6){
         this.save();
         var cp = [],   // array of control points, as x0,y0,x1,y1,...
             n = dots.length;
@@ -24,39 +25,30 @@ CanvasRenderingContext2D.prototype.splineThrought = function(dots, tension, clos
                 cp=cp.concat(getControlPoints(dots[i],dots[i+1],dots[i+2],dots[i+3],dots[i+4],dots[i+5],tension));
             }
             cp=cp.concat(cp[0],cp[1]);   
-            for(var i=2;i<n+2;i+=2){      
-//                this.beginPath();
+            for(var i=2;i<n+2;i+=2){
                 this.moveTo(dots[i],dots[i+1]);
                 this.bezierCurveTo(cp[2*i-2],cp[2*i-1],cp[2*i],cp[2*i+1],dots[i+2],dots[i+3]);
-//                this.stroke();
-//                this.closePath();
             }
-        }else{  
+        }else{
             // Draw an open curve, not connected at the ends
             for(var i=0;i<n-4;i+=2){
                 cp=cp.concat(getControlPoints(dots[i],dots[i+1],dots[i+2],dots[i+3],dots[i+4],dots[i+5],tension));
-            }    
-            for(var i=2;i<dots.length-5;i+=2){  
-//                this.beginPath();
+            }
+            for(var i=2;i<dots.length-5;i+=2){
                 this.moveTo(dots[i],dots[i+1]);
                 this.bezierCurveTo(cp[2*i-2],cp[2*i-1],cp[2*i],cp[2*i+1],dots[i+2],dots[i+3]);
-//                this.stroke();
-//                this.closePath();
             }
             //  For open curves the first and last arcs are simple quadratics.
-//            this.beginPath();
             this.moveTo(dots[0],dots[1]);
             this.quadraticCurveTo(cp[0],cp[1],dots[2],dots[3]);
-//            this.stroke();
-//            this.closePath();
-
-//            this.beginPath();
             this.moveTo(dots[n-2],dots[n-1]);
             this.quadraticCurveTo(cp[2*n-10],cp[2*n-9],dots[n-4],dots[n-3]);
-//            this.stroke();
-//            this.closePath();
         }
         this.restore();
+    }
+    else if(dots.length >= 4){
+        this.moveTo(dots[0], dots[1]);
+        this.lineTo(dots[2], dots[3]);
     }
 };
 function getControlPoints(x0,y0,x1,y1,x2,y2,t){
