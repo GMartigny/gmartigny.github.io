@@ -1,305 +1,89 @@
-<style>
-body{
-	background : url(back.gif);
-	margin : 0;
-}
-@font-face{
-	src : url(olivier.ttf);
-	font-family : perso;
-}
-#menu{
-	position : relative;
-	width : 80%;
-	margin : 50px auto 50px;
-	font-family : perso;
-	color : white;
-}
-#logo{
-	position : absolute;
-	width : 120px;
-	height : 88px;
-	padding-top : 10px;
-	top : -10px;
-	left : 23px;
-	background : #666;
-	border : dotted #FFF; border-width : 3px 3px 0 3px;
-	box-shadow : 0 0 0 5px #666;
-	transition : all linear .2s;
-	text-align : center;
-	font-size : 53px;
-}
-#logo:hover{
-	left : 28px;
-}
-#logo:before{
-	content : "";
-	position : absolute;
-	width : 25px;
-	height : 20px;
-	background : #333;
-	top : -7px;
-	right : -8px;
-	transform : skewX(40deg);
-	-webkit-transform : skewX(50deg);
-    transform-origin: 100% 0;
-    -webkit-transform-origin: 100% 0;
-	z-index : -1;
-	transition : all linear .2s;
-}
-#logo:hover:before{
-	transform : skewX(34deg);
-	-webkit-transform : skewX(40deg);
-}
-#logo:after{
-	content : "";
-	position : absolute;
-	width : 85px;
-	height : 85px;
-	left : 16px;
-	bottom : -49px;
-	transform : rotate(45deg);
-	-webkit-transform : rotate(45deg);
-	background : #666;
-	border : dotted #FFF; border-width : 0 3px 3px 0;
-	box-shadow : 0 0 0 4px #666;
-	z-index : -1;
-}
-#menu ul{
-	background : #555;
-	list-style : none;
-	margin : 0;
-	padding : 0;
-}
-#menu > ul{
-	padding : 0 0 0 170px;
-	border-radius : 5px;
-}
-#menu > ul > li{
-	position: relative;
-	display : inline-block;
-	padding : 25px 30px 20px;
-	font-size : 20px;
-	transition : all linear .2s;
-	cursor: default;
-}
-#menu > ul > li:hover{
-	background : red;
-	padding : 25px 35px 20px;
-}
-#menu > ul > li:hover ul{
-	opacity : 1;
-	top : 100%;
-	z-index : 0;
-}
-#menu ul ul:hover{
-	opacity : 1;
-	top : 100%;
-	z-index : 0;
-}
-
-#menu ul ul{
-	position : absolute;
-	font-size : 17px;
-	top : 20%;
-	margin-left : -35px;
-	opacity : 0;
-	overflow : hidden;
-	border-radius : 0 0 5px 5px;
-	z-index : -1;
-	transition: all ease-out .2s .1s;
-}
-#menu ul ul li{
-	position : relative;
-	padding : 10px 20px;
-	transition : all ease-out .2s;
-	min-width : 80px;
-	cursor: pointer;
-}
-#menu ul ul li:hover{
-	background : red;
-	padding : 15px 20px;
-}
-
-#main{
-	position : relative;
-	width : 65%;
-	margin : 0 auto;
-	color : #333;
-	z-index : -10;
-}
-section{
-	background : #FFF;
-	border : 3px solid #555;
-	border-radius : 5px;
-	padding : 10px 20px;
-	margin : 15px 0;
-}
-section p:first-of-type:first-letter{
-	float : left;
-	font-weight : bold;
-	font-size : 2.5em;
-	margin : 0 8px;
-	padding : 5px;
-	border : 1px solid #555;
-	text-shadow : 1px 1px 0 #888;
-}
-
-@media (max-width:850px){
-	#menu{
-		position : fixed;
-		left : 15px;
-		top: 10px;
-		width : auto;
-		margin: 0;
-	}
-	#logo{
-		top : 15px;
-		left : -8px;
-		width : auto;
-		height : 85px;
-		padding : 35px 0 0 20px;
-		border-width : 3px 0 3px 3px;
-        white-space: nowrap;
-	}
-	#logo:hover{
-		left : -8px;
-		top : 18px;
-	}
-	#logo:hover:before{
-		transform : skewY(28deg);
-		-webkit-transform : skewY(28deg);
-		right : auto;
-		top : 110px;
-	}
-	#logo:before{
-		width : 20px;
-		height : 25px;
-		top : 112px;
-		left : -8px;
-		transform : skewY(40deg);
-		-webkit-transform : skewY(40deg);
-	}
-	#logo:after{
-		top : 16px;
-		left : auto;
-		right : -49px;
-		border-width : 3px 3px 0 0;
-	}
-	#menu > ul{
-		padding : 160px 0 0;
-	}
-	#menu > ul > li{
-		display : list-item;
-		padding: 25px 15px 20px;
-	}
-	#menu > ul > li:last-child{
-		border-radius : 0 0 5px 5px;
-	}
-	#menu > ul > li:hover{
-		background : red;
-		padding : 30px 15px 25px;
-		margin-top : -5px;
-	}
-	
-	#menu > ul > li:hover ul{
-		opacity : 1;
-		width : auto;
-		top : 0;
-		left : 100%;
-	}
-	#menu ul ul{
-		left : 40%;
-		top : -5px;
-		width : 0;
-		height : auto;
-		margin : 0;
-		border-radius : 0 5px 5px 0;
-	}
-	#menu ul ul li{
-		padding : 10px 20px;
-		min-width : 80px;
-	}
-	#menu ul ul li:hover{
-		padding : 15px 20px;
-	}
-	
-	#main{
-		width : auto;
-		margin : 0 0 0 205px;
-	}
-}
-</style>
-<header id="menu">
-	<div id="logo">CSS 3</div>
-	<ul>
-		<li>
-		Home
-		</li><li>
-		Infos
-			<ul>
-				<li>Knowledge</li>
-				<li>Training</li>
-				<li>Creations</li>
-				<li>Customers</li>
-			</ul>
-		</li><li>
-		About us
-			<ul>
-				<li>History</li>
-				<li>Our teams</li>
-			</ul>
-		</li><li>
-		Contacting
-			<ul>
-				<li>Where you can find us ?</li>
-				<li>Mail</li>
-				<li>Opportunities</li>
-			</ul>
-		</li>
-	</ul>
-</header>
-<div id="main">
-	<section>
-		<h2>Look mum, I'm responsive</h2>
-		<p>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus condimentum neque,
-			eu consectetur mauris faucibus nec. Donec gravida, sem id fermentum egestas, tellus nulla egestas ipsum,
-			eu congue purus mauris sit amet sapien. Sed rhoncus mollis consequat. Curabitur semper diam ut tortor viverra
-			adipiscing. Vestibulum aliquam hendrerit bibendum. Suspendisse potenti. Cras orci ligula, eleifend in porttitor at, suscipit a arcu.
-		</p>
-		<p>
-			Aliquam vitae quam ac diam varius malesuada. Phasellus metus erat, hendrerit eget tempor ac, egestas
-			fringilla nisi. Ut vel est sit amet arcu congue volutpat in a leo. Nam dictum vehicula odio, vitae gravida
-			uam luctus vitae. Fusce auctor sagittis varius. Maecenas quis ante tortor, sollicitudin dapibus neque.
-			Pellentesque ut elit sem, vitae congue felis. Vivamus sit amet lacus sapien. Ut vel faucibus nisl. Nam
-			risus neque, auctor vitae fringilla et, facilisis ac ipsum. Aliquam malesuada quam eget lectus blandit posuere.
-			Praesent viverra lectus at augue viverra vehicula. Phasellus in lorem massa. 
-		</p>
-	</section>
-	<section>
-		<h2>Css-only drop-down</h2>
-		<p>
-			Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer laoreet nisl in sem sagittis,
-            sit amet iaculis felis fermentum. Quisque sagittis velit vel lacus semper, vel aliquet sem tristique. Nam vel fringilla nulla. Ut
-            varius tellus et dapibus egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin
-            imperdiet erat ut sem viverra feugiat. Nunc sit amet nisl ac neque varius facilisis eget eu turpis. Aenean et sem sit amet urna sodales
-            fringilla. Donec nunc sem, viverra non sem vitae, vulputate ullamcorper orci. Phasellus nec ante vitae risus placerat elementum. Vivamus
-            risus lectus, convallis ac mollis id, lobortis vitae purus. Pellentesque commodo metus et odio dignissim, nec vestibulum eros malesuada.
-		</p>
-	</section>
-	<section>
-		<p>
-			Sed posuere est rhoncus, porta odio imperdiet, venenatis ligula. Nunc sit amet rhoncus augue, nec hendrerit risus. Nam eget laoreet lectus,
-            vitae tincidunt nisl. Quisque erat mauris, viverra quis turpis quis, lacinia varius purus. Fusce posuere quam nec velit sagittis mollis.
-            In sit amet eros a neque ornare consectetur non nec enim. Pellentesque fringilla molestie metus, nec lobortis felis tempor in. Aenean
-            fringilla interdum ligula, fringilla dignissim dolor dictum quis.
-		</p>
-		<p>
-			Mauris ut sagittis risus, eu blandit sem. Nulla eget feugiat risus. Phasellus lacinia nisl eu justo auctor ultrices. Praesent auctor
-            volutpat lacus, a vestibulum augue placerat et. Proin mattis tristique est. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Vivamus ullamcorper erat nec risus pulvinar, at blandit lorem tincidunt. Nulla a pulvinar quam. Duis nisl libero, convallis non eros vitae,
-            iaculis placerat tortor. Ut volutpat tellus quis libero dapibus euismod. Integer congue justo at nisi gravida dignissim. Nunc vitae lobortis
-            nunc.
-		</p>
-	</section>
-</div>
+<html>
+    <head>
+        <title>Responsible Full CSS Dropdown Menu</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="respon.css"/>
+    </head>
+    <body>
+        <header id="menu">
+            <div id="logo">CSS 3</div>
+            <ul>
+                <li>
+                    Home
+                </li><li>
+                    Infos
+                    <ul>
+                        <li>Knowledge</li>
+                        <li>Training</li>
+                        <li>Creations</li>
+                        <li>Customers</li>
+                    </ul>
+                </li><li>
+                    References
+                    <ul>
+                        <li>Customer reviews</li>
+                        <li>Other articles</li>
+                    </ul>
+                </li><li>
+                    About us
+                    <ul>
+                        <li>History</li>
+                        <li>Our teams</li>
+                    </ul>
+                </li><li>
+                    Contacting
+                    <ul>
+                        <li>Where you can find us ?</li>
+                        <li>Mail</li>
+                        <li>Opportunities</li>
+                    </ul>
+                </li>
+            </ul>
+        </header>
+        <div id="main">
+            <section>
+                <h2>Look mum, I'm responsive</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus condimentum neque,
+                    eu consectetur mauris faucibus nec. Donec gravida, sem id fermentum egestas, tellus nulla egestas ipsum,
+                    eu congue purus mauris sit amet sapien. Sed rhoncus mollis consequat. Curabitur semper diam ut tortor viverra
+                    adipiscing. Vestibulum aliquam hendrerit bibendum. Suspendisse potenti. Cras orci ligula, eleifend in porttitor at, suscipit a arcu.
+                </p>
+                <p>
+                    Aliquam vitae quam ac diam varius malesuada. Phasellus metus erat, hendrerit eget tempor ac, egestas
+                    fringilla nisi. Ut vel est sit amet arcu congue volutpat in a leo. Nam dictum vehicula odio, vitae gravida
+                    uam luctus vitae. Fusce auctor sagittis varius. Maecenas quis ante tortor, sollicitudin dapibus neque.
+                    Pellentesque ut elit sem, vitae congue felis. Vivamus sit amet lacus sapien. Ut vel faucibus nisl. Nam
+                    risus neque, auctor vitae fringilla et, facilisis ac ipsum. Aliquam malesuada quam eget lectus blandit posuere.
+                    Praesent viverra lectus at augue viverra vehicula. Phasellus in lorem massa. 
+                </p>
+            </section>
+            <section>
+                <h2>Css-only drop-down</h2>
+                <p>
+                    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer laoreet nisl in sem sagittis,
+                    sit amet iaculis felis fermentum. Quisque sagittis velit vel lacus semper, vel aliquet sem tristique. Nam vel fringilla nulla. Ut
+                    varius tellus et dapibus egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin
+                    imperdiet erat ut sem viverra feugiat. Nunc sit amet nisl ac neque varius facilisis eget eu turpis. Aenean et sem sit amet urna sodales
+                    fringilla. Donec nunc sem, viverra non sem vitae, vulputate ullamcorper orci. Phasellus nec ante vitae risus placerat elementum. Vivamus
+                    risus lectus, convallis ac mollis id, lobortis vitae purus. Pellentesque commodo metus et odio dignissim, nec vestibulum eros malesuada.
+                </p>
+            </section>
+            <section>
+                <p>
+                    Sed posuere est rhoncus, porta odio imperdiet, venenatis ligula. Nunc sit amet rhoncus augue, nec hendrerit risus. Nam eget laoreet lectus,
+                    vitae tincidunt nisl. Quisque erat mauris, viverra quis turpis quis, lacinia varius purus. Fusce posuere quam nec velit sagittis mollis.
+                    In sit amet eros a neque ornare consectetur non nec enim. Pellentesque fringilla molestie metus, nec lobortis felis tempor in. Aenean
+                    fringilla interdum ligula, fringilla dignissim dolor dictum quis.
+                </p>
+                <p>
+                    Mauris ut sagittis risus, eu blandit sem. Nulla eget feugiat risus. Phasellus lacinia nisl eu justo auctor ultrices. Praesent auctor
+                    volutpat lacus, a vestibulum augue placerat et. Proin mattis tristique est. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Vivamus ullamcorper erat nec risus pulvinar, at blandit lorem tincidunt. Nulla a pulvinar quam. Duis nisl libero, convallis non eros vitae,
+                    iaculis placerat tortor. Ut volutpat tellus quis libero dapibus euismod. Integer congue justo at nisi gravida dignissim. Nunc vitae lobortis
+                    nunc.
+                </p>
+            </section>
+        </div>
+    </body>
+</html>
