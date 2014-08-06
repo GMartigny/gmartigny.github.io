@@ -48,8 +48,8 @@ Touch._lastTap_ = {
     t: 0
 };
 
-Touch.swipeMinDistance = 80;
-Touch.swipeMaxTime = 250;
+Touch.swipeMinDistance = 60;
+Touch.swipeMaxTime = 300;
 
 Touch.tapMaxDistance = 10;
 Touch.dblTapMaxDuration = 250;
@@ -94,7 +94,7 @@ document.addEventListener("touchstart", function(ev){
         }, Touch.holdTapDuration);
     });
     
-    ev.preventDefault();
+//    ev.preventDefault();
 }, 0);
 document.addEventListener("touchmove", function(ev){
     var now = Date.now();
@@ -115,7 +115,6 @@ document.addEventListener("touchmove", function(ev){
                 touch.target.dispatchEvent(cev);
             }
             
-
             if(now - touch.regTime < Touch.swipeMaxTime){
                 touch.direction = 0;
                 if(touch.pageX < touch.regX - Touch.swipeMinDistance) touch.direction = Touch.LEFT;
