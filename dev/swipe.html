@@ -9,6 +9,7 @@
                 margin: 0;
                 height: 100%;
                 font-family: arial;
+                overflow-x: hidden;
             }
             *{
                 box-sizing: border-box;
@@ -103,8 +104,14 @@
                 left: 100px;
                 width: 150px;
                 height: 150px;
-                background: #CF2983;
                 box-shadow: 2px 2px 5px #333;
+                transition: box-shadow linear .1s, transform linear .2s;
+            }
+            #content.drag{
+                box-shadow: 4px 4px 5px #333;
+            }
+            #content.big{
+                transform: scale(1.5);
             }
         </style>
     </head>
@@ -120,7 +127,7 @@
             </ul>
             <div class="handle"></div>
         </div>
-        <div id="content"></div>
+        <div id="content" style="background-color: #CF2983;"></div>
         <script src="../res/js/canTouchThis.js"></script>
         <script>
             var menuHandle = document.getElementById("menu").getElementsByClassName("handle")[0],
@@ -151,13 +158,10 @@
                 p.style.height = "";
             });
             
-            // turn switchs on/off (tap and holdtap)
+            // turn switchs on/off (tap)
             for(var i=0;i<switchs.length;++i){
                 switchs[i].addEventListener("tap", function(){
                     this.classList.toggle("on");
-                });
-                switchs[i].addEventListener("holdtap", function(e){
-                    console.log("options");
                 });
             }
             // scroll switchs (bubbling)
@@ -183,6 +187,7 @@
                 x:0, y:0
             };
             content.addEventListener("grab", function(){
+                this.classList.add("drag");
                 startContent.x = this.offsetLeft;
                 startContent.y = this.offsetTop;
             });
@@ -197,6 +202,23 @@
                 
                 this.style.left = x+"px";
                 this.style.top = y+"px";
+            });
+            content.addEventListener("drop", function(){
+                this.classList.remove("drag");
+            });
+            content.addEventListener("dbltap", function(){
+                this.classList.toggle("big");
+            });
+            // change color on hold (prevent bubbling)
+            var colors = ["#29CF7C", "#CF9229", "#5329CF", "#29BBCF"];
+            content.addEventListener("holdtap", function(e){
+                e.stopPropagation();
+                var tmp = this.style.backgroundColor;
+                this.style.backgroundColor = colors.splice(Math.floor(Math.random()*colors.length), 1);
+                colors.push(tmp);
+            });
+            document.addEventListener("holdtap", function(){
+                alert("No way you could see that");
             });
         </script>
     </body>
