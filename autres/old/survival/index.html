@@ -1,322 +1,337 @@
-<canvas width="800" height="600" id="can">
-</canvas>
-<div id="gui">
-	<img src="head.gif" alt=""/><img src="hp.gif" alt="hp :"/><span id="hp">100</span>
-	<img src="wave.gif" alt="vague :"/><span id="wave">0/10</span>
-	<span id="fps"></span>
-</div>
-<div id="cache"></div>
-<div id="bulle"></div>
+<html>
+    <head>
+        <title>Robot survival</title>
+        <style>
+            body, html{
+                margin : 0;
+            }
 
-<script>
-var canvas;
-var ctx;
+            canvas{
+                position : absolute;
+                top : 20px;
+                left : 20px;
+                border : 2px solid lightgrey;
+                -moz-border-radius : 5px 5px 0 0;
+                cursor : url(target.gif);
+                background-image : url(fond.png);
+                background-size : 100%;
+            }
 
-var paused = false;
+            #gui{
+                position : absolute;
+                left : 20px;
+                top : 620px;
+                background-color : lightblue;
+                width : 800px;
+                height : 30px;
+                border : 2px solid lightgrey;
+                -moz-border-radius : 0 0 5px 5px;
+                font-size : 12px;
+            }
+            #gui > *{
+                float : left;
+                margin-right : 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas width="800" height="600" id="can"></canvas>
+        <div id="gui">
+            <img src="head.gif" alt=""/><img src="hp.gif" alt="hp :"/><span id="hp">100</span>
+            <img src="wave.gif" alt="vague :"/><span id="wave">0/10</span>
+            <span id="fps"></span>
+        </div>
+        <div id="cache"></div>
+        <div id="bulle"></div>
 
-var botimg = new Image();
-var bulimg = new Image();
-var zomimg = new Image();
-var tarimg = new Image();
+        <script>
+            var canvas;
+            var ctx;
 
-var vj = 3;
-var vb = 15;
+            var paused = false;
 
-var fint;
-var mint;
-var zint;
+            var botimg = new Image();
+            var bulimg = new Image();
+            var zomimg = new Image();
+            var tarimg = new Image();
 
-var j;
-var bul = [];
-var relo = true;
-var mouse;
+            var vj = 3;
+            var vb = 15;
 
-var zom = [];
-var wave = 0;
-var maxspa = 10;
-var spa = 0;
+            var fint;
+            var mint;
+            var zint;
 
-window.onload = function(){
-	canvas = document.getElementById("can");
-	ctx = canvas.getContext("2d");
-	
-	ctx.mozImageSmoothingEnabled = false;
-	
-	botimg.src = "bot.gif";
-	botimg.onload = function(){
-		bulimg.src = "bul.gif";
-	};
-	
-	bulimg.onload = function(){
-		zomimg.src = "zom.gif";
-	};
-	
-	zomimg.onload = function(){
-		tarimg.src = "target.gif";
-	};
+            var j;
+            var bul = [];
+            var relo = true;
+            var mouse;
 
-	tarimg.onload = function(){
-		// tirer
-		window.onmousedown = function(){
-			if(relo){
-				fire();
-				fint = setInterval(fire, j.rel);
-			}
-		};
-		window.onmouseup = function(){
-			clearInterval(fint);
-		};
-		window.onkeyup = function(event){
-			if(event.keyCode == 32){
-				shield();
-			}
-		};
-		
-		mint = setInterval(draw, 50);
-		zint = setInterval(spawn, 700);
-	};
-	
-	mouse = {
-		x : 400,
-		y : 300
-	};
-	
-	j = {
-		x : 400,
-		y : 300,
-		ang : Math.PI/2,
-		hp : 100,
-		att : 10,
-		rel : 400,
-		ani : 0,
-		sc : 0};
-};
+            var zom = [];
+            var wave = 0;
+            var maxspa = 10;
+            var spa = 0;
 
-window.onmousemove = function(event){
-	mouse.x = event.clientX - 21;
-	mouse.y = event.clientY - 21;
-};
+            window.onload = function() {
+                canvas = document.getElementById("can");
+                ctx = canvas.getContext("2d");
 
+                ctx.mozImageSmoothingEnabled = false;
 
-function moveBot(){
-	var dx = mouse.x - j.x;
-	var dy = mouse.y - j.y;
-	
-	// déplacement au maximum à la vitesse max
-	if(dx < -5 || 5 < dx) j.x += Math.cos(j.ang) * vj;
-	if(dy < -5 || 5 < dy) j.y += Math.sin(j.ang) * vj;
-	
-	j.ani = (j.ani % 2) + (0.1 * vj);
-	
-	var dist = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-	
-	if(dist <= Math.sqrt(50)) j.ani = 0;
-	
-	// rotation
-	if(dist != 0 && dy != 0) j.ang = Math.acos(dx/dist) * dy/Math.abs(dy);
-	
-	// detection des bords
-	if(j.x < 16) j.x = 16;
-	else if(j.x > 800-16) j.x = 800-16;
-	
-	if(j.y < 16) j.y = 16;
-	else if(j.y > 600-16) j.y = 600-16;
-}
+                botimg.src = "bot.gif";
+                botimg.onload = function() {
+                    bulimg.src = "bul.gif";
+                };
 
-function fire(){
-	if(relo){
-		bul[bul.length] = {
-			x : j.x + Math.cos(j.ang + Math.PI/2) * 10,
-			y : j.y + Math.sin(j.ang + Math.PI/2) * 10,
-			ani : 0,
-			ang : j.ang,
-		};
-		relo = false;
-		setTimeout(reload, j.rel-40);
-	}
-}
+                bulimg.onload = function() {
+                    zomimg.src = "zom.gif";
+                };
 
-function reload(){
-	relo = true;
-}
+                zomimg.onload = function() {
+                    tarimg.src = "target.gif";
+                };
 
-function moveBul(){
-	for(var i=0;i<bul.length;i++){
-		bul[i].x += Math.cos(bul[i].ang) * vb;
-		bul[i].y += Math.sin(bul[i].ang) * vb;
-		
-		bul[i].ani = (bul[i].ani + 1) % 2;
-		
-		// sort du cadre
-		if(bul[i].x < -5 || bul[i].x > 805 || bul[i].y < -5 || bul[i].y > 605){
-			remove(bul, i);
-		}
-	}
-}
+                tarimg.onload = function() {
+                    // tirer
+                    window.onmousedown = function() {
+                        if (relo) {
+                            fire();
+                            fint = setInterval(fire, j.rel);
+                        }
+                    };
+                    window.onmouseup = function() {
+                        clearInterval(fint);
+                    };
+                    window.onkeyup = function(event) {
+                        if (event.keyCode == 32) {
+                            shield();
+                        }
+                    };
 
-function spawn(){
-	if(spa < maxspa){
-		// tirage de position de départ
-		var rx = Math.round(Math.random());
-		var ry = (!rx) ? Math.round(Math.random() * 600) : ((Math.round(Math.random())) ? -16 : 616);
-		rx = (rx) ? Math.round(Math.random() * 800) : ((Math.round(Math.random())) ? -16 : 816);
-		
-		zom[zom.length] = {
-			x : rx,
-			y : ry,
-			ani : 0,
-			ang : 0,
-			hp : 10*(wave+1),
-			att : 10
-		};
-		spa++;
-	}
-	else{
-		clearInterval(zint);
-	}
-}
+                    mint = setInterval(draw, 50);
+                    zint = setInterval(spawn, 700);
+                };
 
-function moveZom(){
-	for(var i=0;i<zom.length;i++){
-		var dx = j.x - zom[i].x;
-		var dy = j.y - zom[i].y;
-		
-		var dist = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-		if(dist > 1){
-			zom[i].x += Math.cos(zom[i].ang) * vj /2;
-			zom[i].y += Math.sin(zom[i].ang) * vj /2;
-		}
-		
-		zom[i].ani = (zom[i].ani % 3) + (0.1);
-		
-		if(dist != 0 && dy != 0) zom[i].ang = Math.acos(dx/dist) * dy/Math.abs(dy);
-		
-		// colision j zom
-		if(j.x-12 < zom[i].x+12 && zom[i].x-12 < j.x+12 && j.y-12 < zom[i].y+12 && zom[i].y-12 <j.y+12){
-			j.hp -= zom[i].att;
-			
-			// knockback
-			j.x += Math.cos(zom[i].ang) * 15;
-			j.y += Math.sin(zom[i].ang) * 15;
-		}
-		
-		// collision zom zom
-		for(var k=0;k<zom.length;k++){
-			if(zom[k].x-12 < zom[i].x+12 && zom[k].x-12 < zom[i].x+12 && zom[k].y-12 < zom[i].y+12 && zom[k].y-12 < zom[i].y+12){
-				
-			}
-		}
-		
-		// collision bul zom
-		for(var k=0;k<bul.length;k++){
-			if(zom[i].x-16 < bul[k].x && bul[k].x < zom[i].x+16 && zom[i].y-16 < bul[k].y && bul[k].y < zom[i].y+16){
-				// knockback
-				zom[i].x += Math.cos(bul[k].ang) * 15;
-				zom[i].y += Math.sin(bul[k].ang) * 15;
-				
-				remove(bul, k);
-				zom[i].hp -= j.att;
-				if(zom[i].hp <= 0){
-					remove(zom, i);
-					j.sc++;
-				}
-				
-				if(zom.length == 0){
-					// nouvelle vague
-					wave++;
-					vj += 0.2;
-					if(j.hp < 100) j.hp += 10;
-					j.rel /= 1.5;
-					spa = 0;
-					maxspa = 10 + wave * (5 + wave);
-					setTimeout(function(){
-						zint = setInterval(spawn, 700);
-					}, 2500);
-				}
-			}
-		}
-	}
-}
+                mouse = {
+                    x: 400,
+                    y: 300
+                };
 
-function remove(arr, id){
-	arr[id] = arr[arr.length-1];
-	arr.length--;
-}
+                j = {
+                    x: 400,
+                    y: 300,
+                    ang: Math.PI / 2,
+                    hp: 100,
+                    att: 10,
+                    rel: 400,
+                    ani: 0,
+                    sc: 0};
+            };
 
-var now = (new Date()).getTime();
-var sav = now;
+            window.onmousemove = function(event) {
+                mouse.x = event.clientX - 21;
+                mouse.y = event.clientY - 21;
+            };
 
-function draw(){
-	var now = (new Date()).getTime();
-	if(!paused){
-		moveBul();
-		moveZom();
-		moveBot();
-		
-		document.getElementById("hp").innerHTML = j.hp;
-		document.getElementById("wave").innerHTML = zom.length + "/" + maxspa;
-		
-		ctx.clearRect(0, 0, 800, 600);
-		
-		//ctx.drawImage(tarimg, mouse.x-5, mouse.y-5);
+            function moveBot() {
+                var dx = mouse.x - j.x;
+                var dy = mouse.y - j.y;
 
-		ctx.save();
-		rotation(j.x, j.y, j.ang);
-		ctx.drawImage(botimg, Math.round(j.ani)*16, 0, 16, 16, -16, -16, 32, 32);
-		ctx.restore();
-		
-		for(var i=0;i<bul.length;i++){
-			ctx.save();
-			rotation(bul[i].x, bul[i].y, bul[i].ang);
-			ctx.drawImage(bulimg, bul[i].ani*5, 0, 5, 5, -5, -5, 10, 10);
-			ctx.restore();
-		}
-		
-		for(var i=0;i<zom.length;i++){
-			ctx.save();
-			rotation(zom[i].x, zom[i].y, zom[i].ang);
-			ctx.drawImage(zomimg, Math.round(zom[i].ani)*16, 0, 16, 16, -16, -16, 32, 32);
-			ctx.restore();
-		}
-	}
-	document.getElementById("fps").innerHTML = "(" + Math.round(1000/(now - sav)) + "fps)";
-	sav = now;
-}
+                // dï¿½placement au maximum ï¿½ la vitesse max
+                if (dx < -5 || 5 < dx)
+                    j.x += Math.cos(j.ang) * vj;
+                if (dy < -5 || 5 < dy)
+                    j.y += Math.sin(j.ang) * vj;
 
-function rotation(x, y, ang){
-	ctx.translate(x, y);
-	ctx.rotate(ang);
-}
-</script>
-<style>
-body, html{
-	margin : 0;
-}
+                j.ani = (j.ani % 2) + (0.1 * vj);
 
-canvas{
-	position : absolute;
-	top : 20px;
-	left : 20px;
-	border : 2px solid lightgrey;
-	-moz-border-radius : 5px 5px 0 0;
-	cursor : url(target.gif);
-	background-image : url(fond.png);
-	background-size : 100%;
-}
+                var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-#gui{
-	position : absolute;
-	left : 20px;
-	top : 620px;
-	background-color : lightblue;
-	width : 800px;
-	height : 30px;
-	border : 2px solid lightgrey;
-	-moz-border-radius : 0 0 5px 5px;
-	font-size : 12px;
-}
-#gui > *{
-	float : left;
-	margin-right : 8px;
-}
-</style>
+                if (dist <= Math.sqrt(50))
+                    j.ani = 0;
+
+                // rotation
+                if (dist != 0 && dy != 0)
+                    j.ang = Math.acos(dx / dist) * dy / Math.abs(dy);
+
+                // detection des bords
+                if (j.x < 16)
+                    j.x = 16;
+                else if (j.x > 800 - 16)
+                    j.x = 800 - 16;
+
+                if (j.y < 16)
+                    j.y = 16;
+                else if (j.y > 600 - 16)
+                    j.y = 600 - 16;
+            }
+
+            function fire() {
+                if (relo) {
+                    bul[bul.length] = {
+                        x: j.x + Math.cos(j.ang + Math.PI / 2) * 10,
+                        y: j.y + Math.sin(j.ang + Math.PI / 2) * 10,
+                        ani: 0,
+                        ang: j.ang,
+                    };
+                    relo = false;
+                    setTimeout(reload, j.rel - 40);
+                }
+            }
+
+            function reload() {
+                relo = true;
+            }
+
+            function moveBul() {
+                for (var i = 0; i < bul.length; i++) {
+                    bul[i].x += Math.cos(bul[i].ang) * vb;
+                    bul[i].y += Math.sin(bul[i].ang) * vb;
+
+                    bul[i].ani = (bul[i].ani + 1) % 2;
+
+                    // sort du cadre
+                    if (bul[i].x < -5 || bul[i].x > 805 || bul[i].y < -5 || bul[i].y > 605) {
+                        remove(bul, i);
+                    }
+                }
+            }
+
+            function spawn() {
+                if (spa < maxspa) {
+                    // tirage de position de dï¿½part
+                    var rx = Math.round(Math.random());
+                    var ry = (!rx) ? Math.round(Math.random() * 600) : ((Math.round(Math.random())) ? -16 : 616);
+                    rx = (rx) ? Math.round(Math.random() * 800) : ((Math.round(Math.random())) ? -16 : 816);
+
+                    zom[zom.length] = {
+                        x: rx,
+                        y: ry,
+                        ani: 0,
+                        ang: 0,
+                        hp: 10 * (wave + 1),
+                        att: 10
+                    };
+                    spa++;
+                }
+                else {
+                    clearInterval(zint);
+                }
+            }
+
+            function moveZom() {
+                for (var i = 0; i < zom.length; i++) {
+                    var dx = j.x - zom[i].x;
+                    var dy = j.y - zom[i].y;
+
+                    var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+                    if (dist > 1) {
+                        zom[i].x += Math.cos(zom[i].ang) * vj / 2;
+                        zom[i].y += Math.sin(zom[i].ang) * vj / 2;
+                    }
+
+                    zom[i].ani = (zom[i].ani % 3) + (0.1);
+
+                    if (dist != 0 && dy != 0)
+                        zom[i].ang = Math.acos(dx / dist) * dy / Math.abs(dy);
+
+                    // colision j zom
+                    if (j.x - 12 < zom[i].x + 12 && zom[i].x - 12 < j.x + 12 && j.y - 12 < zom[i].y + 12 && zom[i].y - 12 < j.y + 12) {
+                        j.hp -= zom[i].att;
+
+                        // knockback
+                        j.x += Math.cos(zom[i].ang) * 15;
+                        j.y += Math.sin(zom[i].ang) * 15;
+                    }
+
+                    // collision zom zom
+                    for (var k = 0; k < zom.length; k++) {
+                        if (zom[k].x - 12 < zom[i].x + 12 && zom[k].x - 12 < zom[i].x + 12 && zom[k].y - 12 < zom[i].y + 12 && zom[k].y - 12 < zom[i].y + 12) {
+
+                        }
+                    }
+
+                    // collision bul zom
+                    for (var k = 0; k < bul.length; k++) {
+                        if (zom[i].x - 16 < bul[k].x && bul[k].x < zom[i].x + 16 && zom[i].y - 16 < bul[k].y && bul[k].y < zom[i].y + 16) {
+                            // knockback
+                            zom[i].x += Math.cos(bul[k].ang) * 15;
+                            zom[i].y += Math.sin(bul[k].ang) * 15;
+
+                            remove(bul, k);
+                            zom[i].hp -= j.att;
+                            if (zom[i].hp <= 0) {
+                                remove(zom, i);
+                                j.sc++;
+                            }
+
+                            if (zom.length == 0) {
+                                // nouvelle vague
+                                wave++;
+                                vj += 0.2;
+                                if (j.hp < 100)
+                                    j.hp += 10;
+                                j.rel /= 1.5;
+                                spa = 0;
+                                maxspa = 10 + wave * (5 + wave);
+                                setTimeout(function() {
+                                    zint = setInterval(spawn, 700);
+                                }, 2500);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function remove(arr, id) {
+                arr[id] = arr[arr.length - 1];
+                arr.length--;
+            }
+
+            var now = (new Date()).getTime();
+            var sav = now;
+
+            function draw() {
+                var now = (new Date()).getTime();
+                if (!paused) {
+                    moveBul();
+                    moveZom();
+                    moveBot();
+
+                    document.getElementById("hp").innerHTML = j.hp;
+                    document.getElementById("wave").innerHTML = zom.length + "/" + maxspa;
+
+                    ctx.clearRect(0, 0, 800, 600);
+
+                    //ctx.drawImage(tarimg, mouse.x-5, mouse.y-5);
+
+                    ctx.save();
+                    rotation(j.x, j.y, j.ang);
+                    ctx.drawImage(botimg, Math.round(j.ani) * 16, 0, 16, 16, -16, -16, 32, 32);
+                    ctx.restore();
+
+                    for (var i = 0; i < bul.length; i++) {
+                        ctx.save();
+                        rotation(bul[i].x, bul[i].y, bul[i].ang);
+                        ctx.drawImage(bulimg, bul[i].ani * 5, 0, 5, 5, -5, -5, 10, 10);
+                        ctx.restore();
+                    }
+
+                    for (var i = 0; i < zom.length; i++) {
+                        ctx.save();
+                        rotation(zom[i].x, zom[i].y, zom[i].ang);
+                        ctx.drawImage(zomimg, Math.round(zom[i].ani) * 16, 0, 16, 16, -16, -16, 32, 32);
+                        ctx.restore();
+                    }
+                }
+                document.getElementById("fps").innerHTML = "(" + Math.round(1000 / (now - sav)) + "fps)";
+                sav = now;
+            }
+
+            function rotation(x, y, ang) {
+                ctx.translate(x, y);
+                ctx.rotate(ang);
+            }
+        </script>
+    </body>
+</html>

@@ -1,91 +1,102 @@
 <!doctype html>
-<body>
-	<form action="#" id="input">
-		<input type="number" id="num" name="num" placeholder="Entre un nombre"/>
-		<input type="submit" value="convertir">
-	</form>
-	<div id="output"></div>
-    <script type="text/javascript">
-    var out = document.getElementById("output");
-    document.getElementById("input").onsubmit = function(){
+<html>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <form action="#" id="input">
+            <input type="number" id="num" name="num" placeholder="Entre un nombre"/>
+            <input type="submit" value="convertir">
+        </form>
+        <div id="output"></div>
+        <script type="text/javascript">
+            var out = document.getElementById("output");
+            document.getElementById("input").onsubmit = function() {
 
-        var lit = makeLiteral(trim(this.num.value));
-        var s = "";
-        for (var i=0;i<lit.length;++i){
-            s += lit[i] + " ";
-        }
-        s = s || zero;
-        out.innerHTML = s;
-        return false;
-    };
-
-
-    function makeLiteral(number){
-        var res = [],
-            n = pad(number);
-
-        for(var i=0;i<n.length;i+=3){
-            var cnt = handleCent([n[i], n[i+1], n[i+2]]),
-                x = (n.length-i)/3-1;
-            if(cnt.length != 1 || cnt[0] != unit[0] || x != 1) res = res.concat(cnt);
-            if(cnt.length && x > 0) res.push(more[x-1]);
-        }
-
-        return res;
-    }
-
-    function trim(s){
-        return s.replace(/^0+/g,'');
-    }
-
-    function pad(x){
-        var p = x+"";
-        for(var i=0;i<p.length%3;++i){
-            p = "0"+p;
-        }
-        return p;
-    }
-
-    function handleCent(n){
-        var res = [];
-        for(var i=0;i<n.length;++i){
-            if(n[i] != 0){
-                switch(i%3){
-                    case 2:
-                        res.push(unit[n[i]-1]);
-                        break;
-                    case 1:
-                        if(n[i] == 1 && n[i+1] < 7 && n[i+1] != 0){
-                            res.push(ten[n[i+1]-1]);
-                            ++i;
-                        }
-                        else if(n[i] == 7 || n[i] == 9){
-                            res.push(deci[n[i]-2]);
-                        }
-                        else res.push(deci[n[i]-1]);
-                        if(n[i+1] == 1 && n[i] < 8) res.push(and);
-                        if(n[i] == 7 || n[i] == 9) n[i--] = 1;
-                        break;
-                    case 0:
-                        if(n[i] > 1) res.push(unit[n[i]-1]);
-                        res.push(cent);
-                        break;
+                var lit = makeLiteral(trim(this.num.value));
+                var s = "";
+                for (var i = 0; i < lit.length; ++i) {
+                    s += lit[i] + " ";
                 }
-            }
-        }
-        return res;
-    }
+                s = s || zero;
+                out.innerHTML = s;
+                return false;
+            };
 
-    var unit = ["un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"],
-        deci = ["dix", "vingt", "trente", "quarante", "cinquante", "soixante", 0, "quatre-vingt"],
-        cent = "cent",
-        zero = "zéro",
-        and = "et",
-        more = ["mille", "million", "milliard", "billion", "billiard",
-                "trillon", "trilliard", "quadrillion", "quadrilliard", "quintillion", "quintilliard",
-                "sextillion", "sextilliard", "septillioin", "septilliard", "soctillion", "octilliard",
-                "nontillion", "nontilliard", "décillion", "decilliard"],
-        go = "gogol",
-        ten = ["onze", "douze", "treize", "quatorze", "quinze", "seize"];
-    </script>
-</body>
+            function makeLiteral(number) {
+                var res = [],
+                        n = pad(number);
+
+                for (var i = 0; i < n.length; i += 3) {
+                    var cnt = handleCent([n[i], n[i + 1], n[i + 2]]),
+                            x = (n.length - i) / 3 - 1;
+                    if (cnt.length != 1 || cnt[0] != unit[0] || x != 1)
+                        res = res.concat(cnt);
+                    if (cnt.length && x > 0)
+                        res.push(more[x - 1]);
+                }
+
+                return res;
+            }
+
+            function trim(s) {
+                return s.replace(/^0+/g, '');
+            }
+
+            function pad(x) {
+                var p = x + "";
+                for (var i = 0; i < p.length % 3; ++i) {
+                    p = "0" + p;
+                }
+                return p;
+            }
+
+            function handleCent(n) {
+                var res = [];
+                for (var i = 0; i < n.length; ++i) {
+                    if (n[i] != 0) {
+                        switch (i % 3) {
+                            case 2:
+                                res.push(unit[n[i] - 1]);
+                                break;
+                            case 1:
+                                if (n[i] == 1 && n[i + 1] < 7 && n[i + 1] != 0) {
+                                    res.push(ten[n[i + 1] - 1]);
+                                    ++i;
+                                }
+                                else if (n[i] == 7 || n[i] == 9) {
+                                    res.push(deci[n[i] - 2]);
+                                }
+                                else
+                                    res.push(deci[n[i] - 1]);
+                                if (n[i + 1] == 1 && n[i] < 8)
+                                    res.push(and);
+                                if (n[i] == 7 || n[i] == 9)
+                                    n[i--] = 1;
+                                break;
+                            case 0:
+                                if (n[i] > 1)
+                                    res.push(unit[n[i] - 1]);
+                                res.push(cent);
+                                break;
+                        }
+                    }
+                }
+                return res;
+            }
+
+            var unit = ["un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"],
+                deci = ["dix", "vingt", "trente", "quarante", "cinquante", "soixante", 0, "quatre-vingt"],
+                cent = "cent",
+                zero = "zéro",
+                and = "et",
+                more = ["mille", "million", "milliard", "billion", "billiard",
+                    "trillon", "trilliard", "quadrillion", "quadrilliard", "quintillion", "quintilliard",
+                    "sextillion", "sextilliard", "septillioin", "septilliard", "soctillion", "octilliard",
+                    "nontillion", "nontilliard", "décillion", "decilliard"],
+                go = "gogol",
+                ten = ["onze", "douze", "treize", "quatorze", "quinze", "seize"];
+        </script>
+    </body>
+
+</html>

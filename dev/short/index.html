@@ -1,4 +1,5 @@
 <head>
+    <title>URL Shortener</title>
 	<style type="text/css">
 		#longurl{
 			opacity: 0;
@@ -36,7 +37,7 @@
 
 		qr.onload = function(){
 			output.style.opacity = "1";
-		}
+		};
 
 		form.onsubmit = function(ev){
 			ev.preventDefault();
@@ -71,5 +72,5 @@
 	<form id="longurl" style="">
 		<label for="url">Url :</label><input type="url" name="url" id="url" required/>
 	</form>
-	<div id="shorturl"><span id="out"></span><img id="qr"/></div>
+    <div id="shorturl"><span id="out"></span><img id="qr" alt="" src=""/></div>
 </body>

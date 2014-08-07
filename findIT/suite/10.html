@@ -1,118 +1,121 @@
-<body>
-<div id="bloc">
-	<div id="jeu">
-		<div></div><div></div>
-		<div></div><div></div><div></div>
-		<div></div><div></div><div></div>
-	</div>
-	<div id="res">
-	</div>
-	<div id="fin" style="visibility:hidden;opacity:0;" onclick="location.href='11.html'">
-	</div>
-</div>
+<html>
+    <head>
+        <title>Level 10</title>
+        <style>
+            #fin{
+                position : relative;
+                height : 201px;
+                width : 201px;
+                margin : -447px auto;
+                background : center center no-repeat url(it.png) lightgrey;
+                transition : all 0.8s linear 0.4s;
+                cursor : pointer;
+            }
 
-<script type="text/javascript">
-var out = 0;
+            #bloc{
+                margin : 50px auto;
+                border : 1px solid;
+                width : 500px;
+                height : 500px;
+                overflow : hidden;
+            }
 
-window.onload = function(){
-	var tab = [1,0,2,3,4,5,6,7,8];
-	var tirage;
-	var divs = document.getElementById("jeu").getElementsByTagName("div");
-	for(i=0;i<divs.length;i++){
-		tirage = Math.floor(Math.random()*tab.length);
-		divs[i].id = "c" + (i+1);
-		divs[i].className = "p" + tab[tirage];
-		tab.splice(tirage,1);
-		divs[i].onclick = function(){
-			bouge(this);
-		};
-	}
-	out = tab[0];
-	checkGood();
-}
+            #jeu{
+                height : 201px;
+                width : 201px;
+                margin : 40px auto;
+                background : white;
+                border : 2px inset black;
+            }
+            #jeu div{
+                position : absolute;
+                background-image : url(it.png);
+                height : 65px;
+                width : 65px;
+                cursor : pointer;
+                border : 1px outset grey;
+                border-radius : 5px;
+                transition : all 0.3s ease-in-out;
+            }
 
-function bouge(cell){
-	var cellNum = num(cell.className);
-	
-	if(cellNum+1 == out || cellNum-1 == out || cellNum-3 == out || cellNum+3 == out){
-		cell.className = "p" + out;
-		out = cellNum;
-		
-		checkGood();
-	}
-}
+            #res{
+                height : 200px;
+                width : 200px;
+                margin : 0 auto;
+                background : url(it.png);
+                border : 2px inset black;
+            }
 
-function checkGood(){
-	var divs = document.getElementById("jeu").getElementsByTagName("div");
-	var ok = true;
-	for(i=0;i<divs.length;i++){
-		if(num(divs[i].id) != num(divs[i].className)) ok = false;
-	}
-	
-	if(ok){
-		document.getElementById("fin").style.visibility = "visible";
-		document.getElementById("fin").style.opacity = "1";
-	}
-}
+            #c0{background-position : 0 0;} 		#c1{background-position : -67px 0;}			#c2{background-position : -134px 0;}
+            #c3{background-position : 0 -67px;}		#c4{background-position : -67px -67px;}		#c5{background-position : -134px -67px;}
+            #c6{background-position : 0 -134px;}	#c7{background-position : -67px -134px;}	#c8{background-position : -134px -134px;}
 
-function num(ch){
-	return parseInt(ch.substr(1,5));
-}
-</script>
+            .p0{margin:0}							.p1{margin-left:67px;}						.p2{margin-left:134px;}
+            .p3{margin-left:0;margin-top:67px}		.p4{margin-left:67px;margin-top:67px} 		.p5{margin-left:134px;margin-top:67px}
+            .p6{margin-left:0;margin-top:134px}		.p7{margin-left:67px;margin-top:134px}		.p8{margin-left:134px;margin-top:134px}
+
+        </style>
+    </head>
+    <body>
+        <div id="bloc">
+            <div id="jeu">
+                <div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+            </div>
+            <div id="res">
+            </div>
+            <div id="fin" style="visibility:hidden;opacity:0;" onclick="location.href = '11.html'">
+            </div>
+        </div>
+        <script type="text/javascript">
+            var out = 0;
+
+            var tab = [1, 0, 2, 3, 4, 5, 6, 7, 8];
+            var tirage;
+            var divs = document.getElementById("jeu").getElementsByTagName("div");
+            for (i = 0; i < divs.length; i++) {
+                tirage = Math.floor(Math.random() * tab.length);
+                divs[i].id = "c" + (i + 1);
+                divs[i].className = "p" + tab[tirage];
+                tab.splice(tirage, 1);
+                divs[i].onclick = function() {
+                    bouge(this);
+                };
+            }
+            out = tab[0];
+
+            function bouge(cell) {
+                var cellNum = num(cell.className);
+
+                if (cellNum + 1 == out || cellNum - 1 == out || cellNum - 3 == out || cellNum + 3 == out) {
+                    cell.className = "p" + out;
+                    out = cellNum;
+
+                    checkGood();
+                }
+            }
+
+            function checkGood() {
+                var divs = document.getElementById("jeu").getElementsByTagName("div");
+                var ok = true;
+                for (i = 0; i < divs.length; i++) {
+                    if (num(divs[i].id) != num(divs[i].className))
+                        ok = false;
+                }
+
+                if (ok) {
+                    document.getElementById("fin").style.visibility = "visible";
+                    document.getElementById("fin").style.opacity = "1";
+                }
+            }
+            checkGood();
+
+            function num(ch) {
+                return parseInt(ch.substr(1, 5));
+            }
+        </script>
 
 
-<style>
-	#fin{
-		position : relative;
-		height : 201px;
-		width : 201px;
-		margin : -447px auto;
-		background : center center no-repeat url(it.png) lightgrey;
-		transition : all 0.8s linear 0.4s;
-		cursor : pointer;
-	}
-	
-	#bloc{
-		margin : 50px auto;
-		border : 1px solid;
-		width : 500px;
-		height : 500px;
-		overflow : hidden;
-	}
-	
-	#jeu{
-		height : 201px;
-		width : 201px;
-		margin : 40px auto;
-		background : white;
-		border : 2px inset black;
-	}
-	#jeu div{
-		position : absolute;
-		background-image : url(it.png);
-		height : 65px;
-		width : 65px;
-		cursor : pointer;
-		border : 1px outset grey;
-		border-radius : 5px;
-		transition : all 0.3s ease-in-out;
-	}
-	
-	#res{
-		height : 200px;
-		width : 200px;
-		margin : 0 auto;
-		background : url(it.png);
-		border : 2px inset black;
-	}
-	
-	#c0{background-position : 0 0;} 		#c1{background-position : -67px 0;}			#c2{background-position : -134px 0;}
-	#c3{background-position : 0 -67px;}		#c4{background-position : -67px -67px;}		#c5{background-position : -134px -67px;}
-	#c6{background-position : 0 -134px;}	#c7{background-position : -67px -134px;}	#c8{background-position : -134px -134px;}
-	
-	.p0{margin:0}							.p1{margin-left:67px;}						.p2{margin-left:134px;}
-	.p3{margin-left:0;margin-top:67px}		.p4{margin-left:67px;margin-top:67px} 		.p5{margin-left:134px;margin-top:67px}
-	.p6{margin-left:0;margin-top:134px}		.p7{margin-left:67px;margin-top:134px}		.p8{margin-left:134px;margin-top:134px}
-	
-</style>
-</body>
+    </body>
+</html>

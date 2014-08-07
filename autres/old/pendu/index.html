@@ -1,15 +1,10 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
   <head>
     <title>Le pendu</title>
     <link type="text/css" href="style.css" rel="stylesheet"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <script language="javascript" type="text/javascript" src="dico.js">alert("erreur de chargement du dictionnaire !");</script>
-    <script language="javascript" type="text/javascript">
+    <script src="dico.js"></script>
+    <script>
         var mod;
         var diff;
         var pseudo1;
@@ -284,7 +279,7 @@ and open the template in the editor.
               </tr>
               <tr>
                   <td>
-                      <input type="text" id="entree" size="" maxlength=""/>
+                      <input type="text" id="entree" size="1" maxlength="1"/>
                       <input type="button" id="boutonOk" value="OK" onclick="enregistrement()"/>
                   </td>
                   <td>

@@ -1,249 +1,257 @@
-<body>
-<canvas id="can" width="600" height="400"></canvas><br/>
-<ul id="legend">
-	<li>Fourmillière<div id="start"></div></li>
-	<li>Gateau (déplaçable)<div id="cake"></div></li>
-	<li>fourmi :<ul id="ant">
-		<li>Cherche<div id="norm"></div></li>
-		<li>Porte du gateau<div id="cary"></div></li>
-		<li>Va chercher du gateau<div id="know"></div></li>
-	</ul></li>
-</ul>
-<div id="count">
-<ul>
-	<li>Nombre de parts ramenées : <span id="ccake">0</span></li>
-	<li>Temps passé : <span id="ctime"></span></li>
-	<li>Ratio : <span id="crate">0.00</span>p/s</li>
-</ul>
-</div>
-<script>
-var ctx;
-var can;
+<html>
+    <head>
+        <title></title>
+        <style>
+            body, html{
+                margin : 0;
+            }
+            canvas{
+                border : 1px solid;
+            }
+            #legend #ant div{
+                height : 10px;
+                width : 10px;
+                border : 1px solid;
+                border-radius : 10px;
+            }
+            #legend > li div{
+                height : 14px;
+                width : 14px;
+                border-radius : 14px;
+            }
+            #start{
+                background-color : #BBB;
+            }
+            #cake{
+                background-color : #DD0;
+            }
+            #norm{
+                background-color : #444;
+            }
+            #cary{
+                background-color : #FE6;
+            }
+            #know{
+                background-color : #870;
+            }
 
-var mouse = {
-	x:0,
-	y:0
-};
-var drag = false;
+            #count{
+                position : absolute;
+                top : 20px;
+                left : 620px;
+                border : 1px solid;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="can" width="600" height="400"></canvas><br/>
+        <ul id="legend">
+            <li>Ant nest<div id="start"></div></li>
+            <li>Cake (movable)<div id="cake"></div></li>
+            <li>ant :<ul id="ant">
+                    <li>Looking for cake<div id="norm"></div></li>
+                    <li>Holding cake<div id="cary"></div></li>
+                    <li>Return to cake<div id="know"></div></li>
+                </ul></li>
+        </ul>
+        <div id="count">
+            <ul>
+                <li>Cake parts brought : <span id="ccake">0</span></li>
+                <li>Time spent : <span id="ctime"></span></li>
+                <li>Ratio : <span id="crate">0.00</span>p/s</li>
+            </ul>
+        </div>
+        <script>
+            var ctx;
+            var can;
 
-var part = 0;
-var beginning = (new Date()).getTime();
+            var mouse = {
+                x: 0,
+                y: 0
+            };
+            var drag = false;
 
-var norm = "#444";
-var cary = "#FE6";
-var know = "#870";
+            var part = 0;
+            var beginning = (new Date()).getTime();
 
-var start = {x : 20, y : 20};
-var cake = {x : 580, y : 380};
-// the cake is not a lie !
+            var norm = "#444";
+            var cary = "#FE6";
+            var know = "#870";
 
-var ant = new Array();
+            var start = {x: 20, y: 20};
+            var cake = {x: 580, y: 380};
+            // the cake is not a lie !
 
-window.onload = function(){
+            var ant = new Array();
 
-	
-	
-	can = document.getElementById("can");
-	ctx = can.getContext("2d");
-	
-	for(var i=0;i<20;i++){
-		var r = Math.random();
-		ant[i] = {
-			n : i,
-			x : start.x,
-			y : start.y,
-			state : 0, // 0 normal, 1 carrying, 2 knowing cake pos
-			cake : false,
-			check : false,
-			dir : {
-				x: (2 * r) * plusoumoins(),
-				y:2 * (1-Math.abs(Math.pow(r,3))) * plusoumoins()
-			}
-		};
-	}
-	
-	can.onmousemove = function(ev){
-		mouse.x = ev.clientX - 1;
-		mouse.y = ev.clientY - 1;
-		if(drag && distance(mouse, start) > 100){
-			cake.x = mouse.x;
-			cake.y = mouse.y;
-			document.getElementById("ccake").innerHTML = 0;
-			part = 0;
-		}
-	};
-	can.onmousedown = function(){
-		if(distance(mouse, cake) < 8)
-			drag = true;
-	};
-	can.onmouseup = function(){
-		drag = false;
-	};
-	
-	setInterval(draw, 60);
-};
+            window.onload = function() {
 
-function move(cur){
-	
-	cur.x += cur.dir.x;
-	cur.y += cur.dir.y;
-	
-	// colision bords
-	if(cur.x < 6 || cur.x > 594 || cur.y < 6 || cur.y > 394){
-		if(cur.x < 6)
-			cur.x = 6;
-		else if(cur.x > 594)
-			cur.x = 594;
-		else if(cur.y < 6)
-			cur.y = 6;
-		else if(cur.y > 394)
-			cur.y = 394;
-		
-		var r = Math.random();
-		
-		cur.dir.x = (2 * r) * plusoumoins();
-		cur.dir.y = 2 * (1-Math.abs(Math.pow(r,3))) * plusoumoins();
-	}
-	
-	// colision cake
-	if(distance(cur, cake) < 14){
-		cur.state = 1;
-		var dist = distance(cur, start);
-		cur.dir.x = ((start.x - cur.x) / dist) * 2;
-		cur.dir.y = ((start.y - cur.y) / dist) * 2;
-		
-		cur.cake = {
-			x : cake.x,
-			y : cake.y
-		};
-	}
-	
-	// is that a lie ??
-	if(distance(cur, cur.cake) <= 2 && distance(cur, cake) > 14){
-		cur.cake = false;
-		cur.state = 0;
-		
-		var r = Math.random();
-		
-		cur.dir.x = (2 * r) * plusoumoins();
-		cur.dir.y = 2 * (1-Math.abs(Math.pow(r,3))) * plusoumoins();
-	}
-	
-	// collision start
-	if(distance(cur, start) < 14 && cur.state == 1){
-		cur.state = 2;
-		var dist = distance(cur, cur.cake);
-		cur.dir.x = ((cur.cake.x - cur.x) / dist) * 2;
-		cur.dir.y = ((cur.cake.y - cur.y) / dist) * 2;
-		
-		part++;
-		document.getElementById("ccake").innerHTML = part;
-	}
-	
-	// collision other
-	for(var i=0;i<ant.length;i++){
-		var oth = ant[i];
-		if(cur.n != oth.n && distance(cur, oth) < 12 && cur.cake && !oth.cake){
-			oth.state = 2;
-			
-			oth.cake = cur.cake;
-			
-			var dist = distance(oth, oth.cake);
-			oth.dir.x = ((oth.cake.x - oth.x) / dist) * 2;
-			oth.dir.y = ((oth.cake.y - oth.y) / dist) * 2;
-		}
-	}
-}
 
-function draw(){
-	ctx.clearRect(0,0,800,600);
-	
-	ctx.fillStyle = "#BBB";
-	ctx.beginPath();
-	ctx.arc(start.x, start.y, 8, 0, 2*Math.PI, false);
-	ctx.fill();
-	
-	var cur;
-	for(var i=0;i<ant.length;i++){
-		cur = ant[i];
-		move(cur);
-		ctx.fillStyle = (cur.state == 0) ? norm : ((cur.state == 1) ? cary : ((cur.state == 2) ? know : ""));
-		ctx.beginPath();
-		ctx.arc(cur.x, cur.y, 5, 0, 2*Math.PI, false);
-		ctx.fill();
-		ctx.stroke();
-	}
-	
-	ctx.fillStyle = "#DD0";
-	ctx.beginPath();
-	ctx.arc(cake.x, cake.y, 8, 0, 2*Math.PI, false);
-	ctx.fill();
-	
-	var spend = ((new Date()).getTime() - beginning) / 1000
-	document.getElementById("ctime").innerHTML = spend;
-	if(spend != 0){ // useless security
-		document.getElementById("crate").innerHTML = Math.round(part / spend * 100) / 100;
-	}
-}
 
-function exist(arr, obj){
-	var boo = false;
-	for(var i=0;i<arr.length;i++){
-		if(arr[i].x == obj.x && arr[i].y == obj.y)
-			boo = true;
-	}
-	return boo;
-}
+                can = document.getElementById("can");
+                ctx = can.getContext("2d");
 
-function plusoumoins(){
-	return Math.round(Math.random()) * 2 - 1;
-}
+                for (var i = 0; i < 20; i++) {
+                    var r = Math.random();
+                    ant[i] = {
+                        n: i,
+                        x: start.x,
+                        y: start.y,
+                        state: 0, // 0 normal, 1 carrying, 2 knowing cake pos
+                        cake: false,
+                        check: false,
+                        dir: {
+                            x: (2 * r) * plusoumoins(),
+                            y: 2 * (1 - Math.abs(Math.pow(r, 3))) * plusoumoins()
+                        }
+                    };
+                }
 
-function distance(one, two){
-	if(!one || !two) return Infinity;
-	return Math.sqrt(Math.pow(one.x - two.x, 2) + Math.pow(one.y - two.y, 2));
-}
-</script>
-<style>
-body, html{
-	margin : 0;
-}
-canvas{
-	border : 1px solid;
-}
-#legend #ant div{
-	height : 10px;
-	width : 10px;
-	border : 1px solid;
-	-moz-border-radius : 10px;
-}
-#legend > li div{
-	height : 14px;
-	width : 14px;
-	-moz-border-radius : 14px;
-}
-#start{
-	background-color : #BBB;
-}
-#cake{
-	background-color : #DD0;
-}
-#norm{
-	background-color : #444;
-}
-#cary{
-	background-color : #FE6;
-}
-#know{
-	background-color : #870;
-}
+                can.onmousemove = function(ev) {
+                    mouse.x = ev.clientX - 1;
+                    mouse.y = ev.clientY - 1;
+                    if (drag && distance(mouse, start) > 100) {
+                        cake.x = mouse.x;
+                        cake.y = mouse.y;
+                        document.getElementById("ccake").innerHTML = 0;
+                        part = 0;
+                    }
+                };
+                can.onmousedown = function() {
+                    if (distance(mouse, cake) < 8)
+                        drag = true;
+                };
+                can.onmouseup = function() {
+                    drag = false;
+                };
 
-#count{
-	position : absolute;
-	top : 20px;
-	left : 620px;
-	border : 1px solid;
-	padding : 10px;
-}
-</style>
-</body>
+                setInterval(draw, 60);
+            };
+
+            function move(cur) {
+
+                cur.x += cur.dir.x;
+                cur.y += cur.dir.y;
+
+                // colision bords
+                if (cur.x < 6 || cur.x > 594 || cur.y < 6 || cur.y > 394) {
+                    if (cur.x < 6)
+                        cur.x = 6;
+                    else if (cur.x > 594)
+                        cur.x = 594;
+                    else if (cur.y < 6)
+                        cur.y = 6;
+                    else if (cur.y > 394)
+                        cur.y = 394;
+
+                    var r = Math.random();
+
+                    cur.dir.x = (2 * r) * plusoumoins();
+                    cur.dir.y = 2 * (1 - Math.abs(Math.pow(r, 3))) * plusoumoins();
+                }
+
+                // colision cake
+                if (distance(cur, cake) < 14) {
+                    cur.state = 1;
+                    var dist = distance(cur, start);
+                    cur.dir.x = ((start.x - cur.x) / dist) * 2;
+                    cur.dir.y = ((start.y - cur.y) / dist) * 2;
+
+                    cur.cake = {
+                        x: cake.x,
+                        y: cake.y
+                    };
+                }
+
+                // is that a lie ??
+                if (distance(cur, cur.cake) <= 2 && distance(cur, cake) > 14) {
+                    cur.cake = false;
+                    cur.state = 0;
+
+                    var r = Math.random();
+
+                    cur.dir.x = (2 * r) * plusoumoins();
+                    cur.dir.y = 2 * (1 - Math.abs(Math.pow(r, 3))) * plusoumoins();
+                }
+
+                // collision start
+                if (distance(cur, start) < 14 && cur.state == 1) {
+                    cur.state = 2;
+                    var dist = distance(cur, cur.cake);
+                    cur.dir.x = ((cur.cake.x - cur.x) / dist) * 2;
+                    cur.dir.y = ((cur.cake.y - cur.y) / dist) * 2;
+
+                    part++;
+                    document.getElementById("ccake").innerHTML = part;
+                }
+
+                // collision other
+                for (var i = 0; i < ant.length; i++) {
+                    var oth = ant[i];
+                    if (cur.n != oth.n && distance(cur, oth) < 12 && cur.cake && !oth.cake) {
+                        oth.state = 2;
+
+                        oth.cake = cur.cake;
+
+                        var dist = distance(oth, oth.cake);
+                        oth.dir.x = ((oth.cake.x - oth.x) / dist) * 2;
+                        oth.dir.y = ((oth.cake.y - oth.y) / dist) * 2;
+                    }
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, 800, 600);
+
+                ctx.fillStyle = "#BBB";
+                ctx.beginPath();
+                ctx.arc(start.x, start.y, 8, 0, 2 * Math.PI, false);
+                ctx.fill();
+
+                var cur;
+                for (var i = 0; i < ant.length; i++) {
+                    cur = ant[i];
+                    move(cur);
+                    ctx.fillStyle = (cur.state == 0) ? norm : ((cur.state == 1) ? cary : ((cur.state == 2) ? know : ""));
+                    ctx.beginPath();
+                    ctx.arc(cur.x, cur.y, 5, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = "#DD0";
+                ctx.beginPath();
+                ctx.arc(cake.x, cake.y, 8, 0, 2 * Math.PI, false);
+                ctx.fill();
+
+                var spend = ((new Date()).getTime() - beginning) / 1000
+                document.getElementById("ctime").innerHTML = spend;
+                if (spend != 0) { // useless security
+                    document.getElementById("crate").innerHTML = Math.round(part / spend * 100) / 100;
+                }
+            }
+
+            function exist(arr, obj) {
+                var boo = false;
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i].x == obj.x && arr[i].y == obj.y)
+                        boo = true;
+                }
+                return boo;
+            }
+
+            function plusoumoins() {
+                return Math.round(Math.random()) * 2 - 1;
+            }
+
+            function distance(one, two) {
+                if (!one || !two)
+                    return Infinity;
+                return Math.sqrt(Math.pow(one.x - two.x, 2) + Math.pow(one.y - two.y, 2));
+            }
+        </script>
+
+    </body>
+
+</html>

@@ -1,71 +1,74 @@
-<body onload="init();">
-<div id="bloc">
-	<a href="3.html">IT</a>
-	<div id="cache" onmousedown="startDrag(this, event);" onmousemove="drag(event)" onmouseout="stopDrag()" onmouseup="stopDrag();"></div>
-</div>
-</body>
+<html>
+    <head>
+        <title>Level 2</title>
+        <style>
+            a{
+                font-size : 0.5em;
+                display : block;
+                z-index : 1;
+                position : relative;
+                width : 1em;
+                top : 200px;
+                left : 200px;
+            }
+            #bloc{
+                margin : 50px auto;
+                border : 1px solid;
+                width : 500px;
+                height : 500px;
+                overflow : hidden;
+            }
 
-<script type="text/javascript">
-var fenetre = "";
-var departX;
-var departY;
-var posX;
-var posY;
+            #cache{
+                position : relative;
+                width : 700px;
+                height : 700px;
+                background-color : lightblue;
+                z-index : 2;
+                cursor : pointer;
+            }
+        </style>
+    </head>
+    <body onload="init();">
+        <div id="bloc">
+            <a href="3.html">IT</a>
+            <div id="cache" onmousedown="startDrag(this, event);" onmousemove="drag(event)" onmouseout="stopDrag()" onmouseup="stopDrag();"></div>
+        </div>
+        <script type="text/javascript">
+            var fenetre = "";
+            var departX;
+            var departY;
+            var posX;
+            var posY;
 
-function init(){
-	document.getElementById("cache").style.marginTop = "-100px";
-	document.getElementById("cache").style.marginLeft = "-100px";
-}
+            function init() {
+                document.getElementById("cache").style.marginTop = "-100px";
+                document.getElementById("cache").style.marginLeft = "-100px";
+            }
 
-function startDrag(fen, ev){
-	ev.preventDefault();
-	fenetre = fen;
-	departX = ev.clientX;
-	departY = ev.clientY;
-	posX = parseInt(fenetre.style.marginLeft);
-	posY = parseInt(fenetre.style.marginTop);
-}
+            function startDrag(fen, ev) {
+                ev.preventDefault();
+                fenetre = fen;
+                departX = ev.clientX;
+                departY = ev.clientY;
+                posX = parseInt(fenetre.style.marginLeft);
+                posY = parseInt(fenetre.style.marginTop);
+            }
 
-function drag(ev){
-	ev.preventDefault();
-	if(fenetre != ""){
-		var deplaceX = ev.clientX - departX;
-		var deplaceY = ev.clientY - departY;
-		
-		fenetre.style.marginTop = posY + deplaceY;
-		fenetre.style.marginLeft = posX + deplaceX;
-	}
-}
+            function drag(ev) {
+                ev.preventDefault();
+                if (fenetre != "") {
+                    var deplaceX = ev.clientX - departX;
+                    var deplaceY = ev.clientY - departY;
 
-function stopDrag(){
-	fenetre = "";
-}
-</script>
+                    fenetre.style.marginTop = posY + deplaceY;
+                    fenetre.style.marginLeft = posX + deplaceX;
+                }
+            }
 
-<style>
-	a{
-		font-size : 0.5em;
-		display : block;
-		z-index : 1;
-		position : relative;
-		width : 1em;
-		top : 200px;
-		left : 200px;
-	}
-	#bloc{
-		margin : 50px auto;
-		border : 1px solid;
-		width : 500px;
-		height : 500px;
-		overflow : hidden;
-	}
-	
-	#cache{
-		position : relative;
-		width : 700px;
-		height : 700px;
-		background-color : lightblue;
-		z-index : 2;
-		cursor : pointer;
-	}
-</style>
+            function stopDrag() {
+                fenetre = "";
+            }
+        </script>
+    </body>
+</html>

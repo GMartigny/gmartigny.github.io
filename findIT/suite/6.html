@@ -1,79 +1,80 @@
-<body onkeyup="appui(event);">
-<div id="bloc">
-	<div id="arrow">
-		<div id="point"></div>
-		<div id="stick"></div>
-	</div>
-	<div id="a" onclick="location.href='7.html'">IT</div>
-	<div id="cache"></div>
-</div>
+<html>
+    <head>
+        <title>Level 6</title>
+        <style>
+            #arrow{
+                position : relative;
+                width : 50px;
+                height : 100px;
+                left : 30px;
+                top : 80px;
+            }
+            #point{
+                border : 20px solid;
+                border-color : transparent transparent black transparent;
+                width : 0px;
+                height : 0px;
+                margin : 0 auto;
+            }
+            #stick{
+                margin : 0 auto;
+                border : 4px solid;
+                height : 50px;
+                width : 0;
+            }
 
+            #a{
+                position : relative;
+                width : 18px;
+                height : 20px;
+                margin : 0px auto;
+                text-decoration : underline;
+                color : blue;
+            }
+            #a:hover{
+                cursor : pointer;
+            }
+            #bloc{
+                margin : 50px auto;
+                border : 1px solid;
+                width : 500px;
+                height : 500px;
+                overflow : hidden;
+            }
+            #cache{
+                position : relative;
+                width : 250px;
+                height : 350px;
+                background: linear-gradient(to bottom, red, rgba(255, 0, 0, 0) 110%);
+                margin : 0px auto;
+            }
+        </style>
+    </head>
+    <body onkeyup="appui(event);">
+        <div id="bloc">
+            <div id="arrow">
+                <div id="point"></div>
+                <div id="stick"></div>
+            </div>
+            <div id="a" onclick="location.href = '7.html'">IT</div>
+            <div id="cache"></div>
+        </div>
+        <script type="text/javascript">
+            var cache = document.getElementById("cache");
+            cache.style.top = -30;
+            setInterval(descend, 350);
 
-<script type="text/javascript">
-	var cache = document.getElementById("cache");
-	cache.style.top = -30;
-	setInterval(descend, 350);
-	
-	function appui(ev){
-		if(ev.keyCode == 38 && parseInt(cache.style.top) > -425){
-			cache.style.top = parseInt(cache.style.top) - 5;
-		}
-	}
-	
-	function descend(){
-		if(parseInt(cache.style.top) < -30){
-			cache.style.top = parseInt(cache.style.top) + 5;
-		}
-	}
-</script>
+            function appui(ev) {
+                if (ev.keyCode == 38 && parseInt(cache.style.top) > -425) {
+                    cache.style.top = parseInt(cache.style.top) - 5;
+                }
+            }
 
-
-<style>
-	#arrow{
-		position : relative;
-		width : 50px;
-		height : 100px;
-		left : 30px;
-		top : 80px;
-	}
-	#point{
-		border : 20px solid;
-		border-color : transparent transparent black transparent;
-		width : 0px;
-		height : 0px;
-		margin : 0 auto;
-	}
-	#stick{
-		margin : 0 auto;
-		border : 4px solid;
-		height : 50px;
-		width : 0;
-	}
-	
-	#a{
-		position : relative;
-		width : 18px;
-		height : 20px;
-		margin : 0px auto;
-		text-decoration : underline;
-		color : blue;
-	}
-	#a:hover{
-		cursor : pointer;
-	}
-	#bloc{
-		margin : 50px auto;
-		border : 1px solid;
-		width : 500px;
-		height : 500px;
-		overflow : hidden;
-	}
-	#cache{
-		position : relative;
-		width : 250px;
-		height : 350px;
-		background-image: linear-gradient(to bottom, red, rgba(255, 0, 0, 0) 110%);
-		margin : 0px auto;
-	}
-</style>
-</body>
+            function descend() {
+                if (parseInt(cache.style.top) < -30) {
+                    cache.style.top = parseInt(cache.style.top) + 5;
+                }
+            }
+        </script>
+    </body>
+</html>

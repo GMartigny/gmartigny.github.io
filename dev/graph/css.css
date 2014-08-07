@@ -53,9 +53,6 @@ ul li.final{
 select{
 	width : 20px;
 	height : 20px;
-	-webkit-appearance : none;
-	-moz-appearance : none;
-	appearance : none;
 	border : 2px inset rgba(120,120,120,0.6);
 	border-radius : 3px;
 	outline : none;

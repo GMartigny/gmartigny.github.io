@@ -1,33 +1,36 @@
-<div id="bloc">
-	<div>
-		<input type="text" onkeyup="entree(this.value);"/><br/>
-		<span id="retour"></span>
-	</div>
-</div>
-
-
-<script type="text/javascript">
-	function entree(val){
-		var str = "<a href='";
-		if(val == "IT") str += "5.html";
-		else str += "#";
-		str += "'>" + val + "</a>";
-		document.getElementById("retour").innerHTML = str
-	}
-</script>
-
-
-<style>
-	a{
-	}
-	#bloc{
-		margin : 50px auto;
-		border : 1px solid;
-		width : 500px;
-		height : 500px;
-	}
-	#bloc div{
-		margin : 50px auto;
-		width : 40%;
-	}
-</style>
+<html>
+    <head>
+        <title>Level 4</title>
+        <style>
+            #bloc{
+                margin : 50px auto;
+                border : 1px solid;
+                width : 500px;
+                height : 500px;
+            }
+            #bloc div{
+                margin : 50px auto;
+                width : 40%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="bloc">
+            <div>
+                <input type="text" onkeyup="entree(this.value);"/><br/>
+                <span id="retour"></span>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function entree(val) {
+                var str = "<a href='";
+                if (val == "IT")
+                    str += "5.html";
+                else
+                    str += "#";
+                str += "'>" + val + "</a>";
+                document.getElementById("retour").innerHTML = str
+            }
+        </script>
+    </body>
+</html>
