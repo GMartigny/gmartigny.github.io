@@ -3,7 +3,7 @@
     <head>
         <title>Use of touchHandle</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width,user-scalable=no">
         <style>
             html, body{
                 margin: 0;
@@ -110,7 +110,7 @@
             }
             
             #content{
-                position: absolute;
+                position: fixed;
                 top: 200px;
                 left: 100px;
                 width: 150px;
@@ -142,7 +142,17 @@
         </div>
         <div id="main">
             <h1>A developper-friendly touch library</h1>
-            <a href="res/js/canTouchThis.js">Can Touch This</a>
+            <a href="res/js/canTouchThis.js">CanTouchThis.js</a>
+            <input type="text" /><input type="checkbox" />
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eget feugiat sem. Integer tincidunt dolor id nisi fringilla, in varius urna varius. Phasellus elementum, augue id egestas convallis, lectus risus imperdiet sapien, vel elementum ipsum diam a tellus. Donec fringilla ipsum eget turpis eleifend, condimentum mattis diam scelerisque. Sed massa velit, sollicitudin in augue ut, venenatis pretium ligula. Nullam consectetur vestibulum erat, id placerat ligula dictum in. Maecenas tristique porta sagittis. Vivamus ac mollis elit. Suspendisse hendrerit nisi sem, vitae posuere velit auctor eu.
+            </p>
+            <p>
+                Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed at erat in magna malesuada tristique. Donec rutrum a metus ut blandit. In imperdiet quam nec turpis aliquam faucibus. Nullam semper et ipsum non fermentum. Integer eu adipiscing ligula, ultricies cursus nulla. Aliquam volutpat nisi eu magna hendrerit, ac vulputate orci facilisis. Proin sollicitudin tincidunt est ut lacinia. Phasellus porta, odio vitae ullamcorper aliquet, tellus metus ullamcorper tortor, quis ultrices nisi erat nec risus. Aliquam pretium, diam eget malesuada scelerisque, sapien lorem accumsan massa, vitae mollis lacus lectus a ipsum. Nullam a pellentesque eros.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eget feugiat sem. Integer tincidunt dolor id nisi fringilla, in varius urna varius. Phasellus elementum, augue id egestas convallis, lectus risus imperdiet sapien, vel elementum ipsum diam a tellus. Donec fringilla ipsum eget turpis eleifend, condimentum mattis diam scelerisque. Sed massa velit, sollicitudin in augue ut, venenatis pretium ligula. Nullam consectetur vestibulum erat, id placerat ligula dictum in. Maecenas tristique porta sagittis. Vivamus ac mollis elit. Suspendisse hendrerit nisi sem, vitae posuere velit auctor eu.
+            </p>
             <div id="content" style="background-color: #CF2983;"></div>
         </div>
         <script src="res/js/canTouchThis.js"></script>
@@ -158,6 +168,7 @@
                 this.parentNode.classList.add("drag");
             });
             menuHandle.addEventListener("drag", function(e){
+                e.stopPropagation();
                 var p = this.parentNode;
                 p.style.height = e.detail.pageY+15+"px";
                 p.classList.remove("max");
@@ -177,7 +188,7 @@
             
             // turn switchs on/off (tap)
             for(var i=0;i<switchs.length;++i){
-                switchs[i].addEventListener("tap", function(){
+                switchs[i].addEventListener("click", function(){
                     this.classList.toggle("on");
                 });
             }
@@ -211,14 +222,15 @@
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
             content.addEventListener("drag", function(e){
+                e.stopPropagation();
                 this.classList.remove("big");
                 var x = startContent.x+(e.detail.pageX-e.detail.startX),
                     y = startContent.y+(e.detail.pageY-e.detail.startY);
                 
                 if(x < 0) x = 0;
-                else if(x > main.offsetWidth-this.offsetWidth) x = main.offsetWidth-this.offsetWidth;
-                if(y < 0) y = 0;
-                else if(y > main.offsetHeight-this.offsetHeight) y = main.offsetHeight-this.offsetHeight;
+                else if(x > document.body.offsetWidth-this.offsetWidth) x = document.body.offsetWidth-this.offsetWidth;
+                if(y < 29) y = 29;
+                else if(y > document.body.offsetHeight-this.offsetHeight) y = document.body.offsetHeight-this.offsetHeight;
                 
                 this.style.left = x+"px";
                 this.style.top = y+"px";
@@ -228,7 +240,6 @@
                 this.style.transform = "";
             });
             content.addEventListener("dbltap", function(){
-                console.log("double");
                 this.classList.toggle("big");
             });
             
@@ -251,6 +262,60 @@
             content.addEventListener("pinch", function(e){
                 var r = e.detail.distanceFromSibling/startContent.d;
                 this.style.transform = "scale("+r+")";
+            });
+            
+            // mouse version
+            var dragged = false;
+            menuHandle.onmousedown = function(){
+                dragged = this;
+                this.parentNode.classList.add("drag");
+            };
+            content.addEventListener("mousedown", function(e){
+                dragged = this;
+                this.classList.add("drag");
+                startContent.x = e.clientX-this.offsetLeft;
+                startContent.y = e.clientY-this.offsetTop;
+                if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
+            });
+            content.addEventListener("dblclick", function(){
+                this.classList.toggle("big");
+            });
+            document.addEventListener("mousemove", function(e){
+                if(dragged){
+                    e.preventDefault();
+                    if(dragged == menuHandle){
+                        var p = menuHandle.parentNode;
+                        p.style.height = e.clientY+15+"px";
+                        p.classList.remove("max");
+                    }
+                    else if(dragged == content){
+                        content.classList.remove("big");
+                        var x = e.clientX-startContent.x,
+                            y = e.clientY-startContent.y;
+
+                        if(x < 0) x = 0;
+                        else if(x > main.offsetWidth-content.offsetWidth) x = main.offsetWidth-content.offsetWidth;
+                        if(y < 0) y = 0;
+                        else if(y > main.offsetHeight-content.offsetHeight) y = main.offsetHeight-content.offsetHeight;
+
+                        content.style.left = x+"px";
+                        content.style.top = y+"px";
+                    }
+                }
+            });
+            document.addEventListener("mouseup", function(){
+                if(dragged == menuHandle){
+                    var p = menuHandle.parentNode;
+                    p.classList.remove("drag");
+                    if(p.offsetHeight > document.body.offsetHeight*0.75) p.classList.add("max");
+                    else if(p.offsetHeight < document.body.offsetHeight*0.75) p.classList.remove("max");
+                    p.style.height = "";
+                }
+                else if(dragged == content){
+                    content.classList.remove("drag");
+                    content.style.transform = "";
+                }
+                dragged = false;
             });
         </script>
     </body>

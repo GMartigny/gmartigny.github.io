@@ -7,7 +7,6 @@
  *  - drag : the element is moved around
  *  - drop : the touch end
  *  - swipe : the element is quickly drag to a direction
- *  - tap : a tap occurs on the element
  *  - dbltap : a double-tap occurs on the element
  *  - taphold : a long pressed touch occurs on the element
  *  - pinch : two moving touch in a same element
@@ -22,6 +21,9 @@
  *          goToNext();
  *      }
  *  };
+ *  
+ *  nb: It may be a good idea to make your page non-scalable to prevent delay
+ *  <meta name="viewport" content="width=device-width,user-scalable=no">
  */
 
 function Touch(t) {
@@ -67,7 +69,7 @@ Touch.swipeMaxTime = 250;
 
 Touch.tapMaxDistance = 10;
 Touch.dblTapMaxDuration = 300;
-Touch.holdTapDuration = 700;
+Touch.holdTapDuration = 750;
 
 // Public functions
 Touch.distance = function(x1, y1, x2, y2) {
@@ -132,6 +134,8 @@ document.addEventListener("touchmove", function(ev) {
     Touch.handleEvent(ev, function(t) {
         var touch = Touch.getById(t.identifier);
 
+        touch.target.removeEventListener("mousemove");
+
         if (touch) {
             touch.pageX = t.pageX;
             touch.pageY = t.pageY;
@@ -183,12 +187,10 @@ document.addEventListener("touchend", function(ev) {
     var now = Date.now();
     Touch.handleEvent(ev, function(t) {
         var touch = Touch.getById(t.identifier);
+
         if (touch) {
             var cev;
             if (!touch.moved && now < touch.startTime + Touch.holdTapDuration) {
-
-                cev = new CustomEvent("tap", {bubbles: true, cancelable: true, detail: touch});
-                touch.target.dispatchEvent(cev);
 
                 if (now < Touch._lastTap_.t + Touch.dblTapMaxDuration &&
                         Touch.distance(touch.pageX, touch.pageY, Touch._lastTap_.x, Touch._lastTap_.y) < Touch.tapMaxDistance) {
