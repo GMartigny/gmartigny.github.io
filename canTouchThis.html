@@ -120,7 +120,6 @@
             }
             #content.drag{
                 box-shadow: 4px 4px 5px #333;
-                transition: box-shadow linear .1s;
             }
             #content.big{
                 transform: scale(1.5);
@@ -222,7 +221,6 @@
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
             content.addEventListener("drag", function(e){
-                e.stopPropagation();
                 this.classList.remove("big");
                 var x = startContent.x+(e.detail.pageX-e.detail.startX),
                     y = startContent.y+(e.detail.pageY-e.detail.startY);
@@ -267,17 +265,19 @@
             // mouse version
             var dragged = false;
             menuHandle.onmousedown = function(){
+                e.preventDefault();
                 dragged = this;
                 this.parentNode.classList.add("drag");
             };
             content.addEventListener("mousedown", function(e){
+                e.preventDefault();
                 dragged = this;
                 this.classList.add("drag");
                 startContent.x = e.clientX-this.offsetLeft;
                 startContent.y = e.clientY-this.offsetTop;
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
-            content.addEventListener("dblclick", function(){
+            content.addEventListener("dblclick", function(e){
                 this.classList.toggle("big");
             });
             document.addEventListener("mousemove", function(e){
