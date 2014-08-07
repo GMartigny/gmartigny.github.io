@@ -207,6 +207,7 @@
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
             content.addEventListener("drag", function(e){
+                this.classList.remove("big");
                 var x = startContent.x+(e.detail.pageX-e.detail.startX),
                     y = startContent.y+(e.detail.pageY-e.detail.startY);
                 
@@ -220,9 +221,9 @@
             });
             content.addEventListener("drop", function(){
                 this.classList.remove("drag");
+                this.style.transform = "";
             });
             content.addEventListener("dbltap", function(){
-                this.style.transform = "";
                 this.classList.toggle("big");
             });
             
