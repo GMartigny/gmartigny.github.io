@@ -104,6 +104,9 @@
                 min-height: calc(100% - 29px);
                 top: 29px;
             }
+            #main.hightlight{
+                background: #EE9;
+            }
             
             #content{
                 position: absolute;
@@ -216,6 +219,7 @@
             });
             content.addEventListener("drop", function(){
                 this.classList.remove("drag");
+                this.style.transform = "";
             });
             content.addEventListener("dbltap", function(){
                 this.classList.toggle("big");
@@ -230,13 +234,16 @@
                 colors.push(tmp);
             });
             main.addEventListener("holdtap", function(){
-                console.log("not triggered by content");
+                this.classList.add("hightlight");
             });
+            main.addEventListener("drop", function(){
+                this.classList.remove("hightlight");
+            })
             
             // enlarge content (pinch)
             content.addEventListener("pinch", function(e){
-//                console.log(e.detail);
                 var r = e.detail.distanceFromSibling/startContent.d;
+                this.style.transform = "scale("+r+")";
             });
         </script>
     </body>
