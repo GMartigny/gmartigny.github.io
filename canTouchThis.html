@@ -264,7 +264,7 @@
             
             // mouse version
             var dragged = false;
-            menuHandle.onmousedown = function(){
+            menuHandle.onmousedown = function(e){
                 e.preventDefault();
                 dragged = this;
                 this.parentNode.classList.add("drag");
