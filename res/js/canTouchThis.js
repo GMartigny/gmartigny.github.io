@@ -146,10 +146,8 @@ document.addEventListener("touchmove", function(ev){
                     var cev = new CustomEvent("pinch", {cancelable: true, detail: touch});
                     touch.target.dispatchEvent(cev);
                 }
-                else{
-                    var cev = new CustomEvent("drag", {bubbles: true, cancelable: true, detail: touch});
-                    touch.target.dispatchEvent(cev);
-                }
+                var cev = new CustomEvent("drag", {bubbles: true, cancelable: true, detail: touch});
+                touch.target.dispatchEvent(cev);
             }
             
             if(now - touch.regTime < Touch.swipeMaxTime){
