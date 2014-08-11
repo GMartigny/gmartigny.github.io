@@ -112,7 +112,7 @@
             #content{
                 position: fixed;
                 top: 200px;
-                left: 100px;
+                left: 150px;
                 width: 150px;
                 height: 150px;
                 box-shadow: 2px 2px 5px #333;
@@ -120,9 +120,19 @@
             }
             #content.drag{
                 box-shadow: 4px 4px 5px #333;
+                transition: box-shadow linear .1s;
             }
             #content.big{
                 transform: scale(1.5);
+            }
+            
+            pre{
+                display: inline-block;
+                padding: 8px;
+                background: #F5F5F5;
+                box-shadow: 0 0 8px #666 inset;
+                width: 100%;
+                white-space: pre-wrap;
             }
         </style>
     </head>
@@ -140,17 +150,37 @@
             <div class="handle"></div>
         </div>
         <div id="main">
-            <h1>A developper-friendly touch library</h1>
-            <a href="res/js/canTouchThis.js">CanTouchThis.js</a>
+            <h1>A developper-friendly javascript touch library</h1>
+            <a href="res/js/canTouchThis.js">CanTouchThis.js</a> &rArr;
             <input type="text" /><input type="checkbox" />
+            <h2>Presentation :</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eget feugiat sem. Integer tincidunt dolor id nisi fringilla, in varius urna varius. Phasellus elementum, augue id egestas convallis, lectus risus imperdiet sapien, vel elementum ipsum diam a tellus. Donec fringilla ipsum eget turpis eleifend, condimentum mattis diam scelerisque. Sed massa velit, sollicitudin in augue ut, venenatis pretium ligula. Nullam consectetur vestibulum erat, id placerat ligula dictum in. Maecenas tristique porta sagittis. Vivamus ac mollis elit. Suspendisse hendrerit nisi sem, vitae posuere velit auctor eu.
+                <a href="http://fr.wikipedia.org/wiki/U_Can't_Touch_This">Since 1990</a>, we all want to be able to touch this as we will.
+                But, it can be tricky to make it real on your favorite browser. Here come canTouchThis.js, a really simple javascript library that let you handle touch events
+                as any other event.
             </p>
+            
+            <h2>Features :</h2>
             <p>
-                Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed at erat in magna malesuada tristique. Donec rutrum a metus ut blandit. In imperdiet quam nec turpis aliquam faucibus. Nullam semper et ipsum non fermentum. Integer eu adipiscing ligula, ultricies cursus nulla. Aliquam volutpat nisi eu magna hendrerit, ac vulputate orci facilisis. Proin sollicitudin tincidunt est ut lacinia. Phasellus porta, odio vitae ullamcorper aliquet, tellus metus ullamcorper tortor, quis ultrices nisi erat nec risus. Aliquam pretium, diam eget malesuada scelerisque, sapien lorem accumsan massa, vitae mollis lacus lectus a ipsum. Nullam a pellentesque eros.
+                We all know and love javascript events, so canTouchThis keep the same spirit. Some new events are just triggered when needed without interfering on old one.
             </p>
+            
+            <h2>Examples :</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eget feugiat sem. Integer tincidunt dolor id nisi fringilla, in varius urna varius. Phasellus elementum, augue id egestas convallis, lectus risus imperdiet sapien, vel elementum ipsum diam a tellus. Donec fringilla ipsum eget turpis eleifend, condimentum mattis diam scelerisque. Sed massa velit, sollicitudin in augue ut, venenatis pretium ligula. Nullam consectetur vestibulum erat, id placerat ligula dictum in. Maecenas tristique porta sagittis. Vivamus ac mollis elit. Suspendisse hendrerit nisi sem, vitae posuere velit auctor eu.
+                The code below is an example of how to detect swipe event.
+            </p>
+            <pre><code>element.addEventListener("swipe", function(ev){
+  if(ev.detail.direction == Touch.LEFT){
+    showPrevious();
+  }
+  else if(ev.detail.direction == Touch.RIGHT){
+    showNext();
+  }
+};</code></pre>
+            
+            <h2>Browser support :</h2>
+            <p>
+                The script use some new features not supported by old browser.
             </p>
             <div id="content" style="background-color: #CF2983;"></div>
         </div>
@@ -272,7 +302,6 @@
             content.addEventListener("mousedown", function(e){
                 e.preventDefault();
                 dragged = this;
-                this.classList.add("drag");
                 startContent.x = e.clientX-this.offsetLeft;
                 startContent.y = e.clientY-this.offsetTop;
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
@@ -282,6 +311,7 @@
             });
             document.addEventListener("mousemove", function(e){
                 if(dragged){
+                    dragged.classList.add("drag");
                     e.preventDefault();
                     if(dragged == menuHandle){
                         var p = menuHandle.parentNode;

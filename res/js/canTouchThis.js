@@ -22,7 +22,7 @@
  *      }
  *  };
  *  
- *  nb: It may be a good idea to make your page non-scalable to prevent delay
+ *  nb: It may be a good idea to make your page non-scalable to prevent tap delay
  *  <meta name="viewport" content="width=device-width,user-scalable=no">
  */
 
