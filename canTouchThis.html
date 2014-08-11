@@ -155,16 +155,26 @@
             <input type="text" /><input type="checkbox" />
             <h2>Presentation :</h2>
             <p>
-                <a href="http://fr.wikipedia.org/wiki/U_Can't_Touch_This">Since 1990</a>, we all want to be able to touch this as we will.
+                <a href="http://fr.wikipedia.org/wiki/U_Can't_Touch_This">Since 1990</a>, we all want to be able to "touch this" as will.
                 But, it can be tricky to make it real on your favorite browser. Here come canTouchThis.js, a really simple javascript library that let you handle touch events
                 as any other event.
             </p>
             
-            <h2>Features :</h2>
+            <h2>New events :</h2>
             <p>
-                We all know and love javascript events, so canTouchThis keep the same spirit. Some new events are just triggered when needed without interfering on old one.
+                We all know and love javascript events, so canTouchThis.js keep the same spirit.
+                Some new events are just triggered when needed without interfering with the old ones.
             </p>
-            
+            Available events :
+            <ul>
+                <li>grab : a moving touch occurs on the element</li>
+                <li>drag : the element is moved around</li>
+                <li>drop : the touch end</li>
+                <li>swipe : the element is quickly drag to a direction</li>
+                <li>dbltap : a double-tap occurs on the element</li>
+                <li>taphold : a long pressed touch occurs on the element</li>
+                <li>pinch : two moving touch in a same element</li>
+            </ul>
             <h2>Examples :</h2>
             <p>
                 The code below is an example of how to detect swipe event.
@@ -180,7 +190,7 @@
             
             <h2>Browser support :</h2>
             <p>
-                The script use some new features not supported by old browser.
+                The script use some new features supported only by most modern browser.
             </p>
             <div id="content" style="background-color: #CF2983;"></div>
         </div>
@@ -294,11 +304,6 @@
             
             // mouse version
             var dragged = false;
-            menuHandle.onmousedown = function(e){
-                e.preventDefault();
-                dragged = this;
-                this.parentNode.classList.add("drag");
-            };
             content.addEventListener("mousedown", function(e){
                 e.preventDefault();
                 dragged = this;
@@ -306,45 +311,32 @@
                 startContent.y = e.clientY-this.offsetTop;
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
-            content.addEventListener("dblclick", function(e){
+            menuHandle.addEventListener("click", function(){
+                this.parentNode.classList.toggle("max");
+            });
+            content.addEventListener("dblclick", function(){
                 this.classList.toggle("big");
             });
             document.addEventListener("mousemove", function(e){
                 if(dragged){
-                    dragged.classList.add("drag");
                     e.preventDefault();
-                    if(dragged == menuHandle){
-                        var p = menuHandle.parentNode;
-                        p.style.height = e.clientY+15+"px";
-                        p.classList.remove("max");
-                    }
-                    else if(dragged == content){
-                        content.classList.remove("big");
-                        var x = e.clientX-startContent.x,
-                            y = e.clientY-startContent.y;
+                    dragged.classList.add("drag");
+                    content.classList.remove("big");
+                    var x = e.clientX-startContent.x,
+                        y = e.clientY-startContent.y;
 
-                        if(x < 0) x = 0;
-                        else if(x > main.offsetWidth-content.offsetWidth) x = main.offsetWidth-content.offsetWidth;
-                        if(y < 0) y = 0;
-                        else if(y > main.offsetHeight-content.offsetHeight) y = main.offsetHeight-content.offsetHeight;
+                    if(x < 0) x = 0;
+                    else if(x > main.offsetWidth-content.offsetWidth) x = main.offsetWidth-content.offsetWidth;
+                    if(y < 0) y = 0;
+                    else if(y > main.offsetHeight-content.offsetHeight) y = main.offsetHeight-content.offsetHeight;
 
-                        content.style.left = x+"px";
-                        content.style.top = y+"px";
-                    }
+                    content.style.left = x+"px";
+                    content.style.top = y+"px";
                 }
             });
             document.addEventListener("mouseup", function(){
-                if(dragged == menuHandle){
-                    var p = menuHandle.parentNode;
-                    p.classList.remove("drag");
-                    if(p.offsetHeight > document.body.offsetHeight*0.75) p.classList.add("max");
-                    else if(p.offsetHeight < document.body.offsetHeight*0.75) p.classList.remove("max");
-                    p.style.height = "";
-                }
-                else if(dragged == content){
-                    content.classList.remove("drag");
-                    content.style.transform = "";
-                }
+                dragged.classList.remove("drag");
+                dragged.style.transform = "";
                 dragged = false;
             });
         </script>
