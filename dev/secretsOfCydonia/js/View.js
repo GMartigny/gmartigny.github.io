@@ -32,11 +32,22 @@ ViewManager.prototype.catchData = function(data){
 ViewManager.prototype.render = function(x, y){
     this.layer.ctx.clear();
     
+    var dx = x - floor(x),
+        dy = y - floor(y);
+    x = floor(x);
+    y = floor(y);
+    
     var p = {};
     for(var i=0;i<GameManager.nbCol;++i){
         for(var j=0;j<GameManager.nbRow;++j){
-            p = this.data.get(i, j) || "#FFFFFF";
+            p = this.data.get(x+i-GameManager.nbCol/2, y+j-GameManager.nbRow/2);
             
+            if(p) this.layer.ctx.fillStyle = p.getHexa();
+            if(p && p.isOpac()){
+                this.layer.ctx.makePath(function(){
+                    this.rect((i-dx)*GameManager.cell, (j-dy)*GameManager.cell, GameManager.cell, GameManager.cell);
+                }, 1, 0);
+            }
         }
     }
 };

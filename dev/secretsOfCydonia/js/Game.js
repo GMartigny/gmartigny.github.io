@@ -8,7 +8,7 @@ function GameManager(canvas, media){
     var s = this.view.super;
     this.fps = new FPS(function(fps){
         s.ctx.clear();
-        s.ctx.fillText(fps, 10, 10);
+        s.ctx.fillText(fps, 10, 15);
     }, 500);
     
     this.render();

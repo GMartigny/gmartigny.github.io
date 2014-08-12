@@ -194,11 +194,11 @@ CanvasRenderingContext2D.prototype.clear = function(){
 };
 
 // generic function for drawing path
-CanvasRenderingContext2D.prototype.makePath = function(act){
+CanvasRenderingContext2D.prototype.makePath = function(act, fill, stroke){
 	this.beginPath();
-	act();
-	this.stroke();
-	this.fill();
+	act.call(this);
+	if(stroke) this.stroke();
+	if(fill) this.fill();
 	this.closePath();
 };
 
@@ -254,6 +254,13 @@ var sqrt = Math.sqrt,
     floor = function(x){
         return x<<0;
     },
+    round = function(x){
+        if(x > 0) return (x+0.5)<<0;
+        else return (x-0.5)<<0;
+    },
+    sin = Math.sin,
+    asin = Math.asin,
+    cos = Math.cos,
     ceil = function(x){
         if(x > 0) return (x+1)<<0;
         else return (x-1)<<0;

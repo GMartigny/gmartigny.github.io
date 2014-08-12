@@ -9,11 +9,11 @@ function Player(canvas, img){
 		anim : 1
 	};
     this.pos = {
-        x: 10,
-        y: 10
+        x: 0.5,
+        y: 0
     };
     this.dir = 0;
-    this.anim = 1;
+    this.anim = 0;
 	
 	this.display = {
 		x : (this.layer.can.width/2)-GameManager.cell/2,
@@ -54,16 +54,16 @@ Player.prototype.move = function(keyboard){
         }
         
         if(this.moving){
-            this.anim += Player.SPEED;
-            if(this.anim > 2) this.anim = 0;
+            this.anim += Player.SPEED*1.5;
         }
     }
-    else this.anim = 1;
+    else this.anim = 0;
 };
 Player.prototype.render = function(){
     // draw charactere
     this.layer.ctx.clear();
+    var step = round(2/PI*asin(sin(this.anim))+1);
     this.layer.ctx.drawImage(this.img,
-        GameManager.cell*floor(this.anim), GameManager.cell*this.dir, GameManager.cell, GameManager.cell,
+        GameManager.cell*round(step), GameManager.cell*this.dir, GameManager.cell, GameManager.cell,
         this.display.x, this.display.y, GameManager.cell, GameManager.cell);
 };
