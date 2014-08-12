@@ -3,169 +3,53 @@
         <title>Secret of Cydonia</title>
         <link rel="stylesheet" href="style.css"/>
         <script src="js/gameLib.js"></script>
+        <script src="../../res/js/fps.js"></script>
     </head>
     <body>
         <div id="c">
-            <canvas id="ground" width="800" height="608" style="display:block"></canvas>
-            <canvas id="under" width="800" height="608" style="display:block"></canvas>
-            <canvas id="blocks" width="800" height="608" style="display:block"></canvas>
-            <canvas id="players" width="800" height="608" style="display:block"></canvas>
-            <canvas id="over" width="800" height="608" style="display:block"></canvas>
-            <canvas id="super" width="800" height="608" style="display:block"></canvas>
+            <canvas id="ground" width="800" height="608"></canvas>
+            <canvas id="under" width="800" height="608"></canvas>
+            <canvas id="block" width="800" height="608"></canvas>
+            <canvas id="player" width="800" height="608"></canvas>
+            <canvas id="over" width="800" height="608"></canvas>
+            <canvas id="super" width="800" height="608"></canvas>
             <div id="loading"><img src="res/loader.gif" alt="Loading"/></div>
-            <div id="ask" style="display:none">
-                <p>Choisit un pseudo :</p>
-                <form action="#" onsubmit="return choosePseudo(this.pseudo.value)">
-                    <input type="text" name="pseudo" id="pseudo"/>
-                    <input type="submit" value="Ok"/>
-                </form>
-            </div>
-            <div id="chat" style="display:none">
-                <form action="#" class="hidden" onsubmit="return sendMess(this.blah.value)">
-                    <input type="text" name="blah" id="blah"/>
-                    <input type="submit" value="Ok"/>
-                </form>
-            </div>
         </div>
     <script>
-    var localURL = "10.4.0.56",
-        media = loadMedia([
-        {src:"js/Player.js", weight:1},
-        {src:"js/Ground.js", weight:1},
-        {src:"js/Keyboard.js", weight:1},
-        {src:"res/perso.png", weight:2.5, name:"perso"}
+    var media = loadMedia([
+        {src: "js/Game.js", weight: 1},
+        {src: "js/Player.js", weight: 1},
+        {src: "js/View.js", weight: 1},
+        {src: "js/views/Ground.js", weight: 1},
+        {src: "js/views/Under.js", weight: 1},
+        {src: "js/views/Block.js", weight: 1},
+        {src: "js/views/Over.js", weight: 1},
+        {src: "js/Keyboard.js", weight: 1},
+        {src: "res/perso.png", weight: 2.5, name:"player"},
+        {src: "res/tiles.png", weight:7.7, name: "tiles"},
+        {src: "res/links.json", weight:1, name: "links"}
     ], function(r){
         if(100 <= r) start();
-    });
-
-    var chat = getById("chat"),
-        blah = getById("blah"),
-        canvas = {};
-    prepareCanvas(getById("c"), canvas);
-
-    var fps = {
-            wait : Date.now(),
-            count : 0
-        },
-        latency = 0,
-        ws = null,
-        keys = {},
-        me = {},
-        others = [],
-        entities = [],
-        ground = {};
-
-    // mise en place
-    function start(){
-        ground = new Ground(canvas.ground.ctx, canvas.under.ctx, canvas.blocks.ctx, canvas.over.ctx);
-        me = new Player(canvas.players.ctx, media.perso, ground);
-
-        // ouverture de la socket
-        ws = new WebSocket("ws://"+localURL+":1337");
-        ws.onopen = function(evt){
-            log("Connection open ...");
-            if(localStorage.pseudo) choosePseudo(localStorage.pseudo);
-            else choosePseudo();
-        }; 
-        ws.onmessage = function(ev){
-            var mess = JSON.parse(ev.data);
-            if(mess.error){ // message d'erreur
-                switch(mess.error){
-                    case "pseudo taken":
-                        break;
-                }
-            }
-            else if(mess.hello){ // message de bienvenu
-                localStorage.pseudo = me.pseudo;
-                me.d = mess.hello;
-                ground.setData(me.d.map);
-            }
-            else{ // message d'infos
-                others = mess.oth;
-                latency = Date.now() - mess.t;
-                ws.send(JSON.stringify({details:me.d}));
-            }
-        }; 
-        ws.onclose = function(evt){ };
-        ws.onerror = function(evt){
-            log("WebSocket error : " + evt.data)
-        };
-
-        canvas.over.ctx.font = "bold 20px arial";
-        canvas.over.ctx.strokeStyle = "#404040";
-        canvas.over.ctx.fillStyle = "#FFEA95";
-        canvas.super.ctx.font = "bold 15px arial";
-    }
-    function draw(){
-        ground.render(me.d.pos.x, me.d.pos.y);
-
-        canvas.players.ctx.clear();
-        var p = {x:0,y:0};
-        others.forEach(function(each){
-            // writing pseudo
-            p.x = (each.d.pos.x-me.d.pos.x)*32+canvas.players.can.width/2-16;
-            p.y = (each.d.pos.y-me.d.pos.y)*32+canvas.players.can.height/2-16;
-            canvas.players.ctx.drawImage(media.perso,32*(each.d.anim<<0),32*each.d.dir,32,32,p.x,p.y,32,32);
-            canvas.over.ctx.fillText(each.pseudo, p.x+16-(canvas.over.ctx.measureText(each.pseudo).width/2), p.y-6);
-            canvas.over.ctx.strokeText(each.pseudo, p.x+16-(canvas.over.ctx.measureText(each.pseudo).width/2), p.y-6);
-
-            each.d.mess.forEach(function(m){
-                canvas.over.ctx.fillText(m, each.d.pos.x, each.d.pos.y);
-            });
-        });
-        me.render();
-
-        entities.forEach(function(each){
-            each.render();
-        });
-
-        if(15 < ++fps.count){
-            canvas.super.ctx.clear();
-            var n = Date.now();
-            canvas.super.ctx.fillText((fps.count/((n-fps.wait)/1000))<<0, 5, 15);
-            canvas.super.ctx.fillText(latency, 5, 35);
-            fps.wait = n;
-            fps.count = 0;
-        }
-
-        setTimeout(draw, 8);
-    }
-
-    function prepareCanvas(hold, obj){
-        var cs = hold.getElementsByTagName("canvas");
-        for(var i=0;i<cs.length;++i){
-            obj[cs[i].id] = {};
-            obj[cs[i].id].can = cs[i];
-            obj[cs[i].id].ctx = cs[i].getContext("2d");
-        }
-    }
-
-    function choosePseudo(p){
-        getById("loading").style.display = "none";
-        if(p){
-            try{
-                me.pseudo = p;
-                ws.send("{\"pseudo\":\""+p+"\"}");
-                getById("ask").style.display = "none";
-
-                keys = new Keyboard(me);
-
-                return false
-            }
-            catch(e){
-                console.log(e.message);
-                return false;
-            }
-        }
         else{
-            getById("ask").style.display = "";
-            getById("pseudo").focus();	
+            // loading
         }
-    }
+    }),
+        canvas = prepareCanvas(getById("c"));
 
-    function sendMess(mess){
-        me.talk(mess);
-        return false;
+    function start(){
+        new GameManager(canvas, media);
+        getById("loading").style.display = "none";
+    }
+    
+    function prepareCanvas(holder){
+        var cs = holder.getElementsByTagName("canvas"),
+            objs = {};
+        for(var i=0;i<cs.length;++i){
+            objs[cs[i].id] = {};
+            objs[cs[i].id].can = cs[i];
+            objs[cs[i].id].ctx = cs[i].getContext("2d");
+        }
+        return objs;
     }
     </script>
     </body>

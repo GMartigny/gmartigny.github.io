@@ -161,12 +161,38 @@ function Script(src){
 	return elm;
 };
 
+function Pixel(r, g, b, a){
+	this.r = r;
+	this.g = g;
+	this.b = b;
+	this.a = a;
+}
+Pixel.prototype.getHexa = function(){
+    return "#"+hexa(this.r)+hexa(this.g)+hexa(this.b);
+};
+Pixel.prototype.isOpac = function(){
+    return (this.a == 255);
+};
+function hexa(n){
+	var h = n.toString(16);
+	return (h.length < 2)? "0"+h : h;
+}
+
+ImageData.prototype.get = function(x, y){
+	if(x < 0 || this.width <= x || y < 0 || this.height <= y){ // out of bound
+		return false;
+	}
+	else{
+		var i = 4*(x + y*this.width);
+		return new Pixel(this.data[i], this.data[++i], this.data[++i], this.data[++i]);
+	}
+};
+
 // clear whole context
 CanvasRenderingContext2D.prototype.clear = function(){
 	this.clearRect(0, 0, this.canvas.width, this.canvas.height);
 };
 
-// *private*
 // generic function for drawing path
 CanvasRenderingContext2D.prototype.makePath = function(act){
 	this.beginPath();
@@ -174,19 +200,30 @@ CanvasRenderingContext2D.prototype.makePath = function(act){
 	this.stroke();
 	this.fill();
 	this.closePath();
+};
+
+function getDataFromImage(src, callBack, self){
+    var can = document.createElement("canvas"),
+        ctx = can.getContext("2d"),
+        img = new Image(src);
+    
+    img.onload = function(){
+        if(this.width && this.height){
+            can.width = this.width;
+            can.height = this.height;
+            ctx.drawImage(img, 0, 0);
+            var data = ctx.getImageData(0, 0, can.width, can.height);
+            callBack.call(self, data);
+        }
+    };
 }
 
 // return the element matching id
-// in:	string id
-// out:	element
 function getById(id){
 	return document.getElementById(id);
 }
 
 // return all elements matching classname (cross-browser)
-// in:	string c
-//		*optional* element elm
-// out:	array<element>
 function getByClass(c, elm){
 	elm = elm || document;
 	if (!elm.getElementsByClassName){
@@ -207,20 +244,31 @@ function getByClass(c, elm){
 	}
 }
 function distance(one, two){
-	return Math.sqrt(up(two.x-one.x)+up(two.y-one.y));
+	return sqrt(sq(two.x-one.x)+sq(two.y-one.y));
 }
-function up(x){
-	return Math.pow(x,2);
-}
-var M = Math;
+var sqrt = Math.sqrt,
+    pow = Math.pow,
+    sq = function(x){
+        return pow(x, 2);
+    },
+    floor = function(x){
+        return x<<0;
+    },
+    ceil = function(x){
+        if(x > 0) return (x+1)<<0;
+        else return (x-1)<<0;
+    },
+    PI = Math.PI,
+    PI2 = PI*2,
+    SQRT2 = sqrt(2);
 
 Array.prototype.out = function(o){
 	var index = this.indexOf(o);
-	if(0 <= index) this.splice(index, 1);
+	if(index >= 0) this.splice(index, 1);
 	else{
 		throw o+" not find in this array";
 	}
-}
+};
 
 function get(url, f){
 	var xhr = new XMLHttpRequest();

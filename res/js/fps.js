@@ -3,9 +3,8 @@ function FPS(tick, delay){
     this.previous = 0;
     this.count = 0;
     
-    
-    this.delay = delay || 300;
     this.tick = tick;
+    this.delay = delay || 300;
 }
 
 FPS.prototype.update = function(){
