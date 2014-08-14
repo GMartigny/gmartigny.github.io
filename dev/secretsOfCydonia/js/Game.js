@@ -1,5 +1,7 @@
 
-function GameManager(canvas, media){
+function GameManager(media){
+    var canvas = prepareCanvas(getById("c"));
+    
     this.player = new Player(canvas.player, media.player);
     this.view = new ViewManager(canvas, media.tiles);
     this.key = new KeyboardManager();
@@ -9,7 +11,7 @@ function GameManager(canvas, media){
     this.fps = new FPS(function(fps){
         s.ctx.clear();
         s.ctx.fillText(fps, 10, 15);
-    }, 500);
+    }, 200);
     
     this.render();
 }
@@ -23,10 +25,9 @@ GameManager.prototype.render = function(){
         self.render.call(self);
     });
     
-    this.fps.update();
-    
-    this.player.move(this.key);
+    this.player.move(this.key, this.view);
     this.player.render();
     
     this.view.renderAll(this.player.pos.x, this.player.pos.y);
+    this.fps.update();
 };

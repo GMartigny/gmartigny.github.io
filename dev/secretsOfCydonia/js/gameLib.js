@@ -167,6 +167,9 @@ function Pixel(r, g, b, a){
 	this.b = b;
 	this.a = a;
 }
+Pixel.prototype.equals = function(o){
+    return this.r === o.r && this.g === o.g && this.b === o.b && this.a === o.a;
+};
 Pixel.prototype.getHexa = function(){
     return "#"+hexa(this.r)+hexa(this.g)+hexa(this.b);
 };
@@ -252,19 +255,20 @@ var sqrt = Math.sqrt,
         return pow(x, 2);
     },
     floor = function(x){
-        return x<<0;
+        if(x > 0) return x<<0;
+        else return (x<<0)-1;
     },
     round = function(x){
         if(x > 0) return (x+0.5)<<0;
         else return (x-0.5)<<0;
     },
+    ceil = function(x){
+        if(x > 0) return (x<<0)+1;
+        else return (x<<0);
+    },
     sin = Math.sin,
     asin = Math.asin,
     cos = Math.cos,
-    ceil = function(x){
-        if(x > 0) return (x+1)<<0;
-        else return (x-1)<<0;
-    },
     PI = Math.PI,
     PI2 = PI*2,
     SQRT2 = sqrt(2);

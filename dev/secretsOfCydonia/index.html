@@ -17,27 +17,22 @@
         </div>
     <script>
     var media = loadMedia([
-        {src: "js/Game.js", weight: 1},
-        {src: "js/Player.js", weight: 1},
-        {src: "js/View.js", weight: 1},
-        {src: "js/views/Ground.js", weight: 1},
-        {src: "js/views/Under.js", weight: 1},
-        {src: "js/views/Block.js", weight: 1},
-        {src: "js/views/Over.js", weight: 1},
-        {src: "js/Keyboard.js", weight: 1},
-        {src: "res/perso.png", weight: 2.5, name:"player"},
-        {src: "res/tiles.png", weight:7.7, name: "tiles"},
-        {src: "res/links.json", weight:1, name: "links"}
-    ], function(r){
-        if(100 <= r) start();
-        else{
-            // loading
-        }
-    }),
-        canvas = prepareCanvas(getById("c"));
+            {src: "js/Game.js", weight: 1},
+            {src: "js/Player.js", weight: 1},
+            {src: "js/View.js", weight: 1},
+            {src: "js/Keyboard.js", weight: 1},
+            {src: "res/perso.png", weight: 2.5, name:"player"},
+            {src: "res/tiles.png", weight:7.7, name: "tiles"},
+            {src: "res/links.json", weight:1, name: "links"}
+        ], function(r){
+            if(100 <= r) start();
+            else{
+                // loading
+            }
+        });
 
     function start(){
-        new GameManager(canvas, media);
+        new GameManager(media);
         getById("loading").style.display = "none";
     }
     
