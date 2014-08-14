@@ -1,16 +1,18 @@
 
-function ViewManager(canvas, tiles){
+function ViewManager(canvas, tiles, controller){
+    this.controller = controller;
     this.tiles = tiles;
-    this.ground = new GroundView(canvas.ground);
-    this.under = new UnderView(canvas.under);
-    this.block = new BlockView(canvas.block);
+    
+    var map = this.getMap();
+    this.ground = new GroundView(canvas.ground, map);
+    this.under = new UnderView(canvas.under, map);
+    this.block = new BlockView(canvas.block, map);
     // player's here
-    this.over = new OverView(canvas.over);
+    this.over = new OverView(canvas.over, map);
     this.super = canvas.super;
     
     getDataFromImage("res/match.png", this.catchData);
 }
-ViewManager.map = localStorage.map || "departure";
 
 ViewManager.prototype.renderAll = function(x, y){
     if(this.ground.ready && this.under.ready && this.block.ready && this.over.ready){
@@ -54,6 +56,20 @@ ViewManager.prototype.isBlocked = function(x, y, dir){
     }
     return false;
 };
+ViewManager.prototype.getMap = function(){
+    return this.controller.links[this.controller.pos[0]][this.controller.pos[1]];
+};
+ViewManager.prototype.changeMap = function(){
+    var map = this.getMap();
+    this.ground.ready = false;
+    getDataFromImage("res/"+map+"/grd.png", this.ground.catchData, this.ground);
+    this.under.ready = false;
+    getDataFromImage("res/"+map+"/und.png", this.under.catchData, this.under);
+    this.block.ready = false;
+    getDataFromImage("res/"+map+"/blk.png", this.block.catchData, this.block);
+    this.over.ready = false;
+    getDataFromImage("res/"+map+"/ovr.png", this.over.catchData, this.over);
+};
 
 // will be called by children
 ViewManager.prototype.catchData = function(data){
@@ -69,9 +85,9 @@ ViewManager.prototype.render = function(x, y){
     y = floor(y);
     
     var p = {};
-    for(var i=0;i<GameManager.nbCol;++i){
-        for(var j=0;j<GameManager.nbRow;++j){
-            p = this.data.get(x+i-GameManager.nbCol/2+1, y+j-GameManager.nbRow/2+1);
+    for(var i=0;i<GameController.nbCol;++i){
+        for(var j=0;j<GameController.nbRow;++j){
+            p = this.data.get(x+i-GameController.nbCol/2+1, y+j-GameController.nbRow/2+1);
             if(!p && this.defaultPixel){
                 p = this.defaultPixel;
             }
@@ -80,7 +96,7 @@ ViewManager.prototype.render = function(x, y){
                 if(p.isOpac()){
                     this.layer.ctx.fillStyle = p.getHexa();
                     this.layer.ctx.beginPath();
-                    this.layer.ctx.fillRect((i-dx)*GameManager.cell, (j-dy)*GameManager.cell, GameManager.cell, GameManager.cell);
+                    this.layer.ctx.fillRect((i-dx)*GameController.cell, (j-dy)*GameController.cell, GameController.cell+1, GameController.cell+1);
                 }
             }
         }
@@ -88,39 +104,39 @@ ViewManager.prototype.render = function(x, y){
 };
 
 //children
-function GroundView(canvas){
-    this.layer = canvas;
+function GroundView(c, m){
+    this.layer = c;
     this.data = 0;
     this.defaultPixel = new Pixel(255, 255, 255, 255);
     this.blocks = [this.defaultPixel];
     
-    getDataFromImage("res/"+ViewManager.map+"/grd.png", this.catchData, this);
+    getDataFromImage("res/"+m+"/grd.png", this.catchData, this);
 }
 GroundView.prototype = Object.create(ViewManager.prototype);
 
-function UnderView(canvas){
-    this.layer = canvas;
+function UnderView(c, m){
+    this.layer = c;
     this.data = 0;
     this.defaultPixel = false;
     
-    getDataFromImage("res/"+ViewManager.map+"/und.png", this.catchData, this);
+    getDataFromImage("res/"+m+"/und.png", this.catchData, this);
 }
 UnderView.prototype = Object.create(ViewManager.prototype);
 
-function BlockView(canvas){
-    this.layer = canvas;
+function BlockView(c, m){
+    this.layer = c;
     this.data = 0;
     this.defaultPixel = false;
     
-    getDataFromImage("res/"+ViewManager.map+"/blk.png", this.catchData, this);
+    getDataFromImage("res/"+m+"/blk.png", this.catchData, this);
 }
 BlockView.prototype = Object.create(ViewManager.prototype);
 
-function OverView(canvas){
-    this.layer = canvas;
+function OverView(c, m){
+    this.layer = c;
     this.data = 0;
     this.defaultPixel = false;
     
-    getDataFromImage("res/"+ViewManager.map+"/ovr.png", this.catchData, this);
+    getDataFromImage("res/"+m+"/ovr.png", this.catchData, this);
 }
 OverView.prototype = Object.create(ViewManager.prototype);

@@ -2,22 +2,21 @@
 function Player(canvas, img){
     this.layer = canvas;
     this.img = img;
+    
+    var save = [];
+    (localStorage.SoC_P && localStorage.SoC_P.hashCode() == localStorage.SoC_HP)?
+        save = localStorage.SoC_P.split(";") : save = [9, 7, 0];
 	
-	this.data = {
-		pos : {},
-		dir : 0,
-		anim : 1
-	};
     this.pos = {
-        x: 20,
-        y: 18
+        x: +save[0],
+        y: +save[1]
     };
-    this.dir = 0;
+    this.dir = save[2];
     this.anim = 0;
 	
 	this.display = {
-		x : (this.layer.can.width/2)-GameManager.cell/2,
-		y : (this.layer.can.height/2)-GameManager.cell/2
+		x : (this.layer.can.width/2)-GameController.cell/2,
+		y : (this.layer.can.height/2)-GameController.cell/2
 	};
 	
 	this.moving = false;
@@ -65,6 +64,10 @@ Player.prototype.move = function(keyboard, view){
             this.anim += Player.SPEED*1.5;
         }
         else this.anim = 0;
+        
+        var s = this.pos.x+";"+this.pos.y+";"+this.dir;
+        localStorage.SoC_P = s;
+        localStorage.SoC_HP = s.hashCode();
     }
     else this.anim = 0;
 };
@@ -75,6 +78,6 @@ Player.prototype.render = function(){
     this.layer.ctx.beginPath();
 //    this.layer.ctx.fillRect(this.display.x, this.display.y, 32, 32);
     this.layer.ctx.drawImage(this.img,
-        GameManager.cell*round(step), GameManager.cell*this.dir, GameManager.cell, GameManager.cell,
-        this.display.x, this.display.y, GameManager.cell, GameManager.cell);
+        GameController.cell*round(step), GameController.cell*this.dir, GameController.cell, GameController.cell,
+        this.display.x, this.display.y, GameController.cell, GameController.cell);
 };
