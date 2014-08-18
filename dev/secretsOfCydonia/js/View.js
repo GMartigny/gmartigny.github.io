@@ -55,7 +55,7 @@ ViewManager.prototype.isBlocked = function(x, y, dir){
     var c = {};
     for(var i=0;i<ahead.length;++i){
         c = this.ground.data.get(ahead[i].x, ahead[i].y);
-        if(!c || (c && c.equals(this.ground.defaultPixel)))
+        if(!c || !c.isOpac())
             return true;
         if(this.block.data.get(ahead[i].x, ahead[i].y).isOpac())
             return true;
@@ -91,22 +91,23 @@ ViewManager.prototype.render = function(tiles, x, y){
     y = floor(y);
     
     var p = {},
+        hexa = "",
         t = {},
         c = GameController.cell;
     for(var i=0;i<GameController.nbCol;++i){
         for(var j=0;j<GameController.nbRow;++j){
             p = this.data.get(x+i-GameController.nbCol/2+1, y+j-GameController.nbRow/2+1);
-            if(!p && this.defaultPixel){
-                p = this.defaultPixel;
+            if(p && p.isOpac()){
+                hexa = p.getHexa();
             }
-            if(p){
-                if(p.isOpac()){
-                    if(t = this.getTile(p.getHexa()))
-                        this.layer.ctx.drawImage(tiles,
-                            c*t.x, c*t.y, c, c,
-                            round((i-dx)*c), round((j-dy)*c), c, c);
-                }
+            else if(this.defaultPixel){
+                hexa = this.defaultPixel;
             }
+            else hexa = 0;
+            if(hexa && (t = this.getTile(hexa)))
+                this.layer.ctx.drawImage(tiles,
+                    c*t.x, c*t.y, c, c,
+                    round((i-dx)*c), round((j-dy)*c), c, c);
         }
     }
     this.anim += this.spd;
@@ -124,7 +125,7 @@ ViewManager.prototype.getTile = function(hexa){
 //children
 function GroundView(c, m){
     this.layer = c;
-    this.defaultPixel = new Pixel(255, 255, 255, 255);
+    this.defaultPixel = "#97d4f7";
     this.SPEED = 0.03;
     
     getDataFromImage("res/"+m+"/grd.png", this.catchData, this);

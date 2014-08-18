@@ -14,7 +14,7 @@ function GameController(media){
     var s = this.view.super;
     this.fps = new FPS(function(fps){
         s.ctx.clear();
-        s.ctx.fillText(fps, 10, 15);
+        s.ctx.fillText(fps, 5, 15);
     }, 200);
     
     this.render();
