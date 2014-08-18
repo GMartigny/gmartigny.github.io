@@ -11,15 +11,22 @@ function ViewManager(canvas, tiles, controller){
     this.over = new OverView(canvas.over, map);
     this.super = canvas.super;
     
-    getDataFromImage("res/match.png", this.catchData);
+    getDataFromImage("res/match.png", function(data){
+        ViewManager.match = data;
+        this.ready = true;
+    }, this);
 }
+ViewManager.match = [];
 
+ViewManager.prototype.ready = false;
+ViewManager.prototype.anim = 0;
+ViewManager.prototype.defaultPixel = false;
 ViewManager.prototype.renderAll = function(x, y){
-    if(this.ground.ready && this.under.ready && this.block.ready && this.over.ready){
-        this.ground.render(x, y);
-        this.under.render(x, y);
-        this.block.render(x, y);
-        this.over.render(x, y);
+    if(this.ready && this.ground.ready && this.under.ready && this.block.ready && this.over.ready){
+        this.ground.render(this.tiles, x, y);
+        this.under.render(this.tiles, x, y);
+        this.block.render(this.tiles, x, y);
+        this.over.render(this.tiles, x, y);
 //        this.super.ctx.clear();
     }
     else{
@@ -27,15 +34,14 @@ ViewManager.prototype.renderAll = function(x, y){
     }
 };
 ViewManager.prototype.isBlocked = function(x, y, dir){
-    
     var ahead = [];
     if(dir == Player.DIR_UP){
         ahead = [{x: floor(x+0.2), y: floor(y+0.3)}, // up left
             {x: ceil(x-0.2), y: floor(y+0.3)}]; // up right
     }
     else if(dir == Player.DIR_DOWN){
-        ahead = [{x: floor(x+0.2), y: ceil(y+0.05)}, // down left
-            {x: ceil(x-0.2), y: ceil(y+0.05)}]; // down right
+        ahead = [{x: floor(x+0.2), y: ceil(y+0.08)}, // down left
+            {x: ceil(x-0.2), y: ceil(y+0.08)}]; // down right
     }
     if(dir == Player.DIR_LEFT){
         ahead.push({x: floor(x+0.1), y: floor(y+0.4)}, // left up
@@ -76,7 +82,7 @@ ViewManager.prototype.catchData = function(data){
     this.data = data;
     this.ready = true;
 };
-ViewManager.prototype.render = function(x, y){
+ViewManager.prototype.render = function(tiles, x, y){
     this.layer.ctx.clear();
     
     var dx = x - floor(x),
@@ -84,31 +90,42 @@ ViewManager.prototype.render = function(x, y){
     x = floor(x);
     y = floor(y);
     
-    var p = {};
+    var p = {},
+        t = {},
+        c = GameController.cell;
     for(var i=0;i<GameController.nbCol;++i){
         for(var j=0;j<GameController.nbRow;++j){
             p = this.data.get(x+i-GameController.nbCol/2+1, y+j-GameController.nbRow/2+1);
             if(!p && this.defaultPixel){
                 p = this.defaultPixel;
             }
-            
             if(p){
                 if(p.isOpac()){
-                    this.layer.ctx.fillStyle = p.getHexa();
-                    this.layer.ctx.beginPath();
-                    this.layer.ctx.fillRect((i-dx)*GameController.cell, (j-dy)*GameController.cell, GameController.cell+1, GameController.cell+1);
+                    if(t = this.getTile(p.getHexa()))
+                        this.layer.ctx.drawImage(tiles,
+                            c*t.x, c*t.y, c, c,
+                            round((i-dx)*c), round((j-dy)*c), c, c);
                 }
             }
         }
     }
+    this.anim += this.spd;
+};
+ViewManager.prototype.getTile = function(hexa){
+    for(var x=0;x<ViewManager.match.width;++x){
+        for(var y=0;y<ViewManager.match.height;++y){
+            if(ViewManager.match.get(x, y).getHexa() === hexa)
+                return {x:x, y:y};
+        }
+    }
+    return false;
 };
 
 //children
 function GroundView(c, m){
     this.layer = c;
-    this.data = 0;
     this.defaultPixel = new Pixel(255, 255, 255, 255);
-    this.blocks = [this.defaultPixel];
+    this.SPEED = 0.03;
     
     getDataFromImage("res/"+m+"/grd.png", this.catchData, this);
 }
@@ -116,8 +133,7 @@ GroundView.prototype = Object.create(ViewManager.prototype);
 
 function UnderView(c, m){
     this.layer = c;
-    this.data = 0;
-    this.defaultPixel = false;
+    this.SPEED = 0.06;
     
     getDataFromImage("res/"+m+"/und.png", this.catchData, this);
 }
@@ -125,8 +141,7 @@ UnderView.prototype = Object.create(ViewManager.prototype);
 
 function BlockView(c, m){
     this.layer = c;
-    this.data = 0;
-    this.defaultPixel = false;
+    this.SPEED = 0.085;
     
     getDataFromImage("res/"+m+"/blk.png", this.catchData, this);
 }
@@ -134,8 +149,7 @@ BlockView.prototype = Object.create(ViewManager.prototype);
 
 function OverView(c, m){
     this.layer = c;
-    this.data = 0;
-    this.defaultPixel = false;
+    this.SPEED = 0.09;
     
     getDataFromImage("res/"+m+"/ovr.png", this.catchData, this);
 }

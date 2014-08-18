@@ -271,7 +271,7 @@ var sqrt = Math.sqrt,
     cos = Math.cos,
     PI = Math.PI,
     PI2 = PI*2,
-    SQRT2 = sqrt(2);
+    SQRT2 = sqrt(2)/2;
 
 Array.prototype.out = function(o){
 	var index = this.indexOf(o);
