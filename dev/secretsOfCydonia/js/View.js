@@ -19,7 +19,6 @@ function ViewManager(canvas, tiles, controller){
 ViewManager.match = [];
 
 ViewManager.prototype.ready = false;
-ViewManager.prototype.anim = 0;
 ViewManager.prototype.defaultPixel = false;
 ViewManager.prototype.renderAll = function(x, y){
     if(this.ready && this.ground.ready && this.under.ready && this.block.ready && this.over.ready){
@@ -126,7 +125,6 @@ ViewManager.prototype.getTile = function(hexa){
 function GroundView(c, m){
     this.layer = c;
     this.defaultPixel = "#97d4f7";
-    this.SPEED = 0.03;
     
     getDataFromImage("res/"+m+"/grd.png", this.catchData, this);
 }
@@ -134,7 +132,6 @@ GroundView.prototype = Object.create(ViewManager.prototype);
 
 function UnderView(c, m){
     this.layer = c;
-    this.SPEED = 0.06;
     
     getDataFromImage("res/"+m+"/und.png", this.catchData, this);
 }
@@ -142,15 +139,20 @@ UnderView.prototype = Object.create(ViewManager.prototype);
 
 function BlockView(c, m){
     this.layer = c;
-    this.SPEED = 0.085;
     
     getDataFromImage("res/"+m+"/blk.png", this.catchData, this);
 }
 BlockView.prototype = Object.create(ViewManager.prototype);
 
+function EntitiesView(c, m){
+    this.layer = c;
+    
+    getDataFromImage("res/"+m+"/ent.png", this.catchData, this);
+}
+EntitiesView.prototype = Object.create(ViewManager.prototype);
+
 function OverView(c, m){
     this.layer = c;
-    this.SPEED = 0.09;
     
     getDataFromImage("res/"+m+"/ovr.png", this.catchData, this);
 }

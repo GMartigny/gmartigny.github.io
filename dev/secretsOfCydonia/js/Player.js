@@ -11,7 +11,7 @@ function Player(canvas, img){
         x: +save[0],
         y: +save[1]
     };
-    this.dir = save[2];
+    this.dir = +save[2];
     this.anim = 0;
 	
 	this.display = {

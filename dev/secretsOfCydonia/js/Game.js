@@ -7,6 +7,7 @@ function GameController(media){
     
     var canvas = prepareCanvas(getById("c"));
     this.player = new Player(canvas.player, media.player);
+    this.entities = new EntityManager(canvas.entities, media.entities);
     this.view = new ViewManager(canvas, media.tiles, this);
     
     this.key = new KeyboardManager();
@@ -32,7 +33,10 @@ GameController.prototype.render = function(){
     this.player.move(this.key, this.view);
     this.player.render();
     
+    this.entities.renderAll(this.player.pos.x, this.player.pos.y);
+    
     this.view.renderAll(this.player.pos.x, this.player.pos.y);
+    
     this.fps.update();
 };
 GameController.prototype.teleport = function(dir){
