@@ -7,7 +7,6 @@
         <style>
             *{
                 box-sizing: border-box;
-                margin: 0 -1px;
                 padding: 0;
                 border: none;
             }
@@ -33,6 +32,7 @@
                 font-family: monospace;
                 border: 1px solid #DDD;
                 border-radius: 5px;
+                margin: 0 -1px;
             }
             .switch.on{
                 color: #cccc00;
@@ -47,8 +47,8 @@
             <div class="switch" data-var="drawAtom">Draw atoms</div>
         </div>
         <script>
-            var drawLine = true;
-            var drawAtom = false;
+            var drawLine = true,
+                drawAtom = false;
             
             var swts = document.getElementsByClassName("switch");
             for(var i=0;i<swts.length;++i){
@@ -60,7 +60,7 @@
                 if(window[s.getAttribute("data-var")]) s.classList.add("on");
             }
         </script>
-        <script src="spline.js"></script>
+        <script src="res/js/spline.js"></script>
         <script>
             var can = document.getElementById("can"),
                 ctx = can.getContext("2d"),
