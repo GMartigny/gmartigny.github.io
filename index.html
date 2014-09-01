@@ -145,13 +145,13 @@
                 };
             }
             window.onload = function(){
-                var id = window.location.hash.substr(1);
-                if(id){
-                    currentEl = document.getElementById(id);
+                var id = window.location.hash.substr(1),
+                    el = document.getElementById(id);
+                if(el){
+                    currentEl = el;
                     current = Array.prototype.indexOf.call(elems, currentEl);
+                    makeRotate();
                 }
-                
-                makeRotate();
                 
                 setTimeout(function() {
                     wheel.classList.add("ready");
