@@ -67,7 +67,7 @@
         <a href="#" id="openning" target="_blank"></a>
         <script type="text/javascript">
             var mouse = {
-                    x: -100, y: -100, pressed: 0, hover: 1, color: 0,
+                    x: 0, y: 0, pressed: 0, hover: 0, color: 0,
                     rad: 50, left: "#000000", right: "#FFFFFF"},
                 tools = document.getElementById("tools"),
                 switchColor = document.getElementById("switchColor"),
@@ -94,10 +94,10 @@
                 canDraw.height = canTmp.height = canMouse.height = document.body.offsetHeight;
                 ctxDraw.fillStyle = "#FFFFFF";
                 ctxDraw.fillRect(0, 0, canDraw.width, canDraw.height);
+                ctxDraw.lineCap = "round";
 
                 ctxMouse.strokeStyle = "#888888";
                 ctxMouse.fillStyle = "#888888";
-                ctxDraw.lineCap = "round"
                 
                 var img = new Image();
                 img.src = "colors.png";
@@ -172,12 +172,10 @@
                     
                     var c = getPixel(x, y);
                     if(mouse.color == 1){
-                        mouse.left = c;
-                        selLeft.style.background = c;
+                        mouse.left = selLeft.style.background = c;
                     }
                     else if(mouse.color == 3){
-                        mouse.right = c;
-                        selRight.style.background = c;
+                        mouse.right = selRight.style.background = c;
                     }
                 }
             };
@@ -207,10 +205,6 @@
                 drawBuff.x = mouse.x = e.clientX;
                 drawBuff.y = mouse.y = e.clientY;
                 mouse.pressed = e.button + 1;
-                
-                if(mouse.pressed == 2){
-                    ctxTmp.drawImage(canDraw, 0, 0);
-                }
             };
             window.onmouseup = function(){
                 mouse.pressed = 0;
