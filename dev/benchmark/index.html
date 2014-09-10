@@ -1,0 +1,165 @@
+<html>
+    <head>
+        <title>JS Benchmark</title>
+        <style type="text/css">
+            body{
+                margin: 0;
+                font-family: arial;
+            }
+            *{
+                box-sizing: border-box;
+            }
+
+            #param, #holder{
+                background: #666;
+                width: 50%;
+                height: 100%;
+                padding: 10px;
+                float: left;
+            }
+            h1{
+                font-size: 18px;
+            }
+            h2{
+                font-size: 15px;
+            }
+            .code{
+                width: 100%;
+                height: 190px;
+            }
+            input[type="range"]{
+                width: 200px;
+                vertical-align: middle;
+            }
+
+            #holder{
+                position: relative;
+                background: #FFF;
+                padding: 0;
+            }
+            #output{
+                height: calc(100% - 300px);
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            #logs{
+                position: relative;
+                height: 300px;
+                bottom: 0;
+                background: #EEE;
+                padding: 5px;
+                font-family: monospace;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            #logs div{
+                position: relative;
+                padding: 3px 0 3px 20px;
+                border-bottom: 1px solid rgba(0, 0, 0, .2);
+            }
+            #logs div:before{
+                content: "";
+                position: absolute;
+                top: 7px;
+                left: 2px;
+                width: .5em;
+                height: .5em;
+                border: 2px solid rgba(0, 0, 0, .4);
+                border-width: 2px 2px 0 0;
+                transform: rotate(45deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="param">
+            <form oninput="amount.value = loops.value" id="code">
+                <h1>HTML</h1>
+                <div id="html" class="code">&lt;div id="test"&gt;&lt;/div&gt;</div>
+
+                <h1>JS</h1>
+                <h2>Run once</h2>
+                <div id="js_once" class="code">var holder = document.getElementById("test"),
+    message = "Hello World !&lt;br/&gt;";
+log("ready");</div>
+                <h2>Loop</h2>
+                <div id="js_loop" class="code">holder.innerHTML += message;</div>
+
+                <h1>Launch</h1>
+                <input type="range" id="loops" min="100" max="10000" value="5000"/><output name="amount" for="loops">5000</output>
+                <input type="submit" value="Executer"/>
+            </form>
+        </div>
+        <div id="holder">
+            <div id="output"></div>
+            <div id="logs"></div>
+        </div>
+        <script src="../../res/js/Ace/ace.js"></script>
+        <script type="text/javascript">
+            var html = ace.edit("html"),
+                jsOnce = ace.edit("js_once"),
+                jsLoop = ace.edit("js_loop"),
+                script,
+                output = document.getElementById("output"),
+                logs = document.getElementById("logs"),
+                startTime = 0;
+            
+            html.getSession().setMode("ace/mode/html");
+            jsOnce.getSession().setMode("ace/mode/javascript");
+            jsLoop.getSession().setMode("ace/mode/javascript");
+            
+            if(localStorage.html !== undefined) html.setValue(localStorage.html);
+            if(localStorage.jsOnce !== undefined) jsOnce.setValue(localStorage.jsOnce);
+            if(localStorage.jsLoop !== undefined) jsLoop.setValue(localStorage.jsLoop);
+            
+            // TODO
+            html.getSession().on('change', function(){
+                localStorage.html = html.getValue();
+            });
+            jsOnce.getSession().on('change', function(){
+                localStorage.jsOnce = jsOnce.getValue();
+            });
+            jsLoop.getSession().on('change', function(){
+                localStorage.jsLoop = jsLoop.getValue();
+            });
+
+            document.getElementById("code").onsubmit = function(e) {
+                e.preventDefault();
+                
+                output.innerHTML = html.getValue();
+
+                script = document.createElement("script");
+                script.innerHTML = jsOnce.getValue() + " function __benchmark(){ " + jsLoop.getValue() + " }";
+                document.body.appendChild(script);
+                
+                startTime = Date.now();
+                loop(this.loops.value);
+                return false;
+            };
+            
+            function loop(i){
+                while(i-- > 0)
+                    __benchmark();
+                
+                log("Executed in " + formatN(Date.now()-startTime) + "ms");
+                document.body.removeChild(script);
+            }
+            
+            function formatN(n){
+                var f = "";
+                n = "" + n;
+                
+                var c = 0;
+                for(var i=n.length-1;i>=0;--i){
+                    if(!(c++%3)) f = " " + f;
+                    f = n[i] + f;
+                }
+                
+                return f;
+            }
+            
+            function log(m){
+                logs.innerHTML += "<div>"+m+"</div>";
+            }
+        </script>
+    </body>
+</html>
