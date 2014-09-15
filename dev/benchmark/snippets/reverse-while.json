@@ -1,0 +1,5 @@
+{
+    "html": "",
+    "jsOnce": "var arr = getTestArray(1000);\nvar length = arr.length;",
+    "jsLoop": "while(length--){\n    arr[length-1];\n}"
+}

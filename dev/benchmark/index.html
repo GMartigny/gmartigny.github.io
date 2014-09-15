@@ -31,6 +31,10 @@
                 width: 200px;
                 vertical-align: middle;
             }
+            #loader{
+                vertical-align: middle;
+                visibility: hidden;
+            }
 
             #holder{
                 position: relative;
@@ -55,6 +59,7 @@
             #logs div{
                 position: relative;
                 padding: 3px 0 3px 20px;
+                min-height: 1em;
                 border-bottom: 1px solid rgba(0, 0, 0, .2);
             }
             #logs div:before{
@@ -72,7 +77,20 @@
     </head>
     <body>
         <div id="param">
-            <form oninput="amount.value = loops.value" id="code">
+            <form oninput="amount.value = formatN(loops.value);" id="code">
+                <label for="example">Examples</label>
+                <select name="example" id="example">
+                    <option selected="">--</option>
+                    <optgroup label="Loops">
+                        <option value="dumb-for">for(var i=0; i&lt;array.length; ++i)</option>
+                        <option value="reverse-for">for(var i=array.length-1; i; --i)</option>
+                        <option value="reverse-while">while(length--)</option>
+                        <option value="foreach">array.forEach();</option>
+                    </optgroup>
+                    <optgroup label="DOM selecting">
+                        <option></option>
+                    </optgroup>
+                </select>
                 <h1>HTML</h1>
                 <div id="html" class="code">&lt;div id="test"&gt;&lt;/div&gt;</div>
 
@@ -85,8 +103,8 @@ log("ready");</div>
                 <div id="js_loop" class="code">holder.innerHTML += message;</div>
 
                 <h1>Launch</h1>
-                <input type="range" id="loops" min="100" max="10000" value="5000"/><output name="amount" for="loops">5000</output>
-                <input type="submit" value="Executer"/>
+                <input type="range" id="loops" min="100" max="10000" value="5000"/><output name="amount" for="loops">5 000</output> times
+                <input type="submit" value="Execute" id="submit"/><img src="loading.gif" alt="Loading" id="loader"/>
             </form>
         </div>
         <div id="holder">
@@ -98,20 +116,20 @@ log("ready");</div>
             var html = ace.edit("html"),
                 jsOnce = ace.edit("js_once"),
                 jsLoop = ace.edit("js_loop"),
-                script,
+                loader = document.getElementById("loader"),
+                submit = document.getElementById("submit"),
                 output = document.getElementById("output"),
-                logs = document.getElementById("logs"),
-                startTime = 0;
+                logs = document.getElementById("logs");
             
             html.getSession().setMode("ace/mode/html");
             jsOnce.getSession().setMode("ace/mode/javascript");
             jsLoop.getSession().setMode("ace/mode/javascript");
             
+            // TODO refacto
             if(localStorage.html !== undefined) html.setValue(localStorage.html);
             if(localStorage.jsOnce !== undefined) jsOnce.setValue(localStorage.jsOnce);
             if(localStorage.jsLoop !== undefined) jsLoop.setValue(localStorage.jsLoop);
             
-            // TODO
             html.getSession().on('change', function(){
                 localStorage.html = html.getValue();
             });
@@ -121,44 +139,90 @@ log("ready");</div>
             jsLoop.getSession().on('change', function(){
                 localStorage.jsLoop = jsLoop.getValue();
             });
+            // --
 
             document.getElementById("code").onsubmit = function(e) {
                 e.preventDefault();
+                loader.style.visibility = "visible";
                 
                 output.innerHTML = html.getValue();
-
-                script = document.createElement("script");
-                script.innerHTML = jsOnce.getValue() + " function __benchmark(){ " + jsLoop.getValue() + " }";
-                document.body.appendChild(script);
                 
-                startTime = Date.now();
-                loop(this.loops.value);
+                asyncBenchmark(this.loops.value, function(time){
+                    log("Executed on "+formatN(time)+"ms");
+                });
+                
                 return false;
             };
-            
-            function loop(i){
-                while(i-- > 0)
-                    __benchmark();
+            function asyncBenchmark(loops, callBack){
+                loading(true);
+                var worker = new Worker("worker.js");
+                worker.onmessage = function(e){
+                    loading(false);
+                    callBack(e.data);
+                    this.terminate();
+                };
+                worker.onerror = function(e){
+                    loading(false);
+                    log(e.message);
+                    this.terminate();
+                };
                 
-                log("Executed in " + formatN(Date.now()-startTime) + "ms");
-                document.body.removeChild(script);
+                var script = jsOnce.getValue()+"\n";
+                script += "var __it = "+loops+";\n";
+                script += "while(__it--){\n";
+                script += jsLoop.getValue()+"\n}\n";
+                
+                worker.postMessage(script);
+            }
+            function loading(state){
+                if(state){
+                    submit.style.display = "none";
+                    loader.style.visibility = "visible";
+                }
+                else{
+                    submit.style.display = "inline";
+                    loader.style.visibility = "hidden";
+                }
+            }
+            
+            function htmlSpecialChars(str){
+                var div = document.createElement("div"),
+                    text = document.createTextNode(str);
+                div.appendChild(text);
+                return div.innerHTML;
+            }
+            
+            document.getElementById("example").onchange = function(){
+                getJson(this.options[this.selectedIndex].value);
+            };
+            function getJson(name){
+                var xhr = new XMLHttpRequest();
+                xhr.open("get", "snippets/"+name+".json");
+                xhr.onload = function(){
+                    var data = JSON.parse(this.responseText);
+                    html.setValue(data.html);
+                    jsOnce.setValue(data.jsOnce);
+                    jsLoop.setValue(data.jsLoop);
+                };
+                xhr.send();
             }
             
             function formatN(n){
                 var f = "";
                 n = "" + n;
-                
+
                 var c = 0;
                 for(var i=n.length-1;i>=0;--i){
                     if(!(c++%3)) f = " " + f;
                     f = n[i] + f;
                 }
-                
+
                 return f;
             }
             
+            // put infos on logs
             function log(m){
-                logs.innerHTML += "<div>"+m+"</div>";
+                logs.innerHTML += "<div>"+htmlSpecialChars(m)+"</div>";
             }
         </script>
     </body>
