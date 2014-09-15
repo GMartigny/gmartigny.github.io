@@ -87,20 +87,17 @@
                         <option value="reverse-while">while(length--)</option>
                         <option value="foreach">array.forEach();</option>
                     </optgroup>
-                    <optgroup label="DOM selecting">
-                        <option></option>
+                    <optgroup label="Math">
+                        <option value="round">Math.round(x);</option>
+                        <option value="binary">x+0.5&lt;&lt;0;</option>
                     </optgroup>
                 </select>
-                <h1>HTML</h1>
-                <div id="html" class="code">&lt;div id="test"&gt;&lt;/div&gt;</div>
 
                 <h1>JS</h1>
                 <h2>Run once</h2>
-                <div id="js_once" class="code">var holder = document.getElementById("test"),
-    message = "Hello World !&lt;br/&gt;";
-log("ready");</div>
+                <div id="js_once" class="code">var message = "Hello World !&lt;br/&gt;";</div>
                 <h2>Loop</h2>
-                <div id="js_loop" class="code">holder.innerHTML += message;</div>
+                <div id="js_loop" class="code">var test = Math.round(Math.sin(2*random())/3;</div>
 
                 <h1>Launch</h1>
                 <input type="range" id="loops" min="100" max="10000" value="5000"/><output name="amount" for="loops">5 000</output> times
@@ -113,8 +110,7 @@ log("ready");</div>
         </div>
         <script src="../../res/js/Ace/ace.js"></script>
         <script type="text/javascript">
-            var html = ace.edit("html"),
-                jsOnce = ace.edit("js_once"),
+            var jsOnce = ace.edit("js_once"),
                 jsLoop = ace.edit("js_loop"),
                 loader = document.getElementById("loader"),
                 submit = document.getElementById("submit"),
@@ -126,13 +122,9 @@ log("ready");</div>
             jsLoop.getSession().setMode("ace/mode/javascript");
             
             // TODO refacto
-            if(localStorage.html !== undefined) html.setValue(localStorage.html);
             if(localStorage.jsOnce !== undefined) jsOnce.setValue(localStorage.jsOnce);
             if(localStorage.jsLoop !== undefined) jsLoop.setValue(localStorage.jsLoop);
             
-            html.getSession().on('change', function(){
-                localStorage.html = html.getValue();
-            });
             jsOnce.getSession().on('change', function(){
                 localStorage.jsOnce = jsOnce.getValue();
             });
@@ -145,26 +137,22 @@ log("ready");</div>
                 e.preventDefault();
                 loader.style.visibility = "visible";
                 
-                output.innerHTML = html.getValue();
-                
                 asyncBenchmark(this.loops.value, function(time){
                     log("Executed on "+formatN(time)+"ms");
                 });
                 
                 return false;
             };
+            var worker = new Worker("worker.js");
             function asyncBenchmark(loops, callBack){
                 loading(true);
-                var worker = new Worker("worker.js");
                 worker.onmessage = function(e){
                     loading(false);
                     callBack(e.data);
-                    this.terminate();
                 };
                 worker.onerror = function(e){
                     loading(false);
                     log(e.message);
-                    this.terminate();
                 };
                 
                 var script = jsOnce.getValue()+"\n";

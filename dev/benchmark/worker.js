@@ -10,6 +10,7 @@ onmessage = function(message){
     eval(message.data);
     
     postMessage(Date.now()-startTime);
+    clearTimeout(timeout);
 };
 
 function TimeoutError(){
