@@ -3,19 +3,10 @@ var self = this;
 onmessage = function(message){
     var startTime = Date.now();
     
-    var timeout = setTimeout(function(){
-        throw new TimeoutError();
-    }, 10000);
-    
     eval(message.data);
     
     postMessage(Date.now()-startTime);
-    clearTimeout(timeout);
 };
-
-function TimeoutError(){
-    this.message = "It's taking too long";
-}
 
 // return an array with random values
 function getTestArray(length){

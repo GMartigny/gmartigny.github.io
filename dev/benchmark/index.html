@@ -89,15 +89,15 @@
                     </optgroup>
                     <optgroup label="Math">
                         <option value="round">Math.round(x);</option>
-                        <option value="binary">x+0.5&lt;&lt;0;</option>
+                        <option value="binary-round">x+0.5&lt;&lt;0;</option>
                     </optgroup>
                 </select>
 
                 <h1>JS</h1>
                 <h2>Run once</h2>
-                <div id="js_once" class="code">var message = "Hello World !&lt;br/&gt;";</div>
+                <div id="js_once" class="code">var message = "Hello World !";</div>
                 <h2>Loop</h2>
-                <div id="js_loop" class="code">var test = Math.round(Math.sin(2*random())/3;</div>
+                <div id="js_loop" class="code">var test = Math.round(Math.sin(2*random())/3);</div>
 
                 <h1>Launch</h1>
                 <input type="range" id="loops" min="100" max="10000" value="5000"/><output name="amount" for="loops">5 000</output> times
@@ -117,7 +117,6 @@
                 output = document.getElementById("output"),
                 logs = document.getElementById("logs");
             
-            html.getSession().setMode("ace/mode/html");
             jsOnce.getSession().setMode("ace/mode/javascript");
             jsLoop.getSession().setMode("ace/mode/javascript");
             
@@ -148,10 +147,12 @@
                 loading(true);
                 worker.onmessage = function(e){
                     loading(false);
+                    clearTimeout(timeout);
                     callBack(e.data);
                 };
                 worker.onerror = function(e){
                     loading(false);
+                    clearTimeout(timeout);
                     log(e.message);
                 };
                 
@@ -160,7 +161,16 @@
                 script += "while(__it--){\n";
                 script += jsLoop.getValue()+"\n}\n";
                 
+                console.log(script);
+                
                 worker.postMessage(script);
+    
+                var timeout = setTimeout(function(){
+                    worker.terminate();
+                    worker = new Worker("worker.js");
+                    loading(false);
+                    log(new TimeoutError());
+                }, 10000);
             }
             function loading(state){
                 if(state){
@@ -188,7 +198,6 @@
                 xhr.open("get", "snippets/"+name+".json");
                 xhr.onload = function(){
                     var data = JSON.parse(this.responseText);
-                    html.setValue(data.html);
                     jsOnce.setValue(data.jsOnce);
                     jsLoop.setValue(data.jsLoop);
                 };
@@ -207,6 +216,13 @@
 
                 return f;
             }
+
+            function TimeoutError(){
+                this.name = "TimeoutError"
+                this.message = "It's taking too long";
+            }
+            TimeoutError.prototype = new Error();
+            TimeoutError.prototype.constructor = TimeoutError;
             
             // put infos on logs
             function log(m){
