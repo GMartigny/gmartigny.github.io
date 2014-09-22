@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Extract 2</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <div id="holder">
+            <canvas id="back" width="400" height="800"></canvas>
+            <canvas id="player" width="400" height="800"></canvas>
+        </div>
+        <script src="../../res/js/gameLib.js"></script>
+        <script>
+            (function(){
+                var media = loadMedia([
+                    {src: "js/Game.js", name: "Game", type: "script", weight: 1},
+                    {src: "js/Save.js", name: "Save", type: "script", weight: 1},
+                    {src: "js/Player.js", name: "Player", type: "script", weight: 1},
+                    {src: "js/View.js", name: "View", type: "script", weight: 1}
+                ], function(per){
+                    if(per >= 100){
+                        var game = new GameManager(media);
+                    }
+                    else{
+                        
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>
