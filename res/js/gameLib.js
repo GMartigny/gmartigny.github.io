@@ -114,15 +114,17 @@ function defineFormat(name){
 }
 
 function prepareCanvas(holder){
-    var cs = holder.getElementsByTagName("canvas"),
+    var cs = getById(holder).getElementsByTagName("canvas"),
+        l = cs.length,
         objs = {};
-    cs.forEach(function(e){
+    
+    while(l--){
         var o = {
-            can: e,
-            ctx: e.getContext("2d")
+            can: cs[l],
+            ctx: cs[l].getContext("2d")
         };
-        objs.push(o);
-    });
+        objs[o.can.id] = o;
+    }
     return objs;
 }
 
