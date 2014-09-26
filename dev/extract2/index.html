@@ -8,8 +8,8 @@
     </head>
     <body>
         <div id="holder">
-            <canvas id="back" width="400" height="800"></canvas>
-            <canvas id="player" width="400" height="800"></canvas>
+            <canvas id="back" width="500" height="700"></canvas>
+            <canvas id="player" width="500" height="700"></canvas>
         </div>
         <script src="../../res/js/gameLib.js"></script>
         <script>
@@ -21,7 +21,8 @@
                     {src: "js/View.js", name: "View", type: "script", weight: 1}
                 ], function(per){
                     if(per >= 100){
-                        var game = new GameManager(media);
+                        var canvas = prepareCanvas("holder");
+                        new GameManager(media, canvas);
                     }
                     else{
                         
