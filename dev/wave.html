@@ -1,120 +1,156 @@
-<style type="text/css">
-    body{
-        margin: 0;
-    }
-    #c{
-        width: 100%;
-        height: 100%;
-        background: #EEE;
-    }
-</style>
-<canvas id="c"></canvas>
-<script src="../res/js/spline.js"></script>
-<script>
-    var can = document.getElementById("c"),
-            ctx = can.getContext("2d"),
-            PI = Math.PI,
-            pts = [],
-            tmp = 0,
-            hover = 0,
-            current = {},
-            previous = {
-                x: 0, y: 0
-            },
-            abs = Math.abs;
+<html>
+    <head>
+        <title></title>
+        <style type="text/css">
+            body{
+                margin: 0;
+            }
+            #c{
+                width: 100%;
+                height: 100%;
+                background: #EEE;
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="../res/js/contextMenu/cm.css"/>
+    </head>
+    <body>
+        <canvas id="c"></canvas>
+        <script src="../res/js/spline.js"></script>
+        <script src="../res/js/contextMenu/cm.js"></script>
+        <script>
+            var can = document.getElementById("c"),
+                ctx = can.getContext("2d"),
+                PI = Math.PI,
+                pts = [],
+                tmp = 0,
+                hover = 0,
+                current = {},
+                previous = {
+                    x: 0, y: 0
+                },
+                abs = Math.abs;
+            
+            var pathClosed = false;
+            can.contextMenu({
+                "Clear": clearData,
+                "Close Path": closePath,
+                "Credits to ": false
+            });
+            function clearData(){
+                pts = [];
+            }
+            function closePath(){
+                pathClosed = true;
+                can.contextMenu.removeOption("Close Path");
+                can.contextMenu.addOption({
+                    "Open path": openPath
+                });
+            }
+            function openPath(){
+                pathClosed = false;
+                can.contextMenu.removeOption("Open path");
+                can.contextMenu.addOption({
+                    "Close Path": closePath
+                });
+            }
 
-    can.width = document.body.offsetWidth;
-    can.height = document.body.offsetHeight;
-    ctx.lineWidth = 3;
-    
-    function Point(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-    Point.prototype.render = function(c){
-        c.beginPath();
-        c.arc(this.x, this.y, Point.r, 0, 2 * PI);
-        c.stroke();
-    };
-    Point.prototype.isIn = function(m){
-        return distance(this, m) < Point.r;
-    };
-    Point.r = 5;
+            can.width = document.body.offsetWidth;
+            can.height = document.body.offsetHeight;
+            ctx.lineWidth = 3;
 
-    can.onmousedown = function(e) {
-        if (hover)
-            hover.drag = 1;
-        else
-            tmp = new Point(e.clientX, e.clientY);
-    };
-    can.ondblclick = function() {
-        if (hover)
-            pts.splice(pts.indexOf(hover), 1);
-    };
-    can.onmousemove = function(e) {
-        if (tmp) {
-            tmp.x = e.clientX;
-            tmp.y = e.clientY;
-        }
-        else if (hover.drag) {
-            hover.x = e.clientX;
-            hover.y = e.clientY;
-        }
-        else {
-            for (var i = 0; i < pts.length; ++i) {
-                var p = pts[i];
-                if (p.isIn({
-                    x: e.clientX, y: e.clientY
-                })) {
-                    hover = p;
-                    document.body.style.cursor = "move";
-                    break;
+            function Point(x, y){
+                this.x = x;
+                this.y = y;
+            }
+            Point.prototype.render = function(c){
+                c.beginPath();
+                c.arc(this.x, this.y, Point.r, 0, 2 * PI);
+                c.stroke();
+            };
+            Point.prototype.isIn = function(m){
+                return distance(this, m) < Point.r;
+            };
+            Point.r = 5;
+
+            can.onmousedown = function(e){
+                if(e.which == 1){
+                    if(hover)
+                        hover.drag = 1;
+                    else
+                        tmp = new Point(e.clientX, e.clientY);
                 }
-                else {
+            };
+            can.ondblclick = function(){
+                if(hover){
+                    pts.splice(pts.indexOf(hover), 1);
                     hover = 0;
                     document.body.style.cursor = "";
                 }
+            };
+            can.onmousemove = function(e){
+                if(tmp){
+                    tmp.x = e.clientX;
+                    tmp.y = e.clientY;
+                }
+                else if(hover.drag){
+                    hover.x = e.clientX;
+                    hover.y = e.clientY;
+                }
+                else{
+                    for(var i = 0; i < pts.length; ++i){
+                        var p = pts[i];
+                        if(p.isIn({x: e.clientX, y: e.clientY})){
+                            hover = p;
+                            document.body.style.cursor = "move";
+                            break;
+                        }
+                        else{
+                            hover = 0;
+                            document.body.style.cursor = "";
+                        }
+                    }
+                    ;
+                }
+            };
+            can.onmouseup = function(){
+                if(tmp){
+                    pts.push(tmp);
+                    tmp = 0;
+                }
+                else
+                    hover.drag = 0;
+            };
+
+            (function draw(){
+                requestAnimationFrame(draw);
+                ctx.clearRect(0, 0, can.width, can.height);
+
+                if(pts.length){
+
+                    ctx.strokeStyle = "#2B918B";
+                    var allPos = [];
+                    for(var i = 0; i < pts.length; ++i){
+                        pts[i].render(ctx);
+                        allPos.push(pts[i].x, pts[i].y);
+                    }
+                    if(tmp)
+                        allPos.push(tmp.x, tmp.y);
+
+                    ctx.strokeStyle = "#666";
+                    ctx.beginPath();
+                    ctx.splineThrought(allPos, 0.5, pathClosed);
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+
+                ctx.strokeStyle = "#A00";
+                if(tmp)
+                    tmp.render(ctx);
+            })();
+
+            function distance(from, to){
+                return Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
             }
-            ;
-        }
-    };
-    can.onmouseup = function() {
-        if (tmp) {
-            pts.push(tmp);
-            tmp = 0;
-        }
-        else
-            hover.drag = 0;
-    };
-
-    (function draw() {
-        requestAnimationFrame(draw);
-        ctx.clearRect(0, 0, can.width, can.height);
-
-        if (pts.length) {
-            
-            ctx.strokeStyle = "#2B918B";
-            var allPos = [];
-            for (var i = 0; i < pts.length; ++i){
-                pts[i].render(ctx);
-                allPos.push(pts[i].x, pts[i].y);
-            }
-            if(tmp)
-                allPos.push(tmp.x, tmp.y);
-            
-            ctx.strokeStyle = "#666";
-            ctx.beginPath();
-            ctx.splineThrought(allPos, 0.3);
-            ctx.stroke();
-            ctx.closePath();
-        }
-        
-        ctx.strokeStyle = "#A00";
-        if (tmp)
-            tmp.render(ctx);
-    })();
-
-    function distance(from, to) {
-        return Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
-    }
-</script>
+        </script>
+    </body>
+</html>
