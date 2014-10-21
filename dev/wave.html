@@ -31,27 +31,18 @@
                 abs = Math.abs;
             
             var pathClosed = false;
-            can.contextMenu({
-                "Clear": clearData,
-                "Close Path": closePath,
-                "Credits to ": false
-            });
+            can.contextMenu([
+                {
+                    "Clear": clearData,
+                    "Open/Close Path": toggleClosing
+                },
+                {"Credits to GMartigny": false}
+            ]);
             function clearData(){
                 pts = [];
             }
-            function closePath(){
-                pathClosed = true;
-                can.contextMenu.removeOption("Close Path");
-                can.contextMenu.addOption({
-                    "Open path": openPath
-                });
-            }
-            function openPath(){
-                pathClosed = false;
-                can.contextMenu.removeOption("Open path");
-                can.contextMenu.addOption({
-                    "Close Path": closePath
-                });
+            function toggleClosing(){
+                pathClosed = !pathClosed;
             }
 
             can.width = document.body.offsetWidth;
