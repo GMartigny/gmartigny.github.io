@@ -30,13 +30,29 @@
                 },
                 abs = Math.abs;
             
-            var pathClosed = false;
+            var pathClosed = false,
+                edge = 0.4;
             can.contextMenu([
                 {
                     "Clear": clearData,
-                    "Open/Close Path": toggleClosing
+                    "Open/Close Path": toggleClosing,
+                    "Edge": [
+                        {
+                            "Round": function(){
+                                edge = 0.9;
+                            },
+                            "Smooth": function(){
+                                edge = 0.4;
+                            }
+                        },
+                        {
+                            "No edging": function(){
+                                edge = 0;
+                            }
+                        }
+                    ]
                 },
-                {"Credits to GMartigny": false}
+                {"Version 1.1": null}
             ]);
             function clearData(){
                 pts = [];
@@ -129,7 +145,7 @@
 
                     ctx.strokeStyle = "#666";
                     ctx.beginPath();
-                    ctx.splineThrought(allPos, 0.5, pathClosed);
+                    ctx.splineThrought(allPos, edge, pathClosed);
                     ctx.stroke();
                     ctx.closePath();
                 }
