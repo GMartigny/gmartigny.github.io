@@ -11,26 +11,63 @@ function ContextMenu(options){
 ContextMenu.Split = "_split";
 
 ContextMenu.createMenu = function(groups){
-    var m = document.createElement("div");
+    var m = document.createElement("div"),
+        s = document.createElement("div");
     m.id = "_cm";
+    s.classList.add("holder");
+    
     groups.forEach(function(g){
-        var d = document.createElement("div");
-        for(var o in g){
-            var i = document.createElement("button");
-            i.innerHTML = o;
-            if(g[o])
-                i.addEventListener("click", g[o]);
-            else
-                i.classList.add("no-action");
-            d.appendChild(i);
-        }
-        m.appendChild(d);
+        s.appendChild(ContextMenu.createMenu.group(g));
     });
+    
     m.addEventListener("contextmenu", function(e){
         e.preventDefault();
         e.target.click();
     });
+    m.appendChild(s);
     return m;
+};
+ContextMenu.createMenu.group = function(g){
+    var d = document.createElement("div");
+    d.classList.add("group");
+    for(var o in g){
+        if(g[o]){
+            if(g[o].length){
+                d.appendChild(ContextMenu.createMenu.dropdown(o, g[o]));
+            }
+            else{
+                d.appendChild(ContextMenu.createMenu.option(o, g[o]));
+            }
+        }
+        else{
+            d.appendChild(ContextMenu.createMenu.noaction(o));
+        }
+    }
+    return d;
+};
+ContextMenu.createMenu.option = function(n,f){
+    var i = document.createElement("button");
+    i.innerHTML = n;
+    i.addEventListener("click", f);
+    return i;
+};
+ContextMenu.createMenu.noaction = function(n){
+    var i = document.createElement("div");
+    i.innerHTML = n;
+    i.classList.add("no-action");
+    return i;
+};
+ContextMenu.createMenu.dropdown = function(n,o){
+    var i = document.createElement("div"),
+        s = document.createElement("div");
+    i.innerHTML = n;
+    i.classList.add("parent");
+    s.classList.add("holder");
+    o.forEach(function(u){
+        s.appendChild(ContextMenu.createMenu.group(u));
+    });
+    i.appendChild(s);
+    return i;
 };
 ContextMenu.prototype.refreshHTML = function(){
     if(this.menu) this.menu.remove();
@@ -44,6 +81,12 @@ ContextMenu.prototype.show = function(x, y){
     this.menu.style.left = x;
     this.menu.style.top = y;
     document.body.appendChild(this.menu);
+    
+    if(y+this.menu.offsetHeight > document.body.offsetHeight)
+        this.menu.style.top = y-this.menu.offsetHeight;
+    if(x+this.menu.offsetWidth > document.body.offsetWidth)
+        this.menu.style.left = document.body.offsetWidth-this.menu.offsetWidth;
+    
     var cm = this;
     window.addEventListener("click", function(){
         cm.hide.call(cm);
