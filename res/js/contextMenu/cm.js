@@ -8,14 +8,11 @@ HTMLElement.prototype.contextMenu = function(options){
 function ContextMenu(options){
     this.setOptions(options);
 }
-ContextMenu.Split = "_split";
-
 ContextMenu.createMenu = function(groups){
     var m = document.createElement("div"),
         s = document.createElement("div");
     m.id = "_cm";
     s.classList.add("holder");
-
     groups.forEach(function(g){
         s.appendChild(ContextMenu.createMenu.group(g));
     });
@@ -92,8 +89,7 @@ ContextMenu.prototype.show = function(x, y){
     ContextMenu.opened = this;
     window.addEventListener("click", ContextMenu.callHide);
 };
-ContextMenu.callHide = function(e){
-    console.log("click");
+ContextMenu.callHide = function(){
     ContextMenu.opened.hide.call(ContextMenu.opened);
 };
 ContextMenu.prototype.hide = function(){
