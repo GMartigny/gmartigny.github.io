@@ -89,7 +89,9 @@
                         }
                     });
                 }
-                else if(e.keyCode == 27){
+                else if(e.keyCode == 27){ // escape
+                    clearTimeout(running);
+                    running = false;
                     grid = new Grid(ctx.canvas.width, ctx.canvas.height);
                     grid.render();
                 }
@@ -160,6 +162,7 @@
                     y: y
                 };
                 this.state = 1;
+                this.weight = 0;
                 this.comeFrom = false;
             }
             Tile.size = 20;
@@ -238,10 +241,10 @@
             function findPath(){
                 if(opened.length){
                     var closest = opened[0],
-                        minDist = closest.distance(grid.finish),
+                        minDist = closest.distance(grid.finish)+closest.weight,
                         l = opened.length;
                     for(var i=1;i<l;++i){
-                        var d = opened[i].distance(grid.finish);
+                        var d = opened[i].distance(grid.finish)+opened[i].weight;
                         if(d < minDist){
                             closest = opened[i];
                             minDist = d;
@@ -253,7 +256,7 @@
                     closest.render();
                     
                     if(evaluate(closest))
-                        setTimeout(findPath, 100);
+                        running = setTimeout(findPath, 100);
                 }
                 else{
                     alert("No possible Path");
@@ -266,11 +269,12 @@
                     if(t.state != 2 && t.state != 3 && t.state != 10 && t.state != 20){
                         if(t === grid.finish){
                             pointer = current;
-                            setTimeout(reconstructPath, 50);
+                            reconstructPath();
                             again = false;
                         }
                         else{
                             t.comeFrom = current;
+                            t.weight = current.weight+0.5;
                             t.state = 10;
                             t.render();
                             opened.push(t);
@@ -284,7 +288,7 @@
                     pointer.state = 30;
                     pointer.render();
                     pointer = pointer.comeFrom;
-                    setTimeout(reconstructPath, 50);
+                    running = setTimeout(reconstructPath, 50);
                 }
             }
         </script>
