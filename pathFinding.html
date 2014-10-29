@@ -22,11 +22,9 @@
     <body>
         <canvas id="can"></canvas>
         <script>
-            var opened = [],
-                grid,
+            var grid,
+                finder,
                 ctx,
-                running = false,
-                pointer = false,
                 mouse = {
                     x: -100,
                     y: -100,
@@ -35,7 +33,7 @@
                 };
             
             window.onmousemove = function(e){
-                if(!running){
+                if(!finder.running){
                     mouse.x = e.clientX/Tile.size<<0;
                     mouse.y = e.clientY/Tile.size<<0;
 
@@ -77,9 +75,7 @@
                         mouse.hover.state <<= 0;
                         mouse.hover.render();
                     }
-                    running = true;
-                    evaluate(grid.start);
-                    findPath();
+                    finder.find();
                 }
                 else if(e.keyCode == 32){ // space
                     grid.forEach(function(t){
@@ -90,35 +86,96 @@
                     });
                 }
                 else if(e.keyCode == 27){ // escape
-                    clearTimeout(running);
-                    running = false;
+                    finder.stop();
                     grid = new Grid(ctx.canvas.width, ctx.canvas.height);
                     grid.render();
                 }
             };
             
             // PATHFINDER
-            function PathFinder(){
+            function PathFinder(grid){
+                this.grid = grid;
                 this.opened = [];
                 this.running = false;
                 this.pointer = false;
             }
             PathFinder.prototype.find = function(){
-                
+                this.evaluate(grid.start);
+                this.step();
             };
-            PathFinder.prototype.evaluate = function(){
-                
+            PathFinder.prototype.step = function(){
+                if(this.opened.length){
+                    var closest = this.opened[0],
+                        minDist = closest.distance(this.grid.finish)+closest.weight,
+                        l = this.opened.length;
+                    for(var i=1;i<l;++i){
+                        var d = this.opened[i].distance(this.grid.finish)+this.opened[i].weight;
+                        if(d < minDist){
+                            closest = this.opened[i];
+                            minDist = d;
+                        }
+                    }
+                    
+                    closest.state = 20;
+                    this.opened.splice(this.opened.indexOf(closest), 1);
+                    closest.render();
+                    
+                    if(this.evaluate(closest)){
+                        var self = this;
+                        this.running = setTimeout(function(){
+                            self.step.call(self);
+                        }, 99);
+                    }
+                }
+                else{
+                    alert("No possible Path");
+                }
+            };
+            PathFinder.prototype.evaluate = function(tile){
+                var arr = tile.around(),
+                    again = true,
+                    self = this;
+                arr.forEach(function(t){
+                    if(t.state != 2 && t.state != 3 && t.state != 10 && t.state != 20){
+                        if(t === grid.finish){
+                            self.pointer = tile;
+                            reconstructPath();
+                            again = false;
+                        }
+                        else{
+                            t.comeFrom = tile;
+                            t.weight = tile.weight+0.5;
+                            t.state = 10;
+                            t.render();
+                            self.opened.push(t);
+                        }
+                    }
+                });
+                return again;
             };
             PathFinder.prototype.path = function(){
-                
+                if(this.pointer.comeFrom){
+                    this.pointer.state = 30;
+                    this.pointer.render();
+                    this.pointer = this.pointer.comeFrom;
+                    var self = this;
+                    this.running = setTimeout(function(){
+                        self.step.call(self);
+                    }, 50);
+                }
+            };
+            PathFinder.prototype.stop = function(){
+                if(this.running){
+                    clearTimeout(this.running);
+                    this.running = false;
+                    this.opened = [];
+                    this.pointer = false;
+                }
             };
             
             // GRID
             function Grid(w, h){
                 this.tiles = [];
-                opened = [];
-                running = false;
-                pointer = false;
                 
                 var rows = h/Tile.size<<0,
                     cols = w/Tile.size<<0;
@@ -234,63 +291,9 @@
                 ctx.lineWidth = 1;
                 
                 grid = new Grid(can.width, can.height);
-                
                 grid.render();
+                finder = new PathFinder(grid);
             })();
-            
-            function findPath(){
-                if(opened.length){
-                    var closest = opened[0],
-                        minDist = closest.distance(grid.finish)+closest.weight,
-                        l = opened.length;
-                    for(var i=1;i<l;++i){
-                        var d = opened[i].distance(grid.finish)+opened[i].weight;
-                        if(d < minDist){
-                            closest = opened[i];
-                            minDist = d;
-                        }
-                    }
-                    
-                    closest.state = 20;
-                    opened.splice(opened.indexOf(closest), 1);
-                    closest.render();
-                    
-                    if(evaluate(closest))
-                        running = setTimeout(findPath, 100);
-                }
-                else{
-                    alert("No possible Path");
-                }
-            }
-            function evaluate(current){
-                var arr = current.around(),
-                    again = true;
-                arr.forEach(function(t){
-                    if(t.state != 2 && t.state != 3 && t.state != 10 && t.state != 20){
-                        if(t === grid.finish){
-                            pointer = current;
-                            reconstructPath();
-                            again = false;
-                        }
-                        else{
-                            t.comeFrom = current;
-                            t.weight = current.weight+0.5;
-                            t.state = 10;
-                            t.render();
-                            opened.push(t);
-                        }
-                    }
-                });
-                return again;
-            }
-            function reconstructPath(){
-                if(pointer.comeFrom){
-                    pointer.state = 30;
-                    pointer.render();
-                    pointer = pointer.comeFrom;
-                    running = setTimeout(reconstructPath, 50);
-                }
-            }
         </script>
     </body>
 </html>
