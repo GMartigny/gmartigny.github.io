@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Webooth</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../res/js/gameLib.js"></script>
+        <style>
+            html, body{
+                margin: 0;
+                height: 100%;
+                background: #777;
+            }
+            #holder{
+                position: absolute;
+                width: 800px;
+                margin: 40px auto 0;
+                right: 0;
+                left: 0;
+            }
+            canvas{
+                display: block;
+                position: absolute;
+            }
+            #output{
+                background: #FFF;
+            }
+            #holder .switch{
+                text-align: center;
+                cursor: pointer;
+                padding: 6px 10px;
+                background-image: linear-gradient(#EEE 0, #FFF 25%, #EEE 100%);
+                color: #666;
+                font-size: 13px;
+                font-weight: bold;
+                font-family: monospace;
+                border: 2px solid #DDD;
+                border-radius: 5px;
+                outline: none;
+            }
+            #holder .switch.on{
+                color: #CC0;
+                border-color: #DD0;
+                background-position: 0 .5em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="holder">
+            <button class="switch" id="grey">Grey</button>
+            <button class="switch" id="invert">Invert</button>
+            <button class="switch" id="hyper">Hyper Color</button>
+            <button class="switch" id="pixel">Pixelate</button>
+            <canvas id="output" width="800" height="600" title="click me to snapshot"></canvas>
+            <!--<canvas id="overlay" width="800" height="600"></canvas>-->
+        </div>
+        <script>
+            var video = new Video(),
+                buffer = {
+                    can: document.createElement("canvas")
+                },
+                canvas = prepareCanvas("holder"),
+                filter = {};
+        
+            navigator.gUM({video: true}, function(stream){
+                video.src = window.URL.createObjectURL(stream);
+            }, function(){
+                alert("User media not enabled");
+            });
+            
+            var switchs = document.getElementsByClassName("switch");
+            for(var i=switchs.length-1;i>=0;--i){
+                switchs[i].addEvent("click", function(){
+                    this.classList.toggle("on");
+                    filter[this.id] = !filter[this.id];
+                });
+            }
+            
+            window.addEvent("load", function(){
+                video.autoplay = true;
+                buffer.can.width = canvas.output.can.width;
+                buffer.can.height = canvas.output.can.height;
+                buffer.ctx = buffer.can.getContext("2d");
+                draw();
+            });
+            canvas.output.can.addEvent("click", function(){
+                window.open(canvas.output.can.toDataURL());
+            });
+            
+            function draw(){
+                raf(draw);
+                var w = buffer.can.width,
+                    h = buffer.can.height,
+                    data = buffer.ctx.getImageData(0, 0, w, h);
+                buffer.ctx.drawImage(video, 0, 0, w, h);
+                
+                while(--w > 0){
+                    h = buffer.can.height;
+                    while(--h > 0){
+                        var px = data.get(w, h);
+                        if(px){
+                            if(filter.grey)
+                                px.grey();
+                            if(filter.invert)
+                                px.invert();
+                            if(filter.hyper)
+                                px.hyper();
+                            data.put(w, h, px);
+                            if(filter.pixel){
+                                var i = 11;
+                                while(i--){
+                                    var j = 11;
+                                    while(j--)
+                                        data.put(w-i, h-j, px);
+                                }
+                                h -= 10;
+                            }
+                        }
+                    }
+                    if(filter.pixel)
+                        w -= 10;
+                }
+                canvas.output.ctx.putImageData(data, 0, 0);
+            }
+            
+            Pixel.prototype.grey = function(){
+                var mean = (this.r + this.g + this.b) / 3 <<0;
+                this.r = this.g = this.b = mean;
+            };
+            Pixel.prototype.invert = function(){
+                this.r = 255 - this.r;
+                this.g = 255 - this.g;
+                this.b = 255 - this.b;
+            };
+            Pixel.prototype.hyper = function(){
+                this.r = this.r < 127 ? 0 : 255;
+                this.g = this.g < 127 ? 0 : 255;
+                this.b = this.b < 127 ? 0 : 255;
+            };
+        </script>
+    </body>
+</html>
