@@ -2,117 +2,118 @@
 <!-- Welcome in the matrix -->
 <head>
     <title>Easy Slider demo</title>
-	<style type="text/css">
-		body{
-		}
-		#loader{
-			position: absolute;
-			width: 100%;
-			text-align: center;
-			font-weight: bold;
-			font-size: 30px;
-			text-align: center;
-			color: #FFF;
-			z-index: 1;
-		}
-		#firstExample{
-			width: 800px;
-			height: 200px;
-			margin: 0 auto;
-		}
-		#secondExample{
-			float: left;
-			width: 200px;
-			height: 350px;
-		}
-		#display{
-			display: inline-block;
-			margin: 20px 40px;
-		}
-		pre{
-			padding: 10px 20px;
-			box-shadow: 0 0 5px #666 inset;
-		}
-	</style>
-	<link rel="stylesheet" type="text/css" href="style.css"/>
-	<script type="text/javascript">
-	function hideLoader(car){
-		car.style.background = "";
-		document.getElementById("loader").style.display = "none";
-	}
-	</script>
+    <style type="text/css">
+        body{
+        }
+        #loader{
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 30px;
+            text-align: center;
+            color: #FFF;
+            z-index: 1;
+        }
+        #firstExample{
+            width: 800px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        #secondExample{
+            float: left;
+            width: 200px;
+            height: 350px;
+        }
+        #display{
+            display: inline-block;
+            margin: 20px 40px;
+        }
+        pre{
+            padding: 10px 20px;
+            box-shadow: 0 0 5px #666 inset;
+            background: #F9F9F9;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script type="text/javascript">
+        function hideLoader(car){
+            car.style.background = "";
+            document.getElementById("loader").style.display = "none";
+        }
+    </script>
 </head>
 <body>
-	<h1>Easy slider</h1>
-	<p>
-		Create easy as hell Carrousel for your sites.<br/>
-		Just set a container with class="carrousel" and ... that it, you're done !
-	</p>
-	<div id="loader">Wait for it ...</div>
-	<!-- Support onload event -->
-	<div id="firstExample" class="carrousel" onload="hideLoader(this);" style="background: #666">
+    <h1>Easy slider</h1>
+    <p>
+        Create easy as hell Carrousel for your sites.<br/>
+        Just set a container with class="carrousel" and ... that it, you're done !
+    </p>
+    <div id="loader">Wait for it ...</div>
+    <!-- Support onload event -->
+    <div id="firstExample" class="carrousel" onload="hideLoader(this);" style="background: #666">
         <img src="http://lorempixel.com/500/100" alt="">
-		<div><h2>Hellow there</h2></div>
+        <div><h2>Hellow there</h2></div>
         <img src="http://lorempixel.com/500/500" alt=""> 
-		<div style="width:70%">
-			<h3>Allow long text to be displayed</h3>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</p>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</p>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</p>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</p>
-		</div>
-	</div>
-	<p>
-		You can put whatever you want in it. Image, text or even video can be throw in.<br/>
-		If you want to make it vertical : class="carrousel vertical" and baaam ... vertical slider !
-	</p>
-	<div id="secondExample" class="carrousel vertical">
+        <div style="width:70%">
+            <h3>Allow long text to be displayed</h3>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </div>
+    </div>
+    <p>
+        You can put whatever you want in it. Image, text or even video can be throw in.<br/>
+        If you want to make it vertical : class="carrousel vertical" and baaam ... vertical slider !
+    </p>
+    <div id="secondExample" class="carrousel vertical">
         <img src="http://lorempixel.com/100/300" alt=""/>
         <img src="http://lorempixel.com/200/200" alt=""/>
-		<img src="http://lorempixel.com/100/400" alt=""/>
-	</div>
-	<div id="display">
-		<p>
-			Code for this one :
-		</p>
+        <img src="http://lorempixel.com/100/400" alt=""/>
+    </div>
+    <div id="display">
+        <p>
+            Code for this one :
+        </p>
         <pre><code>&lt;div class=&quot;carrousel vertical&quot;&gt;&lt;br /&gt;
-	&lt;img src=&quot;http://lorempixel.com/100/300&quot; alt=&quot;&quot;/&gt;&lt;br /&gt;
-	&lt;img src=&quot;http://lorempixel.com/200/200&quot; alt=&quot;&quot;/&gt;&lt;br /&gt;
-	&lt;img src=&quot;http://lorempixel.com/100/400&quot; alt=&quot;&quot;/&gt;&lt;br /&gt;
+    &lt;img src=&quot;http://lorempixel.com/100/300&quot; alt=&quot;&quot;/&gt;
+    &lt;img src=&quot;http://lorempixel.com/200/200&quot; alt=&quot;&quot;/&gt;
+    &lt;img src=&quot;http://lorempixel.com/100/400&quot; alt=&quot;&quot;/&gt;
 &lt;/div&gt;</code></pre>
-		<p>
-			And for this beauty, you only need <a href="style.css">a stylesheet</a> and <a href="script.js">a script file</a>.<br/>
-			Call the script right before your body end tag &lt;/body&gt;.<br/>
-			Code you can find on <a href="https://github.com/GMartigny/EasySlider">GitHub</a>.
-		</p>
-	</div>
-	<script src="script.js"></script>
+        <p>
+            And for this beauty, you only need <a href="style.css">a stylesheet</a> and <a href="script.js">a script file</a>.<br/>
+            Call the script right before your body end tag &lt;/body&gt;.<br/>
+            Code you can find on <a href="https://github.com/GMartigny/EasySlider">GitHub</a>.
+        </p>
+    </div>
+    <script src="script.js"></script>
 </body>
