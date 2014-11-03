@@ -14,6 +14,14 @@ function getTestArray(length){
     while(length--) arr.push(random());
     return arr;
 }
+// return a random string
+var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.;:_-\"/\\?!(){}[]<>$*&%-+#";
+function getTestString(length){
+    var str = "",
+        l = chars.length;
+    while(length--) str += chars[random(0, l)];
+    return str;
+}
 // return a random value
 function random(from, to){
     from = from || 0;

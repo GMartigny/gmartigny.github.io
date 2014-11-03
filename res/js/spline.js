@@ -8,8 +8,7 @@ var sqrt = Math.sqrt,
     sq = function(x){ return pow(x, 2); };
 
 CanvasRenderingContext2D.prototype.splineThrought = function(dots, tension, closed){
-    tension = tension || 0.5;
-    closed = closed || false;
+    tension = tension==undefined? 0.5: tension;
     
     if(dots.length >= 6){
         this.save();
