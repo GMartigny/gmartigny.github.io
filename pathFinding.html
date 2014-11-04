@@ -139,7 +139,7 @@
                     if(t.state != 2 && t.state != 3 && t.state != 10 && t.state != 20){
                         if(t === grid.finish){
                             self.pointer = tile;
-                            reconstructPath();
+                            self.path();
                             again = false;
                         }
                         else{
@@ -160,7 +160,7 @@
                     this.pointer = this.pointer.comeFrom;
                     var self = this;
                     this.running = setTimeout(function(){
-                        self.step.call(self);
+                        self.path.call(self);
                     }, 50);
                 }
             };
