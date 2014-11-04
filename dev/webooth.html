@@ -150,10 +150,11 @@
                 this.b = (this.b/p<<0)*p;
             };
             Pixel.prototype.desat = function(){
-                var m = (this.r + this.g + this.b) / 3 <<0;
-                this.r /= 1+(this.r - m)/200;
-                this.g /= 1+(this.g - m)/200;
-                this.b /= 1+(this.b - m)/200;
+                var i = 0.3 * this.r + 0.59 * this.g + 0.11 * this.b,
+                    d = 0.4;
+                this.r = (i * d + this.r * (1 - d))<<0;
+                this.g = (i * d + this.g * (1 - d))<<0;
+                this.b = (i * d + this.b * (1 - d))<<0;
             };
         </script>
     </body>
