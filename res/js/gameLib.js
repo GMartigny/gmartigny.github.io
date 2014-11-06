@@ -223,7 +223,7 @@ ImageData.prototype.put = function(x, y, P){
         this.data[i] = P.a;
         return true;
     }
-}
+};
 
 // clear whole context
 CanvasRenderingContext2D.prototype.clear = function(){
@@ -269,7 +269,7 @@ function getByClass(c, elm){
         var elements = elm.getElementsByTagName('*'),
             i = 0,
             nodeList = [],
-            reg = new RegExp('(^|\\s)' + c + '(\\s|$)')
+            reg = new RegExp('(^|\\s)' + c + '(\\s|$)');
 
         for(i = 0; i < elements.length; ++i){
             if(elements[i].className.match(reg) !== null){
@@ -311,9 +311,14 @@ var sqrt = Math.sqrt,
     sin = Math.sin,
     asin = Math.asin,
     cos = Math.cos,
+    r = Math.random,
     PI = Math.PI,
     PI2 = PI * 2,
     SQRT2 = sqrt(2) / 2;
+
+function random(from, to){
+    return round(r()*(to - from)+from);
+}
 
 Array.prototype.out = function(o){
     var index = this.indexOf(o);
