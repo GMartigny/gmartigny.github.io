@@ -61,6 +61,8 @@
             <button class="switch" id="hyper">Hyper Contrast</button>
             <button class="switch" id="pixel">Pixelate</button>
             <button class="switch" id="desat">Desaturate</button>
+            <button class="switch" id="reflect">Reflect</button>
+            <button class="switch" id="noise">Noise</button>
             <canvas id="output" width="600" height="450" title="click me to snapshot"></canvas>
         </div>
         <script src="../res/js/gameLib.js"></script>
@@ -108,11 +110,15 @@
                 buffer.ctx.drawImage(video, 0, 0, w, h);
                     
                 if(filter.count){
-                    while(--w > 0){
+                    if(filter.reflect)
+                        w /= 2;
+                    while(w-- > 0){
                         h = buffer.can.height;
-                        while(--h > 0){
+                        while(h-- > 0){
                             var px = data.get(w, h);
                             if(px){
+                                if(filter.noise)
+                                    px.noise(30);
                                 if(filter.invert)
                                     px.invert();
                                 if(filter.desat)
@@ -120,12 +126,17 @@
                                 if(filter.hyper)
                                     px.hyper();
                                 data.put(w, h, px);
+                                if(filter.reflect)
+                                    data.put(data.width-w-1, h, px);
                                 if(filter.pixel){
                                     var i = 11;
                                     while(i--){
                                         var j = 11;
-                                        while(j--)
+                                        while(j--){
                                             data.put(w-i, h-j, px);
+                                            if(filter.reflect)
+                                                data.put(data.width-w+i-1, h-j, px);
+                                        }
                                     }
                                     h -= 10;
                                 }
@@ -151,10 +162,15 @@
             };
             Pixel.prototype.desat = function(){
                 var i = 0.3 * this.r + 0.59 * this.g + 0.11 * this.b,
-                    d = 0.4;
+                    d = 0.5;
                 this.r = (i * d + this.r * (1 - d))<<0;
                 this.g = (i * d + this.g * (1 - d))<<0;
                 this.b = (i * d + this.b * (1 - d))<<0;
+            };
+            Pixel.prototype.noise = function(p){
+                this.r += random(-p, p);
+                this.g += random(-p, p);
+                this.b += random(-p, p);
             };
         </script>
     </body>
