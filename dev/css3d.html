@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cool animations</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                background: #efefef;
+                margin: 0;
+            }
+            article{
+                position: relative;
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
+                width: 80%;
+                min-width: 800px;
+                margin: 10px auto;
+            }
+            figure{
+                flex: 0 1 200px;
+                margin: 10px 20px;
+                padding: 30px;
+                background: #FFF;
+                display: inline-block;
+                border-radius: 10px;
+                box-shadow: 0 5px 10px -4px #333;
+                text-align: center;
+                overflow: hidden;
+            }
+            figcaption{
+                margin-top: 15px;
+            }
+            .hidden{
+                display: none;
+            }
+            
+            /** GLOBAL CHECKBOX **/
+            .chk-animated + label, .swt-animated + label{
+                display: inline-block;
+                padding: 2px 5px;
+                position: relative;
+                perspective: 100px;
+                z-index: 10;
+            }
+            .chk-animated + label:before, .swt-animated + label:before, .swt-animated + label:after{
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background: #9adb8d;
+                border-radius: 3px;
+                z-index: -1;
+                box-shadow: 0 1px 3px -1px #333;
+                transition: all .2s linear;
+            }
+            
+            /** ROTATE **/
+            .chk-rotate + label:before, .chk-flap + label:before{
+                transform: rotateX(-90deg);
+            }
+            .chk-rotate:checked + label:before, .chk-flap:checked + label:before{
+                transform: rotateX(0deg);
+            }
+            /** SCALE **/
+            .chk-scale + label:before{
+                opacity: 0;
+                transform: translateZ(-70px);
+            }
+            .chk-scale:checked + label:before{
+                opacity: 1;
+                transform: translateZ(0);
+            }
+            /** FLAP **/
+            .chk-flap + label{
+                perspective-origin: 50% 0;
+            }
+            .chk-flap + label:before{
+                transform-origin: 0 0;
+            }
+            
+            /** GLOBAL SWITCH **/
+            .swt-animated + label{
+                width: 45px;
+                height: 1em;
+                line-height: calc(1em + 4px);
+            }
+            .swt-animated + label:after{
+                content: "Off";
+                background: #e97468;
+            }
+            .swt-animated + label:before{
+                content: "On";
+            }
+            
+            /** CUBE **/
+            .swt-cube + label:before{
+                transform: translateY(-100%) rotateX(90deg);
+                transform-origin: 50% 100%;
+            }
+            .swt-cube:checked + label:before{
+                transform: translateY(0) rotateX(0);
+            }
+            .swt-cube + label:after{
+                transform-origin: 50% 0;
+            }
+            .swt-cube:checked + label:after{
+                transform: translateY(100%) rotateX(-90deg);
+                z-index: -2;
+            }
+            /** INVERT **/
+            .swt-invert + label:before, .swt-invert + label:after{
+                -webkit-animation: invertTop 1 .4s ease-in-out forwards;
+            }
+            .swt-invert + label:after{
+                -webkit-animation-name: invertBotR;
+            }
+            .swt-invert:checked + label:before{
+                -webkit-animation-name: invertTopR;
+            }
+            .swt-invert:checked + label:after{
+                -webkit-animation-name: invertBot;
+            }
+            @-webkit-keyframes invertTop{
+                0%{transform: translateY(0) translateZ(0);z-index: -1}
+                50%{transform: translateY(-52%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(-14px);z-index: -2}
+            }
+            @-webkit-keyframes invertTopR{
+                0%{transform: translateY(0) translateZ(-14px);z-index: -2}
+                50%{transform: translateY(-52%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(0);z-index: -1}
+            }
+            @-webkit-keyframes invertBot{
+                0%{transform: translateY(0) translateZ(0);z-index: -1}
+                50%{transform: translateY(52%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(-14px);
+                    z-index: -2}
+            }
+            @-webkit-keyframes invertBotR{
+                0%{transform: translateY(0) translateZ(-14px);z-index: -2}
+                50%{transform: translateY(52%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(0);z-index: -1}
+            }
+            /** FLIP **/
+            .swt-flip + label:before{
+                transform: rotateX(180deg);
+                box-shadow: 0 -1px 3px -1px #333;
+                transform-origin: 50% 50%;
+            }
+            .swt-flip:checked + label:before{
+                transform: rotateX(0);
+                box-shadow: 0 1px 3px -1px #333;
+            }
+            .swt-flip:checked + label:after{
+                transform: rotateX(-180deg);
+                box-shadow: 0 -1px 3px -1px #333;
+                z-index: -2;
+            }
+            /** CRASH **/
+            .swt-crash + label{
+                -webkit-animation: vibrate 2 .08s .2s;
+            }
+            .swt-crash + label:before, .swt-crash + label:after{
+                transition: transform .2s linear, z-index 0s;
+            }
+            .swt-crash + label:before{
+                transition: transform 0s linear .2s, z-index 0s 0s;
+                transform: translate(-30px, -100px);
+            }
+            .swt-crash + label:after{
+                transition-duration: .2s;
+                z-index: -1;
+            }
+            .swt-crash:checked + label{
+                -webkit-animation-name: vibrate2;
+            }
+            .swt-crash:checked + label:before{
+                transition: transform .2s linear 0s, z-index 0s 0s;
+                transform: translate(0, 0);
+            }
+            .swt-crash:checked + label:after{
+                transition: transform 0s linear .2s, z-index 0s 0s;
+                transform: translate(30px, -100px);
+                z-index: -3;
+            }
+            @-webkit-keyframes vibrate{
+                25%{top: -2px}
+                75%{top: 2px}
+            }
+            @-webkit-keyframes vibrate2{
+                25%{top: -2px}
+                75%{top: 2px}
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Cool animations for user interaction</h1>
+        <article>
+            <figure>
+                <input type="checkbox" id="chkrt1" class="chk-animated chk-rotate hidden"/><label for="chkrt1">Option</label>
+                <input type="checkbox" id="chkrt2" class="chk-animated chk-rotate hidden"/><label for="chkrt2">Option</label>
+                <input type="checkbox" id="chkrt3" class="chk-animated chk-rotate hidden"/><label for="chkrt3">Option</label>
+                <figcaption>Checkbox : Rotate</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="chksc1" class="chk-animated chk-scale hidden"/><label for="chksc1">Option</label>
+                <input type="checkbox" id="chksc2" class="chk-animated chk-scale hidden"/><label for="chksc2">Option</label>
+                <input type="checkbox" id="chksc3" class="chk-animated chk-scale hidden"/><label for="chksc3">Option</label>
+                <figcaption>Checkbox : Scale</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="chkfl1" class="chk-animated chk-flap hidden"/><label for="chkfl1">Option</label>
+                <input type="checkbox" id="chkfl2" class="chk-animated chk-flap hidden"/><label for="chkfl2">Option</label>
+                <input type="checkbox" id="chkfl3" class="chk-animated chk-flap hidden"/><label for="chkfl3">Option</label>
+                <figcaption>Checkbox : Slide</figcaption>
+            </figure>
+        </article>
+        <article>
+            <figure>
+                <input type="checkbox" id="swtcb1" class="swt-animated swt-cube hidden"/><label for="swtcb1"></label>
+                <input type="checkbox" id="swtcb2" class="swt-animated swt-cube hidden"/><label for="swtcb2"></label>
+                <input type="checkbox" id="swtcb3" class="swt-animated swt-cube hidden"/><label for="swtcb3"></label>
+                <figcaption>Switch : Cube</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtiv1" class="swt-animated swt-invert hidden"/><label for="swtiv1"></label>
+                <input type="checkbox" id="swtiv2" class="swt-animated swt-invert hidden"/><label for="swtiv2"></label>
+                <input type="checkbox" id="swtiv3" class="swt-animated swt-invert hidden"/><label for="swtiv3"></label>
+                <figcaption>Switch : Invert</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtfl1" class="swt-animated swt-flip hidden"/><label for="swtfl1"></label>
+                <input type="checkbox" id="swtfl2" class="swt-animated swt-flip hidden"/><label for="swtfl2"></label>
+                <input type="checkbox" id="swtfl3" class="swt-animated swt-flip hidden"/><label for="swtfl3"></label>
+                <figcaption>Switch : Flip</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtcr1" class="swt-animated swt-crash hidden"/><label for="swtcr1"></label>
+                <input type="checkbox" id="swtcr2" class="swt-animated swt-crash hidden"/><label for="swtcr2"></label>
+                <input type="checkbox" id="swtcr3" class="swt-animated swt-crash hidden"/><label for="swtcr3"></label>
+                <figcaption>Switch : Crash</figcaption>
+            </figure>
+        </article>
+    </body>
+</html>
