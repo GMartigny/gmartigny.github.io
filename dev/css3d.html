@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cool animations</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                background: #efefef;
+                margin: 10px;
+            }
+            article{
+                position: relative;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                flex-wrap: wrap;
+                width: 85%;
+                min-width: 800px;
+                margin: 10px auto;
+            }
+            figure{
+                position: relative;
+                flex: 0 1 300px;
+                margin: 10px 20px;
+                padding: 30px;
+                background: #FFF;
+                display: inline-block;
+                border-radius: 10px;
+                box-shadow: 0 5px 10px -4px #333;
+                text-align: center;
+                overflow: hidden;
+                
+                opacity: 0;
+                top: -40px;
+                -webkit-animation: appear 1 .9s ease-out forwards;
+            }
+            article figure:nth-child(2){-webkit-animation-delay: .2s;}
+            article figure:nth-child(3){-webkit-animation-delay: .4s;}
+            article figure:nth-child(4){-webkit-animation-delay: .6s;}
+            article figure:nth-child(5){-webkit-animation-delay: .8s;}
+            @-webkit-keyframes appear{
+                to{
+                    opacity: 1;
+                    top: 0;
+                }
+            }
+            figcaption{
+                margin-top: 15px;
+            }
+            label{
+                font-weight: bold;
+            }
+            .hidden{
+                display: none;
+            }
+            
+            /** GLOBAL **/
+            .chk-animated + label, .swt-animated + label, .hvr-animated{
+                display: inline-block;
+                padding: 2px 5px;
+                margin: 4px;
+                position: relative;
+                perspective: 100px;
+                z-index: 10;
+            }
+            .chk-animated + label:before, .swt-animated + label:before, .swt-animated + label:after, .hvr-animated:before{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background: #9adb8d;
+                border-radius: 3px;
+                z-index: -1;
+                box-shadow: 0 1px 3px -1px #333;
+                transition: all .2s linear;
+            }
+            
+            /** ROTATE **/
+            .chk-rotate + label:before, .chk-flap + label:before{
+                content: "";
+                transform: rotateX(-90deg);
+            }
+            .chk-rotate:checked + label:before, .chk-flap:checked + label:before{
+                transform: rotateX(0deg);
+            }
+            /** SCALE **/
+            .chk-scale + label:before{
+                content: "";
+                opacity: 0;
+                transform: translateZ(-70px);
+            }
+            .chk-scale:checked + label:before{
+                opacity: 1;
+                transform: translateZ(0);
+            }
+            /** FLAP **/
+            .chk-flap + label{
+                perspective-origin: 50% 0;
+            }
+            .chk-flap + label:before{
+                transform-origin: 0 0;
+            }
+            
+            /** GLOBAL SWITCH **/
+            .swt-animated + label{
+                width: 45px;
+                height: 1em;
+                line-height: calc(1em + 4px);
+            }
+            .swt-animated + label:after{
+                content: "Off";
+                background: #e97468;
+            }
+            .swt-animated + label:before{
+                content: "On";
+            }
+            
+            /** CUBE **/
+            .swt-cube + label:before{
+                transform: translateY(-100%) rotateX(90deg);
+                transform-origin: 50% 100%;
+            }
+            .swt-cube:checked + label:before{
+                transform: translateY(0) rotateX(0);
+            }
+            .swt-cube + label:after{
+                transform-origin: 50% 0;
+            }
+            .swt-cube:checked + label:after{
+                transform: translateY(100%) rotateX(-90deg);
+                z-index: -2;
+            }
+            /** INVERT **/
+            .swt-invert + label:before, .swt-invert + label:after{
+                -webkit-animation: invertTop 1 .4s ease-in-out forwards;
+            }
+            .swt-invert + label:after{
+                -webkit-animation-name: invertBotR;
+            }
+            .swt-invert:checked + label:before{
+                -webkit-animation-name: invertTopR;
+            }
+            .swt-invert:checked + label:after{
+                -webkit-animation-name: invertBot;
+            }
+            @-webkit-keyframes invertTop{
+                0%{transform: translateY(0) translateZ(0);z-index: -1}
+                50%{transform: translateY(-55%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(-14px);z-index: -2}
+            }
+            @-webkit-keyframes invertTopR{
+                0%{transform: translateY(0) translateZ(-14px);z-index: -2}
+                50%{transform: translateY(-55%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(0);z-index: -1}
+            }
+            @-webkit-keyframes invertBot{
+                0%{transform: translateY(0) translateZ(0);z-index: -1}
+                50%{transform: translateY(55%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(-14px);
+                    z-index: -2}
+            }
+            @-webkit-keyframes invertBotR{
+                0%{transform: translateY(0) translateZ(-14px);z-index: -2}
+                50%{transform: translateY(55%) translateZ(-7px)}
+                to{transform: translateY(0) translateZ(0);z-index: -1}
+            }
+            /** FLIP **/
+            .swt-flip + label:before{
+                transform: rotateX(180deg);
+                box-shadow: 0 -1px 3px -1px #333;
+                transform-origin: 50% 50%;
+            }
+            .swt-flip:checked + label:before{
+                transform: rotateX(0);
+                box-shadow: 0 1px 3px -1px #333;
+            }
+            .swt-flip:checked + label:after{
+                transform: rotateX(-180deg);
+                box-shadow: 0 -1px 3px -1px #333;
+                z-index: -2;
+            }
+            /** CRASH **/
+            .swt-crash + label{
+                -webkit-animation: vibrate 2 .08s .2s;
+            }
+            .swt-crash + label:before, .swt-crash + label:after{
+                transition: transform .2s linear, z-index 0s;
+            }
+            .swt-crash + label:before{
+                transition: transform 0s linear .2s, z-index 0s 0s;
+                transform: translate(-30px, -100px);
+            }
+            .swt-crash + label:after{
+                transition-duration: .2s;
+                z-index: -1;
+            }
+            .swt-crash:checked + label{
+                -webkit-animation-name: vibrate2;
+            }
+            .swt-crash:checked + label:before{
+                transition: transform .2s linear 0s, z-index 0s 0s;
+                transform: translate(0, 0);
+            }
+            .swt-crash:checked + label:after{
+                transition: transform 0s linear .2s, z-index 0s 0s;
+                transform: translate(30px, -100px);
+                z-index: -3;
+            }
+            @-webkit-keyframes vibrate{
+                25%{top: -2px}
+                75%{top: 2px}
+            }
+            @-webkit-keyframes vibrate2{
+                25%{top: -2px}
+                75%{top: 2px}
+            }
+            
+            /** GLOBAL HOVERING **/
+            .hvr-animated{
+                display: inline-block;
+                padding: 5px 10px;
+                margin: 8px 4px;
+                background: #FAFAFA;
+                box-shadow: 1px 1px 5px #333 inset;
+                border-radius: 3px;
+                perspective: 300px;
+            }
+            .hvr-animated:hover{
+                z-index: 100;
+            }
+            .hvr-animated:before{
+                z-index: 1;
+            }
+            /** OPEN **/
+            .hvr-open:before{
+                transform-origin: 50% 100%;
+            }
+            .hvr-open:hover:before{
+                transform: rotateX(-99deg);
+                box-shadow: 0 -2px 3px -1px #333;
+            }
+            /** SOCIAL **/
+            .scl-facebook:before{
+                content: "f";
+                background: #3C5998;
+                color: #FFF;
+                font-weight: bold;
+                font-size: 38px;
+                line-height: 28px;
+            }
+            .scl-twitter:before{
+                content: "T";
+                background: #55ACEE;
+                color: #FFF;
+                font-weight: bold;
+                font-size: 25px;
+                line-height: 28px;
+            }
+            .scl-email:before{
+                content: "Email";
+                background: #f8f5dc;
+                color: #111;
+                font-weight: bold;
+                line-height: 28px;
+            }
+            /** CARDS **/
+            .sized{
+                width: 120px;
+                height: 120px;
+            }
+            .card{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                perspective: 300px;
+                transition: transform .8s ease-out .6s;
+            }
+            .card:hover{
+                transform: translateZ(40px);
+                transition-delay: 0s;
+            }
+            .card:before, .card:after{
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                padding: 5px;
+                background-color: #FFF;
+                border-radius: 3px;
+                transition: transform .6s ease-out 0s, z-index .6s 0s, box-shadow .8s ease-out .6s;
+            }
+            .card:before{
+                transform: rotateY(-180deg);
+                z-index: 0;
+            }
+            .card:after{
+                background-repeat: no-repeat;
+                background-position: 50%;
+            }
+            .card:hover:before, .card:hover:after{
+                transition-delay: .8s, .8s, 0s;
+            }
+            .card:hover:before{
+                transform: rotateY(0deg);
+                z-index: 1;
+            }
+            .card:hover:after{
+                box-shadow: 0 5px 8px #333;
+                transform: rotateY(180deg);
+            }
+            .card.cats:before{
+                content: "Look how cute my cat is. This is the most puuurfect picture of him.";
+            }
+            .card.cats:after{
+                background-image: url(http://lorempixel.com/110/110/cats/1);
+            }
+            .card.food:before{
+                content: "I love to eat, I could do it everyday !";
+            }
+            .card.food:after{
+                background-image: url(http://lorempixel.com/110/110/food/3);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Cool animations for user interaction</h1>
+        <h2>in pure CSS</h2>
+        <article>
+            <figure>
+                <input type="checkbox" id="chkrt1" class="chk-animated chk-rotate hidden"/><label for="chkrt1">Option</label>
+                <input type="checkbox" id="chkrt2" class="chk-animated chk-rotate hidden"/><label for="chkrt2">Option</label>
+                <input type="checkbox" id="chkrt3" class="chk-animated chk-rotate hidden"/><label for="chkrt3">Option</label>
+                <figcaption>Checkbox : Rotate</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="chksc1" class="chk-animated chk-scale hidden"/><label for="chksc1">Option</label>
+                <input type="checkbox" id="chksc2" class="chk-animated chk-scale hidden"/><label for="chksc2">Option</label>
+                <input type="checkbox" id="chksc3" class="chk-animated chk-scale hidden"/><label for="chksc3">Option</label>
+                <figcaption>Checkbox : Scale</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="chkfl1" class="chk-animated chk-flap hidden"/><label for="chkfl1">Option</label>
+                <input type="checkbox" id="chkfl2" class="chk-animated chk-flap hidden"/><label for="chkfl2">Option</label>
+                <input type="checkbox" id="chkfl3" class="chk-animated chk-flap hidden"/><label for="chkfl3">Option</label>
+                <figcaption>Checkbox : Slide</figcaption>
+            </figure>
+        </article>
+        <article>
+            <figure>
+                <input type="checkbox" id="swtcb1" class="swt-animated swt-cube hidden"/><label for="swtcb1"></label>
+                <input type="checkbox" id="swtcb2" class="swt-animated swt-cube hidden"/><label for="swtcb2"></label>
+                <input type="checkbox" id="swtcb3" class="swt-animated swt-cube hidden"/><label for="swtcb3"></label>
+                <figcaption>Switch : Cube</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtiv1" class="swt-animated swt-invert hidden"/><label for="swtiv1"></label>
+                <input type="checkbox" id="swtiv2" class="swt-animated swt-invert hidden"/><label for="swtiv2"></label>
+                <input type="checkbox" id="swtiv3" class="swt-animated swt-invert hidden"/><label for="swtiv3"></label>
+                <figcaption>Switch : Invert</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtfl1" class="swt-animated swt-flip hidden"/><label for="swtfl1"></label>
+                <input type="checkbox" id="swtfl2" class="swt-animated swt-flip hidden"/><label for="swtfl2"></label>
+                <input type="checkbox" id="swtfl3" class="swt-animated swt-flip hidden"/><label for="swtfl3"></label>
+                <figcaption>Switch : Flip</figcaption>
+            </figure>
+            <figure>
+                <input type="checkbox" id="swtcr1" class="swt-animated swt-crash hidden"/><label for="swtcr1"></label>
+                <input type="checkbox" id="swtcr2" class="swt-animated swt-crash hidden"/><label for="swtcr2"></label>
+                <input type="checkbox" id="swtcr3" class="swt-animated swt-crash hidden"/><label for="swtcr3"></label>
+                <figcaption>Switch : Crash</figcaption>
+            </figure>
+        </article>
+        <article>
+            <figure>
+                <a href="#" class="hvr-animated hvr-open scl-facebook">#Example</a>
+                <a href="#" class="hvr-animated hvr-open scl-twitter">@Example</a>
+                <a href="#" class="hvr-animated hvr-open scl-email">email@example.com</a>
+                <figcaption>Hovering : Social</figcaption>
+            </figure>
+            <figure>
+                <div class="hvr-animated sized">
+                    <div class="card cats"></div>
+                </div>
+                <div class="hvr-animated sized">
+                    <div class="card food"></div>
+                </div>
+                <figcaption>Hovering : Card</figcaption>
+            </figure>
+        </article>
+    </body>
+</html>
