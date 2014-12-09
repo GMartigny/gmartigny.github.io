@@ -323,31 +323,30 @@
                     y: -rand(1, 1.2)
                 };
                 this.radius = rand(7, 20);
-                
-                this.render = function(){
-                    ctx.beginPath();
-                    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 1);
-                    ctx.moveTo(this.pos.x, this.pos.y-this.radius*0.7);
-                    ctx.arc(this.pos.x, this.pos.y, this.radius*0.7, -1.4, 3.3, 1);
-                    ctx.stroke();
-                    ctx.closePath();
-                    return this.move();
-                };
-                this.move = function(){
-                    this.pos.x += this.vit.x*this.pos.z;
-                    this.pos.y += this.vit.y*this.pos.z;
-                    
-                    this.vit.x += -1*stream;
-                    this.vit.x /= 1.08;
-                    
-                    var pop = 0;
-                    if(this.pos.y + this.radius+2 < 0) pop = 1;
-                    if(this.pos.x + this.radius+100 < 0) pop = 1;
-                    else if(this.pos.x - this.radius-100 > can.width) pop = 1;
-                    
-                    return pop;
-                };
             }
+            Bubble.prototype.render = function(){
+                ctx.beginPath();
+                ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 1);
+                ctx.moveTo(this.pos.x, this.pos.y-this.radius*0.7);
+                ctx.arc(this.pos.x, this.pos.y, this.radius*0.7, -1.4, 3.3, 1);
+                ctx.stroke();
+                ctx.closePath();
+                return this.move();
+            };
+            Bubble.prototype.move = function(){
+                this.pos.x += this.vit.x*this.pos.z;
+                this.pos.y += this.vit.y*this.pos.z;
+
+                this.vit.x += -1*stream;
+                this.vit.x /= 1.08;
+
+                var pop = 0;
+                if(this.pos.y + this.radius+2 < 0) pop = 1;
+                else if(this.pos.x + this.radius+100 < 0) pop = 1;
+                else if(this.pos.x - this.radius-100 > can.width) pop = 1;
+
+                return pop;
+            };
             
             function rand(f, t){
                 return (r()*(t-f)+f);
