@@ -1,0 +1,50 @@
+body{
+    margin: 0;
+    font-family: arial;
+    overflow: hidden;
+}
+
+#can{
+    position: absolute;
+    top: calc(50% - 300px);
+    left: calc(50% - 400px);
+    display: block;
+    background: url(img/floor.png);
+    width: 800px;
+    margin: 0 auto 0;
+    box-shadow: 0 0 20px #666;
+}
+
+#help{
+    position:absolute;
+    left:0;
+    right:0;
+    top: 40%;
+    text-align: center;
+    color: #FFF;
+    text-shadow: 0 0 8px #000;
+    font-weight: bold;
+    transition: opacity .3s linear;
+}
+
+#airpad{
+    position: absolute;
+    width: 300px;
+    height: 250px;
+    top: calc(50% - 125px);
+    right: -320px;
+    right: -320px;
+    background: #EEE;
+    box-shadow: 0 0 20px #666;
+    transition: right .5s ease-out;
+}
+#airpad h2{
+    font-size: 20px;
+    text-align: center;
+    margin: 5px;
+}
+#airpad img{
+    width: 160px;
+    height: 160px;
+    margin: 15px;
+}

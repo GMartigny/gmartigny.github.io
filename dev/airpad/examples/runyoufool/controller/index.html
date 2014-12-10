@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Let's take control</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="nes.css"/>
+        <script src="../../../device/AirPad.js"></script>
+        <script>
+            var param = {};
+            function loadParam(){
+                var url = location.href;
+                url = url.slice(url.indexOf("?")+1, url.length).split("&");
+                var p =[];
+                for(var i=0;i<url.length;++i){
+                    p = url[i].split("=");
+                    param[p[0]] = p[1];
+                }
+            }
+            loadParam();
+            
+            var gamePad = new AirPad('test', 1337);
+        </script>
+    </head>
+    <body>
+        <div id="nes" class="AirPad">
+            <div id="arrows">
+                <div class="dir down"><button value="40"></button></div>
+                <div class="dir left"><button value="37"></button></div>
+                <div class="dir up"><button value="38"></button></div>
+                <div class="dir right"><button value="39"></button></div>
+            </div>
+            <div id="center"></div>
+            <div id="button">
+                <button value="32"></button>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,53 @@
+body{
+    margin: 0;
+    font-family: arial, sans-serif;
+}
+.carrousel{
+    width: 70%;
+    height: 400px;
+    margin: 50px auto;
+    background-image: url(noise.png);
+}
+h1, h2{
+    text-align: center;
+    text-shadow: 1px 1px 2px #666;
+}
+.carrousel .text{
+    border: 1px solid #0099ff;
+}
+#qr{
+    position: relative;
+    width: 180px;
+    height: 180px;
+    left: 50px;
+}
+
+#loadBar{
+    position: absolute;
+    left: calc(50% - 175px);
+    top: 250px;
+    width: 350px;
+    height: 30px;
+    border: 1px solid #222;
+    border-radius: 10px;
+    background: -webkit-linear-gradient(-50deg, rgba(0,0,0,0) 20%, #222 28%, rgba(0,0,0,0) 36%, #222 44%, rgba(0,0,0,0) 52%) #F2F2F2;
+    background: -moz-linear-gradient(-50deg, rgba(0,0,0,0) 20%, #222 28%, rgba(0,0,0,0) 36%, #222 44%, rgba(0,0,0,0) 52%) #F2F2F2;
+    background: linear-gradient(-50deg, rgba(0,0,0,0) 20%, #222 28%, rgba(0,0,0,0) 36%, #222 44%, rgba(0,0,0,0) 52%) #F2F2F2;
+    -webkit-animation: swift 1s linear infinite;
+    -moz-animation: swift 1s linear infinite;
+    animation: swift 1s linear infinite;
+    transition: all .3s linear;
+    box-shadow: 0 0 10px #666 inset;
+}
+@-webkit-keyframes swift{
+    0%{ background-position: 0 0; }
+    to{ background-position: 350px 0; }
+}
+@-moz-keyframes swift{
+    0%{ background-position: 0 0; }
+    to{ background-position: 350px 0; }
+}
+@keyframes swift{
+    0%{ background-position: 0 0; }
+    to{ background-position: 350px 0; }
+}
