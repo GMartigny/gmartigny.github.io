@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            
+        </style>
+    </head>
+    <body>
+        <div>
+            <div id="output"></div>
+            <form action="#" id="discuss">
+                <input type="text" name="message"/>
+                <input type="submit" value="send"/>
+            </form>
+        </div>
+        <script>
+            var socket = new WebSocket("ws://immense-dawn-3722.herokuapp.com:1337");
+            
+            document.getElementById("discuss").onsubmit = function(){
+                
+                
+                
+                return false;
+            };
+        </script>
+    </body>
+</html>
