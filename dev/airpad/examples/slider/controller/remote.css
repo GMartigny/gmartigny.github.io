@@ -1,0 +1,45 @@
+body, html{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+button{
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    background: #DDD;
+    border: 0;
+    padding: 0;
+    box-shadow: 20px -20px 50px #666 inset,
+        -25px 25px 50px #EEE inset;
+}
+button:active{
+    box-shadow: -20px 20px 50px #666 inset,
+        25px -25px 50px #EEE inset;
+}
+
+button:before, button:after{
+    content: '';
+    position: absolute;
+    width: 20%;
+    height: 10px;
+    background: #111;
+    left: 40%;
+    top: 50%;
+    transform-origin: 10px 50%;
+    -webkit-transform-origin: 10px 50%;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+button:after{
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+#right:after, #right:before{
+    transform-origin: 10px 50%;
+    -webkit-transform-origin: calc(100% - 10px) 50%;
+}

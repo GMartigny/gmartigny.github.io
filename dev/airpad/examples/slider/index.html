@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>What a beautiful slider</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="../../Screen side/AirPadReceiver.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <link rel="stylesheet" type="text/css" href="carrousel/carrousel.css"/>
+    </head>
+    <body>
+        <div id="carrousel" class="carrousel" onload="hideLoader()">
+            <div class="text">
+                <h1>Welcome around folks</h1>
+            </div>
+            <img src="http://lorempixel.com/500/200/technics" alt="Intro image"/>
+            <div class="text">
+                <h2>First thing first</h2>
+                <p>Ok, good slideShow we have here but can we ehance it a little bit ?</p>
+                <p>Why not with a little more interaction.</p>
+            </div>
+            <div class="text">
+                <h2>Wooah air control</h2>
+                <p>Scan that Qr-code and take control over it.</p>
+                <img alt="qr-code" id="qr"/>
+            </div>
+            <img src="http://lorempixel.com/600/300" alt="An image"/>
+            <img src="http://lorempixel.com/200/200" alt="Another image"/>
+            <img src="http://lorempixel.com/800/100" alt="An image again"/>
+            <div class="text">
+                <h2>Credits</h2>
+                <p>Thanks <a href="http://lorempixel.com">Lorempixel</a> for the random placeholder images.</p>
+                <p>Don't hesitate to check the <a href="http://github.com/GMartigny/AirPad">AirPad Project</a> for more informations.</p>
+                <p>Slider done with <a href="http://github.com/GMartigny/EasySlider">Easy slider</a>.</p>
+                <p>If you want more web experiments you can check <a href="http://www.guillaume-martigny.fr/crea">my dedicated page</a></p>
+            </div>
+        </div>
+        <div id="loadBar"></div>
+        <script src="carrousel/carrousel.js"></script>
+        <script>
+            // Code for the AirPad
+            var qr = document.getElementById("qr");
+            var carrousel = es_setCarrousel(document.getElementById("carrousel"));
+            
+            var receiver = new AirPadReceiver("localhost", 1337, qr);
+            receiver.oncommand = function(data){
+                if(data.press){
+                    if(data.button == "left")
+                        carrousel.previous();
+                    else if(data.button == "right")
+                        carrousel.next();
+                }
+            };
+            // end
+            
+            function hideLoader(){
+                document.getElementById("loadBar").style.display = "none";
+            }
+        </script>
+    </body>
+</html>

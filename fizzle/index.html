@@ -8,10 +8,14 @@
         background: #000;
     }
     #menu{
-        position: absolute;
+        position: relative;
         background: #777;
         width: 350px;
         padding: 10px;
+        float: left;
+    }
+    #menu.hidden{
+        display: none;
     }
     #menu h2{
         position: relative;
@@ -23,9 +27,8 @@
         width: 100%;
     }
     #can{
+        position: relative;
         display: block;
-        width: 800px;
-        margin: 0 auto;
     }
     #expendable{
         cursor: pointer;
@@ -76,16 +79,28 @@
     <textarea id="output" class="hidden" onclick="select(this);" readonly></textarea>
     <a href="fizzle.js">Script file</a>
 </div>
-<canvas id="can" width="800" height="400"></canvas>
+<canvas id="can" width="1000" height="400"></canvas>
 <script src="fizzle.js"></script>
 <script>
-    var can = document.getElementById('can'),
-        ctx = can.getContext("2d");
+    function getParam(){
+        return location.hash.substr(1);
+    }
+    
+    var txt = getParam(),
+        can = document.getElementById('can');
+    if(txt){
+        document.getElementById("menu").classList.add("hidden");
+        document.getElementById("txt").value = txt;
+        
+        can.width = document.body.offsetWidth;
+    }
+
+    var ctx = can.getContext("2d");
 
     /* DEFAULT OPTIONS */
     /* values should go from 0 to 1 but can overflow (unless density which is cap for perfomance's sake) */
-
-    Fizzle.text = "Hellow";
+    
+    Fizzle.text = txt || "Hellow";
     Fizzle.size = 0.5;
     Fizzle.density = 0.5;
     Fizzle.colors = ["#0ED", "#F32", "#FE0", "#1C0", "#F8E"];
@@ -93,8 +108,9 @@
     Dot.speed = 0.5;
     Dot.fat = 0.5;
     Dot.freedom = 0.5;
-
-    start(ctx);
+    
+    var fizzle = new Fizzle(ctx);
+    fizzle.init();
 </script>
 <script type="text/javascript">
     /** Page Scripts **/
@@ -107,7 +123,8 @@
     document.getElementById('txt').onkeyup = function(){
         if(Fizzle.text != this.value){
             Fizzle.text = this.value;
-            start(ctx);
+            location.hash = "#" + this.value;
+            fizzle.init();
             writeOptions();
         }
     };
@@ -148,7 +165,7 @@
             writeOptions();
 
             drag.prev = drag.elem.value;
-            if(redraw) start(ctx);
+            if(redraw) fizzle.init();
         }
     }
 

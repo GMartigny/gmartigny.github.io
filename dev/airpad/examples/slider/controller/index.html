@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Take control</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="remote.css"/>
+        <script src="../../../Device Side/AirPad.js"></script>
+        <script>
+            var param = {};
+            function loadParam(){
+                var url = location.href;
+                url = url.slice(url.indexOf("?")+1, url.length).split("&");
+                var p =[];
+                for(var i=0;i<url.length;++i){
+                    p = url[i].split("=");
+                    param[p[0]] = p[1];
+                }
+            }
+            loadParam();
+            
+            var gamePad = new AirPad('test', 1337);
+        </script>
+    </head>
+    <body>
+        <button value="left" id="left"></button>
+        <button value="right" id="right"></button>
+    </body>
+</html>

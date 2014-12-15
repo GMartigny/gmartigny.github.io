@@ -21,43 +21,44 @@
     <body>
         <canvas id="can" width="800" height="600"></canvas>
         <script>
-        var raf = 	window.webkitRequestAnimationFrame ||
-                    window.mozRequestAnimationFrame ||
-                    window.requestAnimationFrame;
+        var raf = window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.requestAnimationFrame;
         localStorage.ar = localStorage.ar || [];
-        var can = getById("can");
-        var ctx = can.getContext("2d");
-        ctx.lineCap = "round";
-        var PI = Math.PI;
-        var state = 0;
-        var over = 0;
-        var splash = 0;
-        var rh = false;
-        var intro = [	"We are approaching an asteroid belt.",
+        var can = getById("can"),
+            ctx = can.getContext("2d"),
+            PI = Math.PI,
+            state = 0,
+            over = 0,
+            splash = 0,
+            rh = false,
+            intro = [	"We are approaching an asteroid belt.",
                         "Get ready to extract those ores !",
                         "But, be carefull with the hull, nano repare-bots can't make miracles.",
-                        "We're gonna be rich, let's go !"];
-        var bu = [""];
-        var me = ["Start", "Archievements", "Credits"];
-        var ar = ["Go closer", "Multi-task", "Over 9000", "Journey", "Lucky blind", "???"]; ar.n = [];
+                        "We're gonna be rich, let's go !"],
+            bu = [""],
+            me = ["Start", "Archievements", "Credits"],
+            ar = ["Go closer", "Multi-task", "Over 9000", "Journey", "Lucky blind", "???"],
+            closer = 0, confidence = false, journey = false,
+            ne = [],
+            st = [],
+            ba = [new back()],
+            en = [],
+            bo = 0,
+            me = {
+                x : 400,
+                y : 400,
+                i : 0,
+                l : 3,
+                r : 0
+            },
+            px = me.x,
+            sc = 0,
+            p = [];
+        ar.n = [];
         ar.d = ["Get really close to an asteroid without being hit", "Extract at least 4 asteroids at the same time", "Score more than 9000 points in one game",
                 "Survive during 5 minutes inside the asteroid belt", "Don't make any move for 20 secondes without damage", "Face an extreme rush like a sir !"];
-        var closer = 0; var confidence = false; var journey = false;
-        var ne = [];
-        var st = [];
-        var ba = [new back()];
-        var en = [];
-        var bo = 0;
-        var me = {
-            x : 400,
-            y : 400,
-            i : 0,
-            l : 3,
-            r : 0
-        };
-        var px = me.x;
-        var sc = 0;
-        var p = [];
+        ctx.lineCap = "round";
         window.onmousemove = function(e){
             confidence = 0;
 
@@ -185,7 +186,7 @@
                     raf(draw);
                     ctx.clearRect(0, 0, 800, 600);
 
-                    var n; var nn;
+                    var n, nn;
                     for(var i=0;i<ne.length;++i){
                         n = ne[i];
                         ctx.fillStyle = n.c;
@@ -571,7 +572,7 @@
                     }
                 }
                 ctx.save();
-                ctx.translate(me.x, me.y);
+                ctx.translate(me.x<<0, me.y<<0);
                 var r = -(px - me.x)/10;
                 r = (r < -PI/2.5)? -PI/2.5 : ((PI/2.5 < r)? PI/2.5 : r);
                 me.r += (r - me.r)/10;
@@ -683,7 +684,7 @@
         }
         function circ(x, y, r){
             ctx.beginPath();
-            ctx.arc(x, y, r, 0, 2*Math.PI, true);
+            ctx.arc(x<<0, y<<0, r, 0, 2*Math.PI, true);
             ctx.fill();
         }
         function distance(from, to){

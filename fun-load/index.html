@@ -1,350 +1,364 @@
-<style>
-body{
-	margin: 0;
-}
-.holder{
-	width: 60%;
-	margin: 0 auto;
-	box-shadow: 0 0 10px #666;
-	text-align: center;
-	min-height: 90%;
-	padding: 40px 0;
-}
-h1{
-	position: relative;
-	width: 400px;
-	margin: 0 auto 10px;
-	padding: 10px;
-	background: #F8F8F8;
-}
-/* GOOGLE NOW */
-#googleNow{
-	position: relative;
-}
-#googleNow:before, #googleNow:after{
-	content: "";
-	position: absolute;
-	height: 2px;
-	width: 100%;
-	left: 0;
-	background: #F00;
-	bottom: 0;
-	z-index: 1;
-}
-#googleNow:before{
-	-webkit-animation: expandBefore 4s linear infinite;
-}
-#googleNow:after{
-	-webkit-animation: expandAfter 4s linear infinite;
-}
-@-webkit-keyframes expandBefore{
-	0%{z-index: 0;
-		background: #F00;
-		width: 100%;
-		left: 0;}
-	25%{z-index: 0;
-		background: #F00;
-		width: 100%;
-		left: 0;}
-	26%{z-index: 2;
-		background: #66F;
-		width: 0;
-		left: 50%;}
-	50%{z-index: 2;
-		background: #66F;
-		width: 100%;
-		left: 0;}
-	51%{z-index: 0;}
-	75%{z-index: 0;
-		background: #66F;
-		width: 100%;
-		left: 0;}
-	76%{z-index: 2;
-		background: #F00;
-		width: 0;
-		left: 50%;}
-	to{z-index: 2;
-		background: #F00;
-		width: 100%;
-		left: 0;}
-}
-@-webkit-keyframes expandAfter{
-	0%{background: #0A0;
-		width: 0;
-		left: 50%;}
-	25%{background: #0A0;
-		width: 100%;
-		left: 0;}
-	50%{background: #0A0;
-		width: 100%;
-		left: 0;}
-	51%{background: #EE0;
-		width: 0;
-		left: 50%;}
-	75%{background: #EE0;
-		width: 100%;
-		left: 0;}
-	to{background: #EE0;
-		width: 100%;
-		left: 0;}
-}
-/* WINDOWS 8 START */
-#win8Start .anim{
-	position: relative;
-	width: 65px;
-	height: 65px;
-	margin: 0px auto;
-}
-#win8Start .anim > div{
-	position: absolute;
-	width: 70%;
-	height: 70%;
-	top: 15%;
-	left: 15%;
-	-webkit-animation: rotation 1.7s linear infinite;
-}
-#win8Start .anim > div:last-child{
-	top: 45%;
-	width: 50%;
-	background: #F8F8F8;
-	visibility: visible;
-	-webkit-animation: vanish 1.4s forwards;
-}
-#win8Start .anim > div > div{
-	position: absolute;
-	width: 16%;
-	height: 16%;
-	top: 42%;
-	left: 0;
-	border-radius: 50%;
-	background: #333;
-}
-#win8Start .anim > div:nth-child(2){
-	-webkit-animation-delay: .25s;
-}
-#win8Start .anim > div:nth-child(3){
-	-webkit-animation-delay: .5s;
-}
-#win8Start .anim > div:nth-child(4){
-	-webkit-animation-delay: .75s;
-}
-#win8Start .anim > div:nth-child(5){
-	-webkit-animation-delay: 1s;
-}
-@-webkit-keyframes vanish{
-	to{visibility: hidden;}
-}
-@-webkit-keyframes rotation{
-	0%{-webkit-transform: rotate(0);}
-	82%{-webkit-transform: rotate(180deg);}
-	to{-webkit-transform: rotate(360deg);}
-}
-/* BOUNCE */
-#bounce{
-	height: 100px;
-}
-#bounce div{
-	position: relative;
-	width: 30px;
-	height: 30px;
-    top : -25px;
-	margin: 30px auto 0;
-	border-radius: 50%;
-	background: -webkit-radial-gradient(30% 30%, #777 0, #333 40%);
-    box-shadow : 0 25px 30px #BBB;
-	-webkit-animation: bounce .5s cubic-bezier(0.3,0.6,1,0.5) alternate infinite;
-}
-@-webkit-keyframes bounce{
-  60%{top : -20px;
-    height : 30px;
-    width : 30px;
-    box-shadow : 0 20px 30px #BBB;}
-  to{top : 0;
-    height : 20px;
-    width : 40px;
-    box-shadow : 0 5px 30px #BBB;}
-}
-/* LOADING BAR */
-#bar div{
-	width: 80%;
-	height: 30px;
-	margin: 0 auto;
-	border: 1px solid #222;
-	border-radius: 10px;
-	background: -webkit-linear-gradient(-50deg, rgba(0,0,0,0) 20%, #222 28%, rgba(0,0,0,0) 36%, #222 44%, rgba(0,0,0,0) 52%);
-	-webkit-animation: swift 1s linear infinite;
-	transition: all .3s linear;
-	box-shadow: 0 0 10px #666 inset;
-}
-@-webkit-keyframes swift{
-	0%{
-		background-position: 0 0;
-	}
-	to{
-		background-position: 322px 0;
-	}
-}
-/* CLOCK */
-#clock div{
-	position: relative;
-	border: 2px solid black;
-	width: 70px;
-	height: 70px;
-	margin: 0 auto;
-	border-radius: 50%;
-	background: -webkit-radial-gradient(ellipse, #000 0, #000 3px, #FFF 4px);
-	box-shadow: 0 0 10px #666 inset;
-}
-#clock div:before{
-	content: "";
-	position: absolute;
-	height: calc(50% - 2px);
-	width: 2px;
-	background: #000;
-	top: 2px;
-	left: calc(50% - 1px);
-	-webkit-animation: rotate 1s linear infinite;
-	-webkit-transform-origin: 1px 100%;
-}
-#clock div:after{
-	content: "";
-	position: absolute;
-	height: 30%;
-	width: 4px;
-	background: #000;
-	top: 20%;
-	left: calc(50% - 2px);
-	-webkit-animation: rotate 6s linear infinite;
-	-webkit-transform-origin: 2px 100%;
-}
-@-webkit-keyframes rotate{
-	to{
-		-webkit-transform: rotate(360deg);
-	}
-}
-/* HOURGLASS */
-#glass > div{
-    position: relative;
-    width: 50px;
-    height: 80px;
-    margin: 0 auto;
-    -webkit-animation: upsidedown 4s 2s ease-in-out infinite alternate;
-    -webkit-transform-origin: 50% 50%;
-}
-#glass > div:before, #glass > div:after{
-    position: absolute;
-    content: "";
-    top: 10%;
-    left: 5px;
-    width: 2px;
-    height: 80%;
-    background: #000;
-}
-#glass > div:after{
-    left: auto;
-    right: 5px;
-}
-#glass .half{
-    position: relative;
-    border: solid;
-    border-color: #000 transparent;
-    border-width: 40px 22px 0 22px;
-}
-#glass .half:nth-child(2){
-    -webkit-transform: rotate(180deg);
-}
-#glass .half:before, #glass .half:after{
-    position: absolute;
-    content: "";
-    width: 2px;
-    top: -37px;
-    left: -18px;
-    border: solid;
-    border-color: #FFF transparent;
-    border-width: 37px 20px 0 20px;
-}
-#glass .half:after{
-    border-color: #BBB transparent;
-    -webkit-animation: fillnempty 8s linear infinite;
-}
-#glass .half:nth-child(2):after{
-    -webkit-animation: fillnempty2 8s linear infinite;
-}
-@-webkit-keyframes upsidedown{
-    0%{
-        -webkit-transform: rotate(0deg);
-    }
-    45%{
-        -webkit-transform: rotate(0deg);
-    }
-    55%{
-        -webkit-transform: rotate(180deg);
-    }
-    to{
-        -webkit-transform: rotate(180deg);
-    }
-}
-@-webkit-keyframes fillnempty{
-    0%{
-        left: -18px;
-        top: -37px;
-        border-width: 37px 20px 0 20px;
-    }
-    47%{
-        left: 2px;
-        top: 0px;
-        border-width: 0px 0px 0 0px;
-    }
-    53%{
-        left: -18px;
-        top: -37px;
-        border-width: 0px 20px 0 20px;
-    }
-    to{
-        border-width: 37px 20px 0 20px;
-    }
-}
-@-webkit-keyframes fillnempty2{
-    0%{
-        left: -18px;
-        top: -37px;
-        border-width: 0px 20px 0 20px;
-    }
-    47%{
-        border-width: 37px 20px 0 20px;
-    }
-    53%{
-        left: -18px;
-        top: -37px;
-        border-width: 37px 20px 0 20px;
-    }
-    to{
-        left: 2px;
-        top: 0px;
-        border-width: 0px 0px 0 0px;
-    }
-}
-</style>
-<div class="holder">
-	<h1 id="googleNow">Google Now</h1>
-	<h1 id="win8Start">Windows 8 Start
-		<div class="anim">
-			<div><div></div></div>
-			<div><div></div></div>
-			<div><div></div></div>
-			<div><div></div></div>
-			<div><div></div></div>
-			<div></div>
-		</div></h1>
-	<h1 id="bounce">Bounce
-		<div></div></h1>
-	<h1 id="bar">Load Bar
-		<div></div></h1>
-	<h1 id="clock">Clock
-		<div></div></h1>
-	<h1 id="glass">Hourglass
-        <div>
-            <div class="half"></div><div class="half"></div>
-        </div></h1>
-	<h1>Next</h1>
-</div>
+<html>
+    <head>
+        <title>Loading animation</title>
+        <style>
+            body{
+                margin: 0;
+            }
+            .holder{
+                width: 60%;
+                margin: 0 auto;
+                box-shadow: 0 0 10px #666;
+                text-align: center;
+                min-height: 90%;
+                padding: 40px 0;
+            }
+            .title{
+                position: relative;
+                width: 400px;
+                margin: 0 auto 10px;
+                padding: 10px;
+                background: #F8F8F8;
+                font-size: 30px;
+                font-weight: bold;
+            }
+            /* GOOGLE NOW */
+            #googleNow{
+                position: relative;
+            }
+            #googleNow:before, #googleNow:after{
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 100%;
+                left: 0;
+                background: #F00;
+                bottom: 0;
+                z-index: 1;
+            }
+            #googleNow:before{
+                -webkit-animation: expandBefore 4s linear infinite;
+            }
+            #googleNow:after{
+                -webkit-animation: expandAfter 4s linear infinite;
+            }
+            @-webkit-keyframes expandBefore{
+                0%{z-index: 0;
+                   background: #F00;
+                   width: 100%;
+                   left: 0;}
+                25%{z-index: 0;
+                    background: #F00;
+                    width: 100%;
+                    left: 0;}
+                26%{z-index: 2;
+                    background: #66F;
+                    width: 0;
+                    left: 50%;}
+                50%{z-index: 2;
+                    background: #66F;
+                    width: 100%;
+                    left: 0;}
+                51%{z-index: 0;}
+                75%{z-index: 0;
+                    background: #66F;
+                    width: 100%;
+                    left: 0;}
+                76%{z-index: 2;
+                    background: #F00;
+                    width: 0;
+                    left: 50%;}
+                to{z-index: 2;
+                   background: #F00;
+                   width: 100%;
+                   left: 0;}
+            }
+            @-webkit-keyframes expandAfter{
+                0%{background: #0A0;
+                   width: 0;
+                   left: 50%;}
+                25%{background: #0A0;
+                    width: 100%;
+                    left: 0;}
+                50%{background: #0A0;
+                    width: 100%;
+                    left: 0;}
+                51%{background: #EE0;
+                    width: 0;
+                    left: 50%;}
+                75%{background: #EE0;
+                    width: 100%;
+                    left: 0;}
+                to{background: #EE0;
+                   width: 100%;
+                   left: 0;}
+            }
+            /* WINDOWS 8 START */
+            #win8Start .anim{
+                position: relative;
+                width: 65px;
+                height: 65px;
+                margin: 0px auto;
+            }
+            #win8Start .anim > div{
+                position: absolute;
+                width: 70%;
+                height: 70%;
+                top: 15%;
+                left: 15%;
+                -webkit-animation: rotation 1.7s linear infinite;
+            }
+            #win8Start .anim > div:last-child{
+                top: 45%;
+                width: 50%;
+                background: #F8F8F8;
+                visibility: visible;
+                -webkit-animation: vanish 1.4s forwards;
+            }
+            #win8Start .anim > div > div{
+                position: absolute;
+                width: 16%;
+                height: 16%;
+                top: 42%;
+                left: 0;
+                border-radius: 50%;
+                background: #333;
+            }
+            #win8Start .anim > div:nth-child(2){
+                -webkit-animation-delay: .25s;
+            }
+            #win8Start .anim > div:nth-child(3){
+                -webkit-animation-delay: .5s;
+            }
+            #win8Start .anim > div:nth-child(4){
+                -webkit-animation-delay: .75s;
+            }
+            #win8Start .anim > div:nth-child(5){
+                -webkit-animation-delay: 1s;
+            }
+            @-webkit-keyframes vanish{
+                to{visibility: hidden;}
+            }
+            @-webkit-keyframes rotation{
+                0%{-webkit-transform: rotate(0);}
+                82%{-webkit-transform: rotate(180deg);}
+                to{-webkit-transform: rotate(360deg);}
+            }
+            /* BOUNCE */
+            #bounce{
+                height: 100px;
+            }
+            #bounce div{
+                position: relative;
+                width: 30px;
+                height: 30px;
+                top : -25px;
+                margin: 30px auto 0;
+                border-radius: 50%;
+                background: -webkit-radial-gradient(30% 30%, #777 0, #333 40%);
+                box-shadow : 0 25px 30px #BBB;
+                -webkit-animation: bounce .5s cubic-bezier(0.3,0.6,1,0.5) alternate infinite;
+            }
+            @-webkit-keyframes bounce{
+                60%{top : -20px;
+                    height : 30px;
+                    width : 30px;
+                    box-shadow : 0 20px 30px #BBB;}
+                to{top : 0;
+                   height : 20px;
+                   width : 40px;
+                   box-shadow : 0 5px 30px #BBB;}
+            }
+            /* LOADING BAR */
+            #bar div{
+                width: 80%;
+                height: 30px;
+                margin: 0 auto;
+                border: 1px solid #222;
+                border-radius: 10px;
+                background: -webkit-linear-gradient(-50deg, rgba(0,0,0,0) 20%, #222 28%, rgba(0,0,0,0) 36%, #222 44%, rgba(0,0,0,0) 52%);
+                -webkit-animation: swift 1s linear infinite;
+                transition: all .3s linear;
+                box-shadow: 0 0 10px #666 inset;
+            }
+            @-webkit-keyframes swift{
+                0%{
+                    background-position: 0 0;
+                }
+                to{
+                    background-position: 322px 0;
+                }
+            }
+            /* CLOCK */
+            #clock div{
+                position: relative;
+                border: 2px solid black;
+                width: 70px;
+                height: 70px;
+                margin: 0 auto;
+                border-radius: 50%;
+                background: -webkit-radial-gradient(ellipse, #000 0, #000 3px, #FFF 4px);
+                box-shadow: 0 0 10px #666 inset;
+            }
+            #clock div:before{
+                content: "";
+                position: absolute;
+                height: calc(50% - 2px);
+                width: 2px;
+                background: #000;
+                top: 2px;
+                left: calc(50% - 1px);
+                -webkit-animation: rotate 1s linear infinite;
+                -webkit-transform-origin: 1px 100%;
+            }
+            #clock div:after{
+                content: "";
+                position: absolute;
+                height: 30%;
+                width: 4px;
+                background: #000;
+                top: 20%;
+                left: calc(50% - 2px);
+                -webkit-animation: rotate 6s linear infinite;
+                -webkit-transform-origin: 2px 100%;
+            }
+            @-webkit-keyframes rotate{
+                to{
+                    -webkit-transform: rotate(360deg);
+                }
+            }
+            /* HOURGLASS */
+            #glass > div{
+                position: relative;
+                width: 50px;
+                height: 80px;
+                margin: 0 auto;
+                -webkit-animation: upsidedown 4s 2s ease-in-out infinite alternate;
+                -webkit-transform-origin: 50% 50%;
+            }
+            #glass > div:before, #glass > div:after{
+                position: absolute;
+                content: "";
+                top: 10%;
+                left: 5px;
+                width: 2px;
+                height: 80%;
+                background: #000;
+            }
+            #glass > div:after{
+                left: auto;
+                right: 5px;
+            }
+            #glass .half{
+                position: relative;
+                border: solid;
+                border-color: #000 transparent;
+                border-width: 40px 22px 0 22px;
+            }
+            #glass .half:nth-child(2){
+                -webkit-transform: rotate(180deg);
+            }
+            #glass .half:before, #glass .half:after{
+                position: absolute;
+                content: "";
+                width: 2px;
+                top: -37px;
+                left: -18px;
+                border: solid;
+                border-color: #FFF transparent;
+                border-width: 37px 20px 0 20px;
+            }
+            #glass .half:after{
+                border-color: #BBB transparent;
+                -webkit-animation: fillnempty 8s linear infinite;
+            }
+            #glass .half:nth-child(2):after{
+                -webkit-animation: fillnempty2 8s linear infinite;
+            }
+            @-webkit-keyframes upsidedown{
+                0%{
+                    -webkit-transform: rotate(0deg);
+                }
+                45%{
+                    -webkit-transform: rotate(0deg);
+                }
+                55%{
+                    -webkit-transform: rotate(180deg);
+                }
+                to{
+                    -webkit-transform: rotate(180deg);
+                }
+            }
+            @-webkit-keyframes fillnempty{
+                0%{
+                    left: -18px;
+                    top: -37px;
+                    border-width: 37px 20px 0 20px;
+                }
+                47%{
+                    left: 2px;
+                    top: 0px;
+                    border-width: 0px 0px 0 0px;
+                }
+                53%{
+                    left: -18px;
+                    top: -37px;
+                    border-width: 0px 20px 0 20px;
+                }
+                to{
+                    border-width: 37px 20px 0 20px;
+                }
+            }
+            @-webkit-keyframes fillnempty2{
+                0%{
+                    left: -18px;
+                    top: -37px;
+                    border-width: 0px 20px 0 20px;
+                }
+                47%{
+                    border-width: 37px 20px 0 20px;
+                }
+                53%{
+                    left: -18px;
+                    top: -37px;
+                    border-width: 37px 20px 0 20px;
+                }
+                to{
+                    left: 2px;
+                    top: 0px;
+                    border-width: 0px 0px 0 0px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <div class="title" id="googleNow">Google Now</div>
+            <div class="title" id="win8Start">Windows 8 Start
+                <div class="anim">
+                    <div><div></div></div>
+                    <div><div></div></div>
+                    <div><div></div></div>
+                    <div><div></div></div>
+                    <div><div></div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="title" id="bounce">Bounce
+                <div></div>
+            </div>
+            <div class="title" id="bar">Load Bar
+                <div></div>
+            </div>
+            <div class="title" id="clock">Clock
+                <div></div>
+            </div>
+            <div class="title" id="glass">Hourglass
+                <div>
+                    <div class="half"></div><div class="half"></div>
+                </div>
+            </div>
+            <div class="title">Next</div>
+        </div>
+    </body>
+</html>

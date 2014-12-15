@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Avoid the blades</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="style.css"/>
+        <script src="../../screen/AirPadReceiver.js"></script>
+        <script src="game.js"></script>
+    </head>
+    <body>
+        <canvas width="800" height="600" id="can"></canvas>
+        <div id="help">Move with arrows and use your blink with space.<br/>Click when you're ready !</div>
+        <aside id="airpad">
+            <h2>You can play with your SmartPhone !!</h2>
+            <img id="qr-code" src="" alt="qrcode"/>
+        </aside>
+        <script>
+            var help = document.getElementById("help"),
+                aside = document.getElementById("airpad"),
+                qr = document.getElementById("qr-code"),
+                can = document.getElementById("can"),
+                ctx = can.getContext("2d");
+        
+            // Code for the AirPad
+            var receiver = new AirPadReceiver("heroku.com/app159/:1337", qr, location.href+"/controller/");
+            receiver.onload = function(){
+                aside.style.right = "-320px";
+            };
+            receiver.oncommande = function(data){
+                Game.key(data.button, data.press);
+            };
+            receiver.onclose = function(){
+                help.innerHTML = "Connection with controller lost";
+                help.style.opacity = 1;
+                aside.style.right = "-320px";
+            };
+            // end
+            
+            function start(){
+                help.style.opacity = 0;
+                aside.style.right = 0;
+                
+                ctx.fillStyle = '#666';
+                Game.start(ctx);
+            }
+            window.onclick = start;
+        </script>
+    </body>
+</html>
