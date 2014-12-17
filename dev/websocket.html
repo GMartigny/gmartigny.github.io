@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>dumb tchat</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            
+            #output{
+                height: 100px;
+                width: 300px;
+                background: #EEE;
+            }
         </style>
     </head>
     <body>
@@ -17,11 +21,21 @@
             </form>
         </div>
         <script>
-            var socket = new WebSocket("ws://immense-dawn-3722.herokuapp.com:1337");
+            var url = "immense-dawn-3722.herokuapp.com",
+                socket = new WebSocket("ws://" + url + ":5000"),
+                output = document.getElementById("output");
+            
+            socket.onmessage = function(data){
+                var infos = JSON.parse(data.utf8Data);
+                output.innerHTML = infos.time + " : " + infos.message + "<br/>You said :" + infos.youSaid;
+            };
             
             document.getElementById("discuss").onsubmit = function(){
                 
-                
+                socket.send(JSON.stringify({
+                    message: this.message,
+                    time: Date.now()
+                }));
                 
                 return false;
             };
