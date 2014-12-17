@@ -1,45 +1,35 @@
-<!DOCTYPE html>
 <html>
     <head>
-        <title>dumb tchat</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Websocket auto-tchat</title>
         <style>
-            #output{
-                height: 100px;
-                width: 300px;
-                background: #EEE;
+            body {
+                padding: 15px;
+            }
+
+            ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            ul li {
+                line-height: 1.4;
             }
         </style>
-    </head>
-    <body>
-        <div>
-            <div id="output"></div>
-            <form action="#" id="discuss">
-                <input type="text" name="message"/>
-                <input type="submit" value="send"/>
-            </form>
-        </div>
         <script>
-            var url = "immense-dawn-3722.herokuapp.com",
+            var host = "thawing-inlet-8604.herokuapp.com",
                 port = "5000",
-                socket = new WebSocket("ws://" + url + ":" + port),
-                output = document.getElementById("output");
+                ws = new WebSocket("ws://" + host + ":" + port);
             
-            socket.onmessage = function(data){
-                var infos = JSON.parse(data.utf8Data);
-                output.innerHTML = infos.time + " : " + infos.message + "<br/>You said :" + infos.youSaid;
-            };
-            
-            document.getElementById("discuss").onsubmit = function(){
-                
-                socket.send(JSON.stringify({
-                    message: this.message,
-                    time: Date.now()
-                }));
-                
-                return false;
+            ws.onmessage = function(event){
+                var data = JSON.parse(event.data);
+                var li = document.createElement("li");
+                li.innerHTML = data.time + " : " + data.message;
+                document.getElementById("tchat").appendChild(li);
             };
         </script>
+    </head>
+    <body>
+        <ul id="tchat"></ul>
     </body>
 </html>
