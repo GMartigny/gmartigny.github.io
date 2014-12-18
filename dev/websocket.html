@@ -18,8 +18,7 @@
         </style>
         <script>
             var host = "thawing-inlet-8604.herokuapp.com",
-                port = "32605",
-                ws = new WebSocket("ws://" + host + ":" + port);
+                ws = new WebSocket("ws://" + host);
             
             ws.onmessage = function(event){
                 var data = JSON.parse(event.data);
