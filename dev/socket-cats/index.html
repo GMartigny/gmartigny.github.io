@@ -1,0 +1,126 @@
+<html>
+    <head>
+        <title>The Socket Cats</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <div id="welcome" class="modal fade">
+            <div class="modal-backdrop fade in"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <h1>Welcome fellow cat</h1>
+                    <form action="#" id="login" role="form">
+                        <div class="form-group">
+                            <label for="nick">Choose a name</label>
+                            <div class="col-md-10 col-md-offset-1">
+                                <input type="text" maxlength="20" name="nick" id="nick" class="form-control" required/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>And a color</label>
+                            <div class="color-chooser">
+                                <div class="col-md-1 col-md-offset-1">
+                                    <input type="radio" value="" id="violet" name="color" required/><label for="violet" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="red" name="color" required/><label for="red" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="orange" name="color" required/><label for="orange" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="yellow" name="color" required/><label for="yellow" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="lime" name="color" required/><label for="lime" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="green" name="color" required/><label for="green" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="jade" name="color" required/><label for="jade" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="ocean" name="color" required/><label for="ocean" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="sky" name="color" required/><label for="sky" class="color form-control"></label>
+                                </div>
+                                <div class="col-md-1">
+                                    <input type="radio" value="" id="grey" name="color" required/><label for="grey" class="color form-control"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                            <input type="submit" value="Dive in" class="btn btn-primary btn-block"/>
+                        <!--</div>-->
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="chat" class="col-md-6 col-md-offset-3 panel panel-default">
+            <div class="panel-body">
+                <div id="history" class="well well-sm">
+                    <div class="mess"><span class="author jade" data-time="18/12/2014 14:34:20">Altenalson</span>Coucou</div>
+                    <div class="mess"><span class="author violet" data-time="18/12/2014 14:34:20">Lowlow</span>Ca va ?</div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form action="#" id="say">
+                    <input type="text" name="message" value="" class="form-control"/>
+                    <input type="submit"/>
+                </form>
+            </div>
+            <aside class="panel panel-default">
+                <ul id="list"><li class="jade">Alte</li><li class="violet">Lowlow</li></ul>
+            </aside>
+        </div>
+        
+        <script>
+            var w = document.getElementById("welcome");
+//            w.style.display = "block";
+            setTimeout(function(){
+//                w.classList.add("in");
+            }, 20);
+            
+            
+            document.getElementById("login").onsubmit = function(){
+                //new LittleCat(this.name, this.color);
+                w.classList.remove("in");
+                return false;
+            };
+            
+            function LittleCat(name, color){
+                this.name = name;
+                this.color = color;
+                this.socket = new SocketManager("ws://thawing-inlet-8604.herokuapp.com");
+                this.socket.send({
+                    type: "handshake",
+                    name: this.name,
+                    color: this.color
+                });
+            }
+            
+            function SocketManager(url){
+                this.socket = new WebSocket(url);
+                
+                this.socket.onmessage = function(e){
+                    var data = JSON.parse(e.data);
+                };
+                this.socket.onerror = function(){
+                    
+                };
+                var s = this;
+                document.getElementById("say").onsubmit = function(){
+                    
+                    return false;
+                };
+            }
+            SocketManager.prototype.send = function(o){
+                this.socket.send(JSON.stringify(o));
+            };
+        </script>
+    </body>
+</html>
