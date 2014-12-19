@@ -22,40 +22,38 @@
                             <label>And a color</label>
                             <div class="color-chooser">
                                 <div class="col-md-1 col-md-offset-1">
-                                    <input type="radio" value="" id="violet" name="color" required/><label for="violet" class="color form-control"></label>
+                                    <input type="radio" value="violet" id="violet" name="color" required/><label for="violet" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="red" name="color" required/><label for="red" class="color form-control"></label>
+                                    <input type="radio" value="red" id="red" name="color" required/><label for="red" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="orange" name="color" required/><label for="orange" class="color form-control"></label>
+                                    <input type="radio" value="orange" id="orange" name="color" required/><label for="orange" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="yellow" name="color" required/><label for="yellow" class="color form-control"></label>
+                                    <input type="radio" value="yellow" id="yellow" name="color" required/><label for="yellow" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="lime" name="color" required/><label for="lime" class="color form-control"></label>
+                                    <input type="radio" value="lime" id="lime" name="color" required/><label for="lime" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="green" name="color" required/><label for="green" class="color form-control"></label>
+                                    <input type="radio" value="green" id="green" name="color" required/><label for="green" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="jade" name="color" required/><label for="jade" class="color form-control"></label>
+                                    <input type="radio" value="jade" id="jade" name="color" required/><label for="jade" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="ocean" name="color" required/><label for="ocean" class="color form-control"></label>
+                                    <input type="radio" value="ocean" id="ocean" name="color" required/><label for="ocean" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="sky" name="color" required/><label for="sky" class="color form-control"></label>
+                                    <input type="radio" value="sky" id="sky" name="color" required/><label for="sky" class="color form-control"></label>
                                 </div>
                                 <div class="col-md-1">
-                                    <input type="radio" value="" id="grey" name="color" required/><label for="grey" class="color form-control"></label>
+                                    <input type="radio" value="grey" id="grey" name="color" required/><label for="grey" class="color form-control"></label>
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="form-group">-->
-                            <input type="submit" value="Dive in" class="btn btn-primary btn-block"/>
-                        <!--</div>-->
+                        <input type="submit" value="Dive in" class="btn btn-primary btn-block"/>
                     </form>
                 </div>
             </div>
@@ -63,8 +61,8 @@
         <div id="chat" class="col-md-6 col-md-offset-3 panel panel-default">
             <div class="panel-body">
                 <div id="history" class="well well-sm">
-                    <div class="mess"><span class="author jade" data-time="18/12/2014 14:34:20">Altenalson</span>Coucou</div>
-                    <div class="mess"><span class="author violet" data-time="18/12/2014 14:34:20">Lowlow</span>Ca va ?</div>
+                    <div class="mess"><span class="author me jade">Altenalson</span>Coucou</div>
+                    <div class="mess"><span class="author violet">Lowlow</span>Ca va ?</div>
                 </div>
             </div>
             <div class="panel-body">
@@ -74,53 +72,145 @@
                 </form>
             </div>
             <aside class="panel panel-default">
-                <ul id="list"><li class="jade">Alte</li><li class="violet">Lowlow</li></ul>
+                <ul id="list"><li class="jade">Altenalson</li><li class="violet">Lowlow</li></ul>
             </aside>
         </div>
         
         <script>
-            var w = document.getElementById("welcome");
+            var w = document.getElementById("welcome"),
+                me;
 //            w.style.display = "block";
             setTimeout(function(){
-//                w.classList.add("in");
+                w.classList.add("in");
             }, 20);
             
             
             document.getElementById("login").onsubmit = function(){
-                //new LittleCat(this.name, this.color);
-                w.classList.remove("in");
+                //me = new LittleCat(this.name, this.color);
                 return false;
             };
             
-            function LittleCat(name, color){
-                this.name = name;
+            function LittleCat(nick, color){
+                this.nick = nick;
                 this.color = color;
-                this.socket = new SocketManager("ws://thawing-inlet-8604.herokuapp.com");
-                this.socket.send({
-                    type: "handshake",
-                    name: this.name,
-                    color: this.color
-                });
+                this.socket = false;
             }
+            LittleCat.prototype.connect = function(){
+                var handshake = function(){
+                    this.send({
+                        type: "handshake",
+                        name: this.name,
+                        color: this.color
+                    });
+                };
+                if(!this.socket)
+                    this.socket = new SocketManager("ws://thawing-inlet-8604.herokuapp.com", handshake);
+                else
+                    handshake.call(this.socket);
+            };
+            LittleCat.prototype.minify = function(){
+                return {
+                    nick: this.nick,
+                    color: this.color
+                };
+            };
             
-            function SocketManager(url){
+            function SocketManager(url, handshake){
                 this.socket = new WebSocket(url);
                 
-                this.socket.onmessage = function(e){
-                    var data = JSON.parse(e.data);
+                var self = this;
+                this.socket.onopen = function(){
+                    handshake.call(self);
                 };
-                this.socket.onerror = function(){
-                    
-                };
-                var s = this;
-                document.getElementById("say").onsubmit = function(){
-                    
-                    return false;
-                };
+                this.socket.onmessage = this.message;
+                
+                this.html = new HTMLManager();
             }
             SocketManager.prototype.send = function(o){
                 this.socket.send(JSON.stringify(o));
             };
+            SocketManager.prototype.message = function(e){
+                    var data = JSON.parse(e.data);
+                    
+                    if(data.type == "list"){
+                        this.html.setList = data.value;
+                    }
+                    else if(data.type == "isok"){
+                        var self = this;
+                        document.getElementById("say").onsubmit = function(){
+                            self.send({
+                                type: "message",
+                                value: {
+                                    message: this.message,
+                                    by: me.minify()
+                                }
+                            });
+                            self.html.addMessage(this.message, me.nick, me.color, true);
+                            return false;
+                        };
+                    }
+                    else if(data.type == "error"){
+                        
+                    }
+                    else if(data.type == "arrive")
+                        this.html.addList(data.value.nick, data.value.color);
+                    else if(data.type == "leave")
+                        this.html.removeList(data.value.nick, data.value.color);
+                    else if(data.type == "message")
+                        this.html.addMessage(data.value.message, data.value.nick, data.value.color);
+                };
+            
+            function HTMLManager(){
+                this.list = document.getElementById("list");
+                this.array = [];
+                this.history = document.getElementById("history");
+            }
+            HTMLManager.prototype.setList = function(arr){
+                arr = arr || [];
+                this.array = arr.sort();
+                this.list.innerHTML = "";
+                var self = this;
+                this.array.forEach(function(u){
+                    self.addList(u.nick, u.color);
+                });
+            };
+            HTMLManager.prototype.addList = function(nick, color){
+                this.array.push(nick);
+                this.array.sort();
+                var pos = this.array.indexOf(nick);
+                
+                var li = document.createElement("li");
+                li.className = color;
+                li.id = nick+color;
+                li.innerHTML = nick;
+                
+                var next = this.list.children[pos];
+                if(next)
+                    this.list.insertBefore(li, next);
+                else
+                    this.list.appendChild(li);
+            };
+            HTMLManager.prototype.removeList = function(nick, color){
+                this.array.splice(this.array.indexOf(nick), 1);
+                document.getElementById(nick+color).remove();
+            };
+            HTMLManager.prototype.addMessage = function(message, nick, color, isme){
+                isme = isme || false;
+                var div = document.createElement("div");
+                div.className = "mess";
+                var author = document.createElement("span");
+                author.innerHTML = nick;
+                author.className = "author " + color;
+                if(isme)
+                    author.className += " me";
+                div.appendChild(author);
+                div.innerHTML += htmlescape(message);
+                this.history.appendChild(div);
+            };
+            
+            function htmlescape(str){
+                return str.replace("<", "&lt;").replace(">", "&gt;");
+            }
         </script>
     </body>
 </html>
