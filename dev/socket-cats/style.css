@@ -1,0 +1,114 @@
+html, body{
+    margin: 0;
+}
+
+.modal-backdrop{
+    height: 100%;
+}
+.modal-content{
+    padding: 10px 15px;
+}
+
+.color-chooser{
+    overflow: hidden;
+}
+.color-chooser .col-md-1{
+    padding: 1px 5px;
+}
+.color{
+    display: inline-block;
+    border: 3px solid #FFF;
+    outline: 1px solid #CCC;
+    cursor: pointer;
+    float: left;
+    border-radius: 7px;
+}
+#violet + .color{background-color: #cf5692;}
+.violet{color: #cf5692;}
+#red + .color{background-color: #c61919;}
+.red{color: #c61919;}
+#orange + .color{background-color: #c68908;}
+.orange{color: #c68908;}
+#yellow + .color{background-color: #cdbd07;}
+.yellow{color: #cdbd07;}
+#lime + .color{background-color: #74d102;}
+.lime{color: #74d102;}
+#green + .color{background-color: #55a549;}
+.green{color: #55a549;}
+#jade + .color{background-color: #127547;}
+.jade{color: #127547;}
+#ocean + .color{background-color: #08585e;}
+.ocean{color: #08585e;}
+#sky + .color{background-color: #24c8c8;}
+.sky{color: #24c8c8;}
+#grey + .color{background-color: #8b8b8b;}
+.grey{color: #8b8b8b;}
+#login input[type="radio"]{
+    display: none;
+}
+#login input[type="radio"]:checked + .color{
+    -webkit-animation: glow .7s ease-out infinite alternate;
+}
+@-webkit-keyframes glow{
+    0%{
+        box-shadow: 0 0 10px -1px #FFF inset;
+    }
+    to{
+        box-shadow: 0 0 10px 4px #FFF inset;
+    }
+}
+
+#chat{
+    padding: 2px;
+}
+#chat .panel-body{
+    padding: 2px;
+}
+#history{
+    height: 500px;
+    margin: 0;
+    overflow: auto;
+}
+#history .mess{
+    position: relative;
+    padding-left: 1em;
+}
+#history .mess:before{
+    content: "";
+    position: absolute;
+    width: .4em;
+    height: .4em;
+    top: .5em;
+    left: 0;
+    border: solid #333;
+    border-width: 2px 2px 0 0;
+    transform: rotate(45deg);
+}
+#history .author.me{
+    font-weight: bold;
+}
+#history .author:after{
+    content: ": "
+}
+#say{
+    margin: 0;
+}
+#say input[type="submit"]{
+    display: none;
+}
+#chat aside{
+    position: absolute;
+    top: 5%;
+    max-height: 90%;
+    width: 150px;
+    left: 100%;
+    border-radius: 0 4px 4px 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-hyphenate-character: inherit;
+}
+#list{
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
