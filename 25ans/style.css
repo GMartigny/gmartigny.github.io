@@ -1,0 +1,186 @@
+html{
+    height: 100%;
+}
+body{
+    margin: 0;
+    background: #0f254c;
+    height: 100%;
+    padding: 5%;
+    overflow: hidden;
+}
+
+*{
+    position: relative;
+    box-sizing: border-box;
+}
+
+a{
+    color: #e45e00;
+    text-decoration: none;
+}
+a:hover{
+    color: #0084d5;
+}
+
+.tel{
+    text-decoration: underline;
+}
+
+main{
+    width: 80%;
+    height: 100%;
+    margin: 0 auto;
+    background: #F5F5F5;
+    box-shadow: 0 0 100px #EEE;
+    overflow: hidden;
+}
+
+.crowd{
+    position: absolute;
+    top: 0;
+    padding: 30px 0 0;
+    width: 15%;
+    height: 100%;
+}
+.crowd img{
+    display: block;
+    width: 100%;
+    margin: -20px 0;
+    -webkit-animation: 1.3s linear dance infinite;
+}
+.crowd img:nth-child(2){
+    -webkit-animation-delay: .5s;
+}
+.crowd img:nth-child(3){
+    -webkit-animation-delay: .2s;
+}
+.crowd img:nth-child(4){
+    -webkit-animation-delay: .65s;
+}
+@-webkit-keyframes dance{
+    0%{
+        transform: rotate(10deg) translate(20px, 10px);
+    }
+    25%{
+        transform: rotate(-10deg) translate(20px, -10px);
+    }
+    50%{
+        transform: rotate(-10deg) translate(-20px, 10px);
+    }
+    75%{
+        transform: rotate(10deg) translate(-20px, -10px);
+    }
+    to{
+        transform: rotate(10deg) translate(20px, 10px);
+    }
+}
+.crowd.left{
+    left: -200px;
+}
+.ready .crowd.left{
+    -webkit-animation: 1s .5s ease-out from-left 1 forwards;
+}
+.crowd.right{
+    right: -200px;
+}
+.ready .crowd.right{
+    -webkit-animation: 1s .5s ease-out from-right 1 forwards;
+}
+@-webkit-keyframes from-left{
+    to{left: 0;}
+}
+@-webkit-keyframes from-right{
+    to{right: 0;}
+}
+
+#titre{
+    top: 50px;
+    list-style: none;
+    perspective: 300px;
+    perspective-origin: 50% 50%;
+    margin: 0;
+    padding: 0;
+}
+#titre li{
+    position: absolute;
+    width: 100%;
+    display: block;
+    font-size: 5vh;
+    text-align: center;
+    background: #F5F5F5;
+    z-index: 1;
+    transition: all linear 0s;
+    transform: translateY(100%) rotateX(-90deg);
+    transform-origin: 0 0;
+}
+#titre .current{
+    transition-duration: .55s;
+    transform: translateY(0) rotateX(0deg);
+    z-index: 10;
+}
+#titre .topped{
+    transition-duration: .55s;
+    transform-origin: 0 100%;
+    transform: translateY(-100%) rotateX(90deg);
+}
+
+.para{
+    margin-top: 20vh;
+    font-size: 3.5vh;
+}
+
+.curtain{
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: url(img/rideau.png) #8b0913;
+    transition: all ease-out 1s;
+}
+.curtain.left{
+    left: 0;
+}
+.curtain.right{
+    right: 0;
+}
+.ready .curtain.left{
+    left: -50%;
+}
+.ready .curtain.right{
+    right: -50%;
+}
+
+.para{
+    width: 100%;
+    padding: 0 20%;
+}
+.para.left{
+    right: calc(100% + 250px);
+}
+.para.left:after{
+    position: absolute;
+    top: 0;
+    left: 100%;
+    content: "";
+    width: 250px;
+    height: 265px;
+    background: url(img/tintin.png);
+}
+.para.right{
+    left: calc(100% + 200px);
+}
+.para.right:before{
+    position: absolute;
+    top: 0;
+    right: 100%;
+    content: "";
+    width: 200px;
+    height: 200px;
+    background: url(img/maya.png);
+}
+.ready .para.left{
+    -webkit-animation: 3s 2s ease-out from-right 1 forwards;
+}
+.ready .para.right{
+    -webkit-animation: 3s 3s ease-out from-left 1 forwards;
+}

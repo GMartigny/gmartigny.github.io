@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>25ans de Guigui</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <main>
+            <ul id="titre">
+                <li class="current">Vous avez fêtez sa naissance ...</li>
+                <li>Ou son adolescence ...</li>
+                <li>Ou son passage à l'age adulte ...</li>
+                <li>Nous vous invitons à venir fêter son quart de siecle</li>
+                <li class="topped">&nbsp;</li>
+            </ul>
+            
+            <div class="para left">
+                <p>Venez nombreux le samedi 27 février 2015</p>
+                <p>à partir de 19h30</p>
+                <p>au <a href="https://goo.gl/maps/aHpFw">4 mail des gauterie Carquefou</a></p>
+            </div>
+            <div class="para right">
+                <p>Merci de nous confirmer votre venu au</p>
+                <p><span class="tel">09 52 92 25 03</span> ou <span class="tel">07 82 45 07 79</span></p>
+            </div>
+            
+            <aside class="crowd left">
+                <img src="img/asterix.png" alt="asterix"/>
+                <img src="img/garfield.png" alt="garfield"/>
+                <img src="img/lucky.png" alt="lucky luke"/>
+                <img src="img/obelix.png" alt="obelix"/>
+            </aside>
+            <aside class="crowd right">
+                <img src="img/calvin.png" alt="calvin"/>
+                <img src="img/mini-marsu.png" alt="minis marsus"/>
+                <img src="img/marsu.png" alt="marsu"/>
+            </aside>
+        </main>
+        
+        <div class="curtain left"></div><div class="curtain right"></div>
+        <script>
+            var lis = document.getElementById("titre").children,
+                cursor = 0,
+                current = lis[cursor],
+                topped = lis[lis.length-1],
+                imgs = ["asterix", "garfield", "lucky", "marsu", "tintin", "maya", "rideau", "mini-marsu", "obelix", "calvin"],
+                ready = 0;
+            
+            imgs.forEach(function(s){
+                var i = new Image();
+                i.onload = function(){
+                    ready++;
+                    if(ready == imgs.length){
+                        document.body.className = "ready";
+                        setTimeout(startTitre, 200);
+                    }
+                };
+                i.src = "img/" + s + ".png";
+            });
+            
+            function startTitre(){
+                setInterval(function(){
+                    topped.className = "";
+                    current.className = "topped";
+                    topped = current;
+
+                    current = lis[++cursor];
+                    current.className = "current";
+                    if(cursor == lis.length-1)
+                        cursor = -1;
+                    console.log(cursor);
+                }, 3500);
+            }
+        </script>
+    </body>
+</html>
