@@ -7,6 +7,7 @@ body{
     height: 100%;
     padding: 5%;
     overflow: hidden;
+    font-family: tahoma;
 }
 
 *{
@@ -31,8 +32,16 @@ main{
     height: 100%;
     margin: 0 auto;
     background: #F5F5F5;
-    box-shadow: 0 0 100px #EEE;
     overflow: hidden;
+    -webkit-animation: 1s linear glow infinite alternate;
+}
+@-webkit-keyframes glow{
+    0%{
+        box-shadow: 0 0 100px #EEE;
+    }
+    to{
+        box-shadow: 0 0 50px #EEE;
+    }
 }
 
 .crowd{
@@ -105,7 +114,7 @@ main{
     position: absolute;
     width: 100%;
     display: block;
-    font-size: 5vh;
+    font-size: 4.7vh;
     text-align: center;
     background: #F5F5F5;
     z-index: 1;
@@ -179,8 +188,8 @@ main{
     background: url(img/maya.png);
 }
 .ready .para.left{
-    -webkit-animation: 3s 2s ease-out from-right 1 forwards;
+    -webkit-animation: 3s 10s ease-out from-right 1 forwards;
 }
 .ready .para.right{
-    -webkit-animation: 3s 3s ease-out from-left 1 forwards;
+    -webkit-animation: 3s 11s ease-out from-left 1 forwards;
 }
