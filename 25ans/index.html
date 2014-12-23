@@ -4,25 +4,29 @@
         <title>25ans de Guigui</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head>
     <body>
         <main>
             <ul id="titre">
-                <li class="current">Vous avez fêtez sa naissance ...</li>
-                <li>Ou son adolescence ...</li>
-                <li>Ou son passage à l'age adulte ...</li>
+                <li class="current"><img src="img/mini-guigui.png" height="80" alt="mini guigui"/> Vous avez fêté sa naissance ...</li>
+                <li>Ou son adolescence ... <img src="img/ado-guigui.png" height="80" alt="ado guigui"/></li>
+                <li><img src="img/beau-guigui.png" height="80" alt="beau guigui"/> Ou son passage à l'age adulte ...</li>
                 <li>Nous vous invitons à venir fêter son quart de siecle !</li>
-                <li class="topped">&nbsp;</li>
             </ul>
             
-            <div class="para left">
-                <p>Venez nombreux le samedi 27 février 2015</p>
-                <p>à partir de 19h30</p>
-                <p>au <a href="https://goo.gl/maps/aHpFw">4 mail des gauterie Carquefou</a></p>
-            </div>
             <div class="para right">
-                <p>Merci de nous confirmer votre venu au</p>
+                <p>le samedi 7 février 2015</p>
+                <p>à partir de 19h30</p>
+                <p>au <a href="https://goo.gl/maps/aHpFw">4 mail des gauteries, Carquefou</a></p>
+            </div>
+            <div class="para left smaller">
+                <p>La soirée sera organisée autour du thême de la BD et tout ce qui y ressemble...</p>
+                <p>alors ajustez vos déguisements ou accessoires.</p>
+            </div>
+            <div class="para right smaller">
+                <p>Merci de nous confirmer votre venue au</p>
                 <p><span class="tel">09 52 92 25 03</span> ou <span class="tel">07 82 45 07 79</span></p>
             </div>
             
@@ -45,8 +49,9 @@
                 cursor = 0,
                 current = lis[cursor],
                 topped = lis[lis.length-1],
-                imgs = ["asterix", "garfield", "lucky", "marsu", "tintin", "maya", "rideau", "mini-marsu", "obelix", "calvin"],
-                ready = 0;
+                imgs = ["asterix", "garfield", "lucky", "marsu", "tintin", "maya", "rideau", "mini-marsu", "obelix", "calvin", "mini-guigui", "ado-guigui", "beau-guigui"],
+                ready = 0,
+                loop;
             
             imgs.forEach(function(s){
                 var i = new Image();
@@ -61,16 +66,17 @@
             });
             
             function startTitre(){
-                setInterval(function(){
+                loop = setInterval(function(){
                     topped.className = "";
                     current.className = "topped";
                     topped = current;
 
                     current = lis[++cursor];
                     current.className = "current";
-                    if(cursor == lis.length-1)
-                        cursor = -1;
-                    console.log(cursor);
+                    if(cursor == lis.length-1){
+                        clearInterval(loop);
+                        current.className += " grow";
+                    }
                 }, 3000);
             }
         </script>
