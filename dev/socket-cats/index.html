@@ -60,10 +60,7 @@
         </div>
         <div id="chat" class="col-md-6 col-md-offset-3 panel panel-default">
             <div class="panel-body">
-                <div id="history" class="well well-sm">
-                    <div class="mess"><span class="author me jade">Altenalson</span>Coucou</div>
-                    <div class="mess"><span class="author violet">Lowlow</span>Ca va ?</div>
-                </div>
+                <div id="history" class="well well-sm"></div>
             </div>
             <div class="panel-body">
                 <form action="#" id="say">
@@ -72,41 +69,105 @@
                 </form>
             </div>
             <aside class="panel panel-default">
-                <ul id="list"><li class="jade">Altenalson</li><li class="violet">Lowlow</li></ul>
+                <ul id="list"></ul>
             </aside>
         </div>
         
         <script>
-            var w = document.getElementById("welcome"),
-                me;
-//            w.style.display = "block";
-            setTimeout(function(){
+//            var url = "thawing-inlet-8604.herokuapp.com";
+            var url = "localhost:5000";
+            
+            var w = document.getElementById("welcome");
+            
+            document.body.onload = function(){
+                new SocketManager("ws://"+url);
+
+                w.style.display = "block";
                 w.classList.add("in");
-            }, 20);
-            
-            
-            document.getElementById("login").onsubmit = function(){
-                //me = new LittleCat(this.name, this.color);
-                return false;
+                
             };
             
-            function LittleCat(nick, color){
+            // Socket connection manager
+            function SocketManager(url){
+                var self = this;
+                this.socket = new WebSocket(url);
+                this.socket.onopen = function(){
+                    console.log("connection open");
+                };
+                this.socket.onmessage = function(d){
+                    self.message.call(self, d);
+                };
+                
+                this.cat = new LittleCat();
+                document.getElementById("login").onsubmit = function(){
+                    self.cat.setInfos(this.nick.value, this.color.value);
+                    self.send({
+                        type: "handshake",
+                        value: self.cat.minify()
+                    });
+                    
+                    return false;
+                };
+                
+                this.html = new HTMLManager();
+            }
+            SocketManager.prototype.send = function(o){
+                console.log("send " + o.type);
+                this.socket.send(JSON.stringify(o));
+            };
+            SocketManager.prototype.message = function(e){
+                var data = JSON.parse(e.data);
+                console.log(data.type);
+                
+                switch(data.type){
+                    case "list":
+                        this.html.setList = data.value;
+                        break;
+                    case "hs-isok":
+                        this.html.addList(data.value.nick, data.value.color, true);
+                        this.activateChat();
+                        break;
+                    case "hs-taken":
+                        this.html.informe("This combinaison is already taken");
+                        break;
+                    case "error":
+                        this.html.informe(data.value);
+                        break;
+                    case "arrive":
+                        this.html.addList(data.value.nick, data.value.color);
+                        break;
+                    case "leave":
+                        this.html.removeList(data.value.nick, data.value.color);
+                        break;
+                    case "message":
+                        this.html.addMessage(data.value.message, data.value.nick, data.value.color);
+                        break;
+                }
+            };
+            SocketManager.prototype.activateChat = function(){
+                w.classList.remove("in");
+                w.style.display = "none";
+                var self = this;
+                document.getElementById("say").onsubmit = function(){
+                    self.send({
+                        type: "message",
+                        value: {
+                            message: this.message.value,
+                            by: self.cat.minify()
+                        }
+                    });
+                    self.html.addMessage(this.message.value, self.cat.nick, self.cat.color, true);
+                    this.message.value = "";
+                    return false;
+                };
+            };
+            
+            // A tchat user
+            function LittleCat(){
+            }
+            LittleCat.prototype.setInfos = function(nick, color){
                 this.nick = nick;
                 this.color = color;
-                this.socket = false;
-            }
-            LittleCat.prototype.connect = function(){
-                var handshake = function(){
-                    this.send({
-                        type: "handshake",
-                        name: this.name,
-                        color: this.color
-                    });
-                };
-                if(!this.socket)
-                    this.socket = new SocketManager("ws://thawing-inlet-8604.herokuapp.com", handshake);
-                else
-                    handshake.call(this.socket);
             };
             LittleCat.prototype.minify = function(){
                 return {
@@ -115,56 +176,15 @@
                 };
             };
             
-            function SocketManager(url, handshake){
-                this.socket = new WebSocket(url);
-                
-                var self = this;
-                this.socket.onopen = function(){
-                    handshake.call(self);
-                };
-                this.socket.onmessage = this.message;
-                
-                this.html = new HTMLManager();
-            }
-            SocketManager.prototype.send = function(o){
-                this.socket.send(JSON.stringify(o));
-            };
-            SocketManager.prototype.message = function(e){
-                    var data = JSON.parse(e.data);
-                    
-                    if(data.type == "list"){
-                        this.html.setList = data.value;
-                    }
-                    else if(data.type == "isok"){
-                        var self = this;
-                        document.getElementById("say").onsubmit = function(){
-                            self.send({
-                                type: "message",
-                                value: {
-                                    message: this.message,
-                                    by: me.minify()
-                                }
-                            });
-                            self.html.addMessage(this.message, me.nick, me.color, true);
-                            return false;
-                        };
-                    }
-                    else if(data.type == "error"){
-                        
-                    }
-                    else if(data.type == "arrive")
-                        this.html.addList(data.value.nick, data.value.color);
-                    else if(data.type == "leave")
-                        this.html.removeList(data.value.nick, data.value.color);
-                    else if(data.type == "message")
-                        this.html.addMessage(data.value.message, data.value.nick, data.value.color);
-                };
-            
+            // Add and remove to DOM
             function HTMLManager(){
                 this.list = document.getElementById("list");
                 this.array = [];
                 this.history = document.getElementById("history");
             }
+            HTMLManager.prototype.informe = function(m){
+                alert(m);
+            };
             HTMLManager.prototype.setList = function(arr){
                 arr = arr || [];
                 this.array = arr.sort();
@@ -174,13 +194,16 @@
                     self.addList(u.nick, u.color);
                 });
             };
-            HTMLManager.prototype.addList = function(nick, color){
+            HTMLManager.prototype.addList = function(nick, color, isme){
+                isme = isme || false;
                 this.array.push(nick);
                 this.array.sort();
                 var pos = this.array.indexOf(nick);
                 
                 var li = document.createElement("li");
                 li.className = color;
+                if(isme)
+                    li.className += " me";
                 li.id = nick+color;
                 li.innerHTML = nick;
                 
