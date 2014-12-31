@@ -84,7 +84,6 @@
 
                 w.style.display = "block";
                 w.classList.add("in");
-                
             };
             
             // Socket connection manager
@@ -112,16 +111,14 @@
                 this.html = new HTMLManager();
             }
             SocketManager.prototype.send = function(o){
-                console.log("send " + o.type);
                 this.socket.send(JSON.stringify(o));
             };
             SocketManager.prototype.message = function(e){
                 var data = JSON.parse(e.data);
-                console.log(data.type);
                 
                 switch(data.type){
                     case "list":
-                        this.html.setList = data.value;
+                        this.html.setList(data.value);
                         break;
                     case "hs-isok":
                         this.html.addList(data.value.nick, data.value.color, true);
@@ -140,7 +137,7 @@
                         this.html.removeList(data.value.nick, data.value.color);
                         break;
                     case "message":
-                        this.html.addMessage(data.value.message, data.value.nick, data.value.color);
+                        this.html.addMessage(data.value.message, data.value.by.nick, data.value.by.color);
                         break;
                 }
             };
@@ -149,15 +146,17 @@
                 w.style.display = "none";
                 var self = this;
                 document.getElementById("say").onsubmit = function(){
-                    self.send({
-                        type: "message",
-                        value: {
-                            message: this.message.value,
-                            by: self.cat.minify()
-                        }
-                    });
-                    self.html.addMessage(this.message.value, self.cat.nick, self.cat.color, true);
-                    this.message.value = "";
+                    if(this.message.value != ""){
+                        self.send({
+                            type: "message",
+                            value: {
+                                message: this.message.value,
+                                by: self.cat.minify()
+                            }
+                        });
+                        self.html.addMessage(this.message.value, self.cat.nick, self.cat.color, true);
+                        this.message.value = "";
+                    }
                     return false;
                 };
             };
@@ -187,10 +186,9 @@
             };
             HTMLManager.prototype.setList = function(arr){
                 arr = arr || [];
-                this.array = arr.sort();
                 this.list.innerHTML = "";
                 var self = this;
-                this.array.forEach(function(u){
+                arr.forEach(function(u){
                     self.addList(u.nick, u.color);
                 });
             };
