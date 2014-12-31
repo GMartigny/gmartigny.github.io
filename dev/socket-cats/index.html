@@ -64,7 +64,7 @@
             </div>
             <div class="panel-body">
                 <form action="#" id="say">
-                    <input type="text" name="message" value="" class="form-control"/>
+                    <input type="text" name="message" value="" class="form-control" autocomplete="off" required=""/>
                     <input type="submit"/>
                 </form>
             </div>
@@ -89,6 +89,9 @@
                 this.socket = new WebSocket(url);
                 this.socket.onopen = function(){
                     console.log("connection open");
+                };
+                this.socket.onerror = function(){
+                    self.html.informe("Something fishy happend");
                 };
                 this.socket.onmessage = function(d){
                     self.message.call(self, d);
@@ -143,17 +146,15 @@
                 w.style.display = "none";
                 var self = this;
                 document.getElementById("say").onsubmit = function(){
-                    if(this.message.value != ""){
-                        self.send({
-                            type: "message",
-                            value: {
-                                message: this.message.value,
-                                by: self.cat.minify()
-                            }
-                        });
-                        self.html.addMessage(this.message.value, self.cat.nick, self.cat.color, true);
-                        this.message.value = "";
-                    }
+                    self.send({
+                        type: "message",
+                        value: {
+                            message: this.message.value,
+                            by: self.cat.minify()
+                        }
+                    });
+                    self.html.addMessage(this.message.value, self.cat.nick, self.cat.color, true);
+                    this.message.value = "";
                     return false;
                 };
             };
@@ -224,6 +225,7 @@
                 div.appendChild(author);
                 div.innerHTML += htmlescape(message);
                 this.history.appendChild(div);
+                this.history.scrollTop = this.history.scrollHeight;
             };
             
             function htmlescape(str){

@@ -47,7 +47,16 @@ html, body{
     display: none;
 }
 #login input[type="radio"]:checked + .color{
+    animation: glow .7s ease-out infinite alternate;
     -webkit-animation: glow .7s ease-out infinite alternate;
+}
+@keyframes glow{
+    0%{
+        box-shadow: 0 0 10px -1px #FFF inset;
+    }
+    to{
+        box-shadow: 0 0 10px 4px #FFF inset;
+    }
 }
 @-webkit-keyframes glow{
     0%{
@@ -72,6 +81,7 @@ html, body{
 #history .mess{
     position: relative;
     padding-left: 1em;
+    word-break: break-all;
 }
 #history .mess:before{
     content: "";
@@ -100,12 +110,11 @@ html, body{
     position: absolute;
     top: 5%;
     max-height: 90%;
-    width: 150px;
+    width: 200px;
     left: 100%;
     border-radius: 0 4px 4px 0;
     overflow-x: hidden;
     overflow-y: auto;
-    -webkit-hyphenate-character: inherit;
 }
 #list{
     list-style: none;
