@@ -72,12 +72,9 @@
                 <ul id="list"></ul>
             </aside>
         </div>
-        
         <script>
-//            var url = "thawing-inlet-8604.herokuapp.com";
-            var url = "localhost:5000";
-            
-            var w = document.getElementById("welcome");
+            var url = "thawing-inlet-8604.herokuapp.com",
+                w = document.getElementById("welcome");
             
             document.body.onload = function(){
                 new SocketManager("ws://"+url);
