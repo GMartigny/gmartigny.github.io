@@ -1,7 +1,13 @@
-function AirPadReceiver(serverURL, qr, controllerURL){
-    this.socket = new WebSocket("ws://"+serverURL);
+/**
+ * The object to connect a command receiver
+ * @param {HTMLElement, String, JQuery} QRcode The image showing the QRcode
+ * @param {String} controllerURL the URL to controller
+ * @returns {AirPadReceiver} 
+ * @throws {String} Error if something happend
+ */
+function AirPadReceiver(QRcode, controllerURL){
+    this.socket = new WebSocket("ws://heroku.com");
     
-    this.id = 0;
     this.url = controllerURL;
     this.qr = (function(o){
         var qr;
@@ -10,15 +16,15 @@ function AirPadReceiver(serverURL, qr, controllerURL){
         }
         else if(o.length){ // is a string
             qr = document.getElementById(o);
-            if(!qr) throw "Undefined id "+o+" for QrCode image";
+            if(!qr) throw "Undefined id \""+o+"\" for QrCode image";
         }
         else if(o.nodeName){ // is really a elem
-            qr = o;
             if(o.nodeName != "IMG") throw "This's not an image";
+            qr = o;
         }
         else throw "WTF is this shit ?";
         return qr;
-    })(qr);
+    })(QRcode);
     this.qr.onload = this.onload;
     
     this.verbose = true;
@@ -27,20 +33,21 @@ function AirPadReceiver(serverURL, qr, controllerURL){
     this.socket.onmessage = this.onmessage;
     this.socket.onerror = this.onerror;
     this.socket.onclose = this.onclose;
-    
-    this.onopen = function(){
+};
+AirPadReceiver.prototype = {
+    onopen: function(){
         this.log("Connection established");
-    };
-    this.onmessage = function(txt){
+    },
+    onmessage: function(txt){
         this.log("Received : "+txt);
         try{
             var mess = JSON.parse(txt);
             switch (mess.type){
                 case "id":
-                    this.id = mess.data;
+                    this.id = mess.value;
                     this.qr = this.getQR();
                     break;
-                case "cmd":
+                case "command":
                     this.oncommand(mess.data);
                     break;
             }
@@ -48,46 +55,46 @@ function AirPadReceiver(serverURL, qr, controllerURL){
         catch(e){
             throw "Invalid JSON";
         }
-    };
-    this.oncommand = function(data){
+    },
+    oncommand: function(data){
         this.log((data.press? "Press": "Release")+" the button "+data.button);
-    };
-    this.onload = function(){
+    },
+    onload: function(){
         this.log("Ready for scanning");
-    };
-    this.onerror = function(err){
+    },
+    onerror: function(err){
         this.log("An error occured");
         this.log(err);
-    };
-    this.onclose = function(){
+    },
+    onclose: function(){
         this.log("Connection closed");
-    };
-    this.onconnect = function(){
+    },
+    onconnect: function(){
         this.log("A new controller is connected");
-    };
-    this.ondisconnect = function(){
+    },
+    ondisconnect: function(){
         this.log("The controller disconnect");
-    };
+    },
     
-    this.getQR = function(){
+    getQR: function(){
         if(this.id){
             if(!this.qr.src){
-                url = encodeURIComponent(this.url+"?apid="+this.id);
+                url = encodeURIComponent(this.url+"#apid="+this.id);
                 this.qr.src = "http://qrickit.com/api/qr?qrsize=150&d="+url;
             }
             return this.qr;
         }
         else throw "Not ready";
-    };
+    },
     
-    this.send = function(data){
+    send: function(data){
         this.socket.send(data);
-    };
-    this.close = function(){
+    },
+    close: function(){
         this.socket.close();
-    };
+    },
     
-    this.log = function(m){
+    log: function(m){
         if(this.verbose) console.log(m);
-    };
-}
+    }
+};

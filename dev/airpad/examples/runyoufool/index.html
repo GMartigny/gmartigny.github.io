@@ -23,7 +23,7 @@
                 ctx = can.getContext("2d");
         
             // Code for the AirPad
-            var receiver = new AirPadReceiver("heroku.com/app159/:1337", qr, location.href+"/controller/");
+            var receiver = new AirPadReceiver(qr, location.href+"/controller/");
             receiver.onload = function(){
                 aside.style.right = "-320px";
             };
