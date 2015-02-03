@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Les premières pierres</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../res/js/gameLib.js"></script>
+        <style>
+            #main{
+                position: relative;
+                width: 1200px;
+                margin: 30px auto 0;
+            }
+            canvas{
+                display: block;
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="main">
+            <canvas id="level" width="1200" height="800"></canvas>
+            <canvas id="bricks" width="1200" height="800"></canvas>
+        </div>
+        <script>
+            var layers = prepareCanvas("main"),
+                bricks = [],
+                house;
+            bricks.over = [];
+            
+            function start(){
+                house = new House();
+                for(var i=0;i<5;++i)
+                    bricks.push(new Brick());
+                
+                loop();
+            }
+            window.onload = start;
+            
+            function loop(){
+                raf(loop);
+                
+                layers.bricks.ctx.clear();
+                layers.level.ctx.clear();
+                
+                house.render(layers.bricks.ctx);
+                
+                bricks.forEach(function(b){
+                    b.render(layers.bricks.ctx);
+                });
+                bricks.over.forEach(function(b){
+                    bricks.out(b);
+                });
+                bricks.over = [];
+                
+                if(!random(0, 10))
+                    bricks.push(new Brick());
+            }
+            
+            function Brick(){
+                this.pos = {
+                    x: random(0, layers.bricks.can.width),
+                    y: -50,
+                    z: random(10, 15)/10
+                };
+                this.r = random(0, 10)/10;
+            }
+            Brick.to = layers.bricks.can.height+100;
+            Brick.asset = new Image("brick.png");
+            
+            Brick.prototype.render = function(ctx){
+                ctx.save();
+                ctx.translate(this.pos.x, this.pos.y);
+                ctx.rotate(360*this.r);
+                ctx.globalAlpha = 1/this.pos.z;
+                ctx.drawImage(Brick.asset, -50, -35, 100*this.pos.z, 70*this.pos.z);
+                ctx.restore();
+                this.pos.y += 3*this.pos.z;
+                if(this.pos.y > Brick.to) bricks.over.push(this);
+                this.r = this.r > 1? 0: this.r+0.0002;
+            };
+            
+            function House(){
+                this.level = (House.level.val + House.speed*(Date.now() - House.level.date))/House.max;
+                this.move = 0;
+            }
+            House.level = {
+                val: 14890,
+                date: 1422976379621
+            };
+            House.speed = 0;
+            House.max = 150000;
+            House.asset = new Image("house.png");
+            
+            House.prototype.render = function(ctx){
+                var r = {x: (ctx.canvas.width-House.asset.width)/2, y: ctx.canvas.height-House.asset.height};
+                ctx.globalAlpha = 0.3;
+                ctx.drawImage(House.asset, r.x, r.y);
+                ctx.globalAlpha = 1;
+                
+                var level = ctx.canvas.height-this.level*House.asset.height;
+                ctx = layers.level.ctx;
+                ctx.globalCompositeOperation = "source-over";
+                ctx.drawImage(House.asset, r.x, r.y);
+                ctx.globalCompositeOperation = "destination-in";
+                ctx.beginPath();
+                ctx.moveTo(0, level);
+                ctx.bezierCurveTo(ctx.canvas.width/2, level-(60*sin(this.move)), ctx.canvas.width/2, level+(60*sin(this.move)), ctx.canvas.width, level);
+                ctx.rect(0, level, ctx.canvas.width, ctx.canvas.height);
+                ctx.fill();
+                this.level = (House.level.val + House.speed*(Date.now() - House.level.date))/House.max;
+                this.move+=0.03;
+            };
+        </script>
+    </body>
+</html>
