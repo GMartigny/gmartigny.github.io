@@ -238,7 +238,8 @@ CanvasRenderingContext2D.prototype.makePath = function(act, fill, stroke){
         this.stroke();
     if(fill)
         this.fill();
-    this.closePath();
+    else
+        this.closePath();
 };
 
 function getDataFromImage(src, callBack, self){
