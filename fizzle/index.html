@@ -1,191 +1,167 @@
-<meta charset="UTF-8">
-<style>
-    *{
-        box-sizing: border-box;
-    }
-    body{
-        margin: 0;
-        background: #000;
-    }
-    #menu{
-        position: relative;
-        background: #777;
-        width: 350px;
-        padding: 10px;
-        float: left;
-    }
-    #menu.hidden{
-        display: none;
-    }
-    #menu h2{
-        position: relative;
-        color: #FFF;
-        margin: 1.3em 0 .3em;
-        text-shadow: 1px 1px 3px #222;
-    }
-    #menu input{
-        width: 100%;
-    }
-    #can{
-        position: relative;
-        display: block;
-    }
-    #expendable{
-        cursor: pointer;
-    }
-    #expendable:after{
-        content: "";
-        position: absolute;
-        top: calc(50% - 10px);
-        right: 0;
-        width: 0;
-        height: 0;
-        border: 10px solid;
-        border-color: rgba(255,255,255,0) rgba(255,255,255,0) rgba(255,255,255,0) #FFF;
-        transition: all linear .1s;
-        -webkit-transform-origin: 25% 50%;
-    }
-    #expendable.expended:after{
-        -webkit-transform: rotate(90deg);
-    }
-    #output{
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        border: 0;
-        transition: height linear .3s;
-        height: 180px;
-        max-width: 100%;
-        width: 100%;
-    }
-    #output.hidden{
-        height: 0;
-    }
-</style>
-<div id="menu">
-    <h2>Text</h2>
-    <input type="text" id="txt" value="Hellow"/>
-    <h2>Font size</h2>
-    <input type="range" id="siz" min="0" max="1" step="0.01" value="0.5"/>
-    <h2>Bubble size</h2>
-    <input type="range" id="fat" min="0" max="1" step="0.01" value="0.5"/>
-    <h2>Freedom</h2>
-    <input type="range" id="fre" min="0" max="1" step="0.01" value="0.5"/>
-    <h2>Exitement</h2>
-    <input type="range" id="vit" min="0" max="1" step="0.01" value="0.5"/>
-    <h2>Density</h2>
-    <input type="range" id="den" min="0" max="1" step="0.01" value="0.5"/>
-    <h2 onclick="toggleOptions();" id="expendable">Options</h2>
-    <textarea id="output" class="hidden" onclick="select(this);" readonly></textarea>
-    <a href="fizzle.js">Script file</a>
-</div>
-<canvas id="can" width="1000" height="400"></canvas>
-<script src="fizzle.js"></script>
-<script>
-    function getParam(){
-        return location.hash.substr(1);
-    }
-    
-    var txt = getParam(),
-        can = document.getElementById('can');
-    if(txt){
-        document.getElementById("menu").classList.add("hidden");
-        document.getElementById("txt").value = txt;
-        
-        can.width = document.body.offsetWidth;
-    }
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Make it Fizzle</title>
+        <style>
+            *{
+                box-sizing: border-box;
+            }
+            body{
+                margin: 0;
+                background: #000;
+                overflow: hidden;
+            }
+            #menu{
+                position: absolute;
+                background: rgba(200, 200, 200, .5);
+                width: 350px;
+                left: 0;
+                padding: 10px;
+                transition: left ease-out .2s;
+            }
+            #menu.hidden{
+                left: -350px;
+            }
+            #menu h2{
+                position: relative;
+                color: #FFF;
+                margin: 1.3em 0 .3em;
+                text-shadow: 1px 1px 3px #222;
+            }
+            #menu input{
+                width: 100%;
+            }
+            #can{
+                display: block;
+                width: 100%;
+            }
+            #output{
+                margin: 0;
+                padding: 5px;
+                border: 0;
+                height: 180px;
+                max-width: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="menu">
+            <h2>Text</h2>
+            <input type="text" id="txt" value="Hellow"/>
+            <h2>Font size</h2>
+            <input type="range" id="siz" min="0" max="1" step="0.01" value="0.5"/>
+            <h2>Bubble size</h2>
+            <input type="range" id="fat" min="0" max="1" step="0.01" value="0.5"/>
+            <h2>Freedom</h2>
+            <input type="range" id="fre" min="0" max="1" step="0.01" value="0.5"/>
+            <h2>Exitement</h2>
+            <input type="range" id="vit" min="0" max="1" step="0.01" value="0.5"/>
+            <h2>Density</h2>
+            <input type="range" id="den" min="0" max="1" step="0.01" value="0.5"/>
+            <h2>Options</h2>
+            <textarea id="output" onclick="select(this);" readonly></textarea>
+            <a href="fizzle.js">Script file</a>
+        </div>
+        <canvas id="can"></canvas>
+        <script src="fizzle.js"></script>
+        <script>
+            var can = document.getElementById('can');
+            can.width = document.body.offsetWidth;
+            can.height = document.body.offsetHeight;
 
-    var ctx = can.getContext("2d");
+            var ctx = can.getContext("2d");
 
-    /* DEFAULT OPTIONS */
-    /* values should go from 0 to 1 but can overflow (unless density which is cap for perfomance's sake) */
-    
-    Fizzle.text = txt || "Hellow";
-    Fizzle.size = 0.5;
-    Fizzle.density = 0.5;
-    Fizzle.colors = ["#0ED", "#F32", "#FE0", "#1C0", "#F8E"];
+            /* DEFAULT OPTIONS */
+            /* values should go from 0 to 1 but can overflow (unless density which is cap for perfomance's sake) */
 
-    Dot.speed = 0.5;
-    Dot.fat = 0.5;
-    Dot.freedom = 0.5;
-    
-    var fizzle = new Fizzle(ctx);
-    fizzle.init();
-</script>
-<script type="text/javascript">
-    /** Page Scripts **/
-    var out = document.getElementById('output'),
-        drag = {
-            elem: 0,
-            prev: 0
-        };
+            Fizzle.text = "Hellow";
+            Fizzle.size = 0.5;
+            Fizzle.density = 0.5;
+            Fizzle.colors = ["#0ED", "#F32", "#FE0", "#1C0", "#F8E"];
 
-    document.getElementById('txt').onkeyup = function(){
-        if(Fizzle.text != this.value){
-            Fizzle.text = this.value;
-            location.hash = "#" + this.value;
+            Dot.speed = 0.5;
+            Dot.fat = 0.5;
+            Dot.freedom = 0.5;
+
+            var fizzle = new Fizzle(ctx);
             fizzle.init();
-            writeOptions();
-        }
-    };
-    document.getElementById('siz').onmousedown =
-    document.getElementById('fat').onmousedown =
-    document.getElementById('fre').onmousedown =
-    document.getElementById('vit').onmousedown =
-    document.getElementById('den').onmousedown = function(){
-        drag.elem = this;
-    };
-    window.onmousemove = changeValue;
-    window.onmouseup = function(){
-        changeValue();
-        drag.elem = 0;
-    };
-    function changeValue(){
-        if(drag.elem && drag.prev != drag.elem.value){
-            var redraw = 0;
-            switch(drag.elem.id){
-                case "siz":
-                    Fizzle.size = drag.elem.value;
-                    redraw = 1;
-                    break;
-                case "fat":
-                    Dot.fat = drag.elem.value;
-                    break;
-                case "fre":
-                    Dot.freedom = drag.elem.value;
-                    break;
-                case "vit":
-                    Dot.speed = drag.elem.value;
-                    break;
-                case "den":
-                    Fizzle.density = drag.elem.value;
-                    redraw = 1;
-                    break;
+        </script>
+        <script type="text/javascript">
+            /** Page Scripts **/
+            var out = document.getElementById('output'),
+                drag = {
+                    elem: 0,
+                    prev: 0
+                };
+            
+            window.onkeydown = function(e){
+                if(e.keyCode == 9){
+                    e.preventDefault();
+                    document.getElementById("menu").classList.toggle("hidden");
+                }
+            };
+
+            document.getElementById('txt').onkeyup = function (){
+                if(Fizzle.text != this.value){
+                    Fizzle.text = this.value;
+                    fizzle.init();
+                    writeOptions();
+                }
+            };
+            document.getElementById('siz').onmousedown =
+                document.getElementById('fat').onmousedown =
+                document.getElementById('fre').onmousedown =
+                document.getElementById('vit').onmousedown =
+                document.getElementById('den').onmousedown = function (){
+                drag.elem = this;
+            };
+            window.onmousemove = changeValue;
+            window.onmouseup = function (){
+                changeValue();
+                drag.elem = 0;
+            };
+            function changeValue(){
+                if(drag.elem && drag.prev != drag.elem.value){
+                    var redraw = 0;
+                    switch(drag.elem.id){
+                        case "siz":
+                            Fizzle.size = drag.elem.value;
+                            redraw = 1;
+                            break;
+                        case "fat":
+                            Dot.fat = drag.elem.value;
+                            break;
+                        case "fre":
+                            Dot.freedom = drag.elem.value;
+                            break;
+                        case "vit":
+                            Dot.speed = drag.elem.value;
+                            break;
+                        case "den":
+                            Fizzle.density = drag.elem.value;
+                            redraw = 1;
+                            break;
+                    }
+                    writeOptions();
+
+                    drag.prev = drag.elem.value;
+                    if(redraw)
+                        fizzle.init();
+                }
+            }
+
+            function writeOptions(){
+                out.value = "Fizzle.text = \"" + Fizzle.text + "\";\n";
+                out.value += "Fizzle.size = " + Fizzle.size + ";\n";
+                out.value += "Fizzle.density = " + Fizzle.density + ";\n";
+                out.value += "Fizzle.colors = " + JSON.stringify(Fizzle.colors) + ";\n\n";
+
+                out.value += "Dot.speed = " + Dot.speed + ";\n";
+                out.value += "Dot.fat = " + Dot.fat + ";\n";
+                out.value += "Dot.freedom = " + Dot.freedom + ";\n";
             }
             writeOptions();
-
-            drag.prev = drag.elem.value;
-            if(redraw) fizzle.init();
-        }
-    }
-
-    writeOptions();
-    function writeOptions(){
-        out.value = "Fizzle.text = \"" + Fizzle.text + "\";\n";
-        out.value += "Fizzle.size = " + Fizzle.size + ";\n";
-        out.value += "Fizzle.density = " + Fizzle.density + ";\n";
-        out.value += "Fizzle.colors = " + JSON.stringify(Fizzle.colors) + ";\n\n";
-
-        out.value += "Dot.speed = " + Dot.speed + ";\n";
-        out.value += "Dot.fat = " + Dot.fat + ";\n";
-        out.value += "Dot.freedom = " + Dot.freedom + ";\n";
-    }
-
-    function toggleOptions(){
-        var exp = document.getElementById("expendable");
-        if(out.classList.toggle("hidden"))
-            exp.classList.remove("expended");
-        else
-            exp.classList.add("expended");
-    }
-</script>
+        </script>
+    </body>
+</html>

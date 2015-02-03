@@ -26,13 +26,14 @@ Fizzle.prototype.init = function(){
     this.render();
 };
 Fizzle.prototype.getData = function(){
+    var line = 100 + 200 * Fizzle.size;
     this.ctx.fillStyle = "#010101";
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.ctx.fillStyle = "#000";
-    this.ctx.font = 100 + 200 * Fizzle.size + 'px sans-serif';
+    this.ctx.font = line + 'px sans-serif';
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillText(Fizzle.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+    this.ctx.wrapText(Fizzle.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2, line);
     return this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height).data;
 };
 Fizzle.prototype.render = function(){
@@ -87,7 +88,23 @@ Dot.prototype.render = function(ctx){
         this.vit.y *= -1;
     else if(this.pos.y > this.origin.y + this.bound.y * Dot.freedom && this.vit.y > 0)
         this.vit.y *= -1;
-}
+};
+
+CanvasRenderingContext2D.prototype.wrapText = function(txt, x, y, lineH){
+    var words = txt.split(" "),
+        lines = [""],
+        point = 0;
+    while(words.length){
+        var w = words.shift();
+        if(this.measureText(lines[point] + " " + w).width < this.canvas.width)
+            lines[point] += " " + w;
+        else
+            lines[++point] = w;
+    }
+    var l = lines.length;
+    while(lines.length)
+        this.fillText(lines.shift(), x, y-lineH*(lines.length-(l/2-0.5)));
+};
 
 function rand(f, t){
     return _R() * (t - f) + f;
