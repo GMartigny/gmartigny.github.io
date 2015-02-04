@@ -6,6 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="../res/js/gameLib.js"></script>
         <style>
+            body{
+                background: #666;
+            }
             #main{
                 position: relative;
                 width: 1200px;
@@ -13,10 +16,28 @@
             }
             #level{
                 background: #EEE;
+                animation: flash 1.5s infinite alternate;
+                -webkit-animation: flash 1.5s linear infinite alternate;
             }
             canvas{
                 display: block;
                 position: absolute;
+            }
+            @keyframes flash{
+                0%{
+                    box-shadow: 0 0 150px #FFF;
+                }
+                to{
+                    box-shadow: 0 0 30px #FFF;
+                }
+            }
+            @-webkit-keyframes flash{
+                0%{
+                    box-shadow: 0 0 150px #FFF;
+                }
+                to{
+                    box-shadow: 0 0 30px #FFF;
+                }
             }
         </style>
     </head>
