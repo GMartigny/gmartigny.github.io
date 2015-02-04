@@ -63,5 +63,5 @@ function getControlPoints(x0,y0,x1,y1,x2,y2,t){
     var p2x=x1-fb*(x0-x2);
     var p2y=y1-fb*(y0-y2);  
     
-    return [p1x,p1y,p2x,p2y]
+    return [p1x,p1y,p2x,p2y];
 }
