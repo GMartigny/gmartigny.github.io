@@ -335,9 +335,11 @@
                 }
             });
             document.addEventListener("mouseup", function(){
-                dragged.classList.remove("drag");
-                dragged.style.transform = "";
-                dragged = false;
+                if(dragged){
+                    dragged.classList.remove("drag");
+                    dragged.style.transform = "";
+                    dragged = false;
+                }
             });
         </script>
     </body>
