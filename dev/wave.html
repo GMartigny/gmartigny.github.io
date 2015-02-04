@@ -46,6 +46,39 @@
                             }
                         },
                         {
+                            "Custom": [
+                                {
+                                    1: function(){
+                                        edge = 0.1;
+                                    },
+                                    2: function(){
+                                        edge = 0.2;
+                                    },
+                                    3: function(){
+                                        edge = 0.3;
+                                    },
+                                    4: function(){
+                                        edge = 0.4;
+                                    },
+                                    5: function(){
+                                        edge = 0.5;
+                                    },
+                                    6: function(){
+                                        edge = 0.6;
+                                    },
+                                    7: function(){
+                                        edge = 0.7;
+                                    },
+                                    8: function(){
+                                        edge = 0.8;
+                                    },
+                                    9: function(){
+                                        edge = 0.9;
+                                    }
+                                }
+                            ]
+                        },
+                        {
                             "No edging": function(){
                                 edge = 0;
                             }
@@ -133,7 +166,6 @@
                 ctx.clearRect(0, 0, can.width, can.height);
 
                 if(pts.length){
-
                     ctx.strokeStyle = "#2B918B";
                     var allPos = [];
                     for(var i = 0; i < pts.length; ++i){
