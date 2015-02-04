@@ -1,409 +1,435 @@
 <!-- Media Table v0.8 -->
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Media Table</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<style>
-		html, body{
-			height : 100%;
-			margin : 0;
-			padding : 0;
-			overflow : hidden;
-		}
-		#holder{
-			background : #999;
-			overflow : hidden;
-			height : 100%;
-			transition : all ease-out .3s;
-		}
-		#holder.hovered{
-			background : #BBB;
-		}
-		#classic{
-			position : absolute;
-			top : 0;
-			left : 40%;
-			width : 20%;
-			padding : 7px;
-			background : #FFF;
-			border-radius : 0 0 3px 3px;
-			box-shadow : 3px 3px 10px #777;
-		}
-		#classic input[type="button"]{
-			position : relative;
-			width : 100%;
-			border : none;
-			background : #EEE;
-			box-shadow : 2px 2px 0 #777;
-			padding : 5px 0;
-			cursor : pointer;
-		}
-		#classic input[type="button"]:hover{
-			background : #F8F8EE;
-		}
-		#classic input[type="button"]:active{
-			top : 1px;
-			left : 1px;
-			box-shadow : 1px 1px 0 #777;
-		}
-		#classic #fileInput{
-			display : none;
-		}
-		#empty{
-			position : absolute;
-			color : #FFF;
-			top : 40%;
-			width : 100%;
-			font-size : 50px;
-			text-align : center;
-			text-shadow : 2px 2px 0 #777;
-		}
-		.media{
-			position : absolute;
-			padding : 10px;
-			background : #FFF;
-			box-shadow : 2px 2px 10px #333;
-			cursor : pointer;
-			z-index : 1;
-			max-width : 300px;
-		}
-		.media pre{
-			white-space : pre-wrap;
-		}
-		div.media.enbiged{
-			top : 5% !important;
-			left : 5% !important;
-			transform : none !important;
-			max-width : 90%;
-			z-index : 2100000010 !important;
-		}
-		div.media *:first-child{
-			position : relative;
-			display : block;
-			max-width : 300px;
-			width : auto;
-			margin : 0 auto;
-			max-height : 94%;
-		}
-		div.media.enbiged *:first-child{
-			max-width : none;
-		}
-		#holder .media audio{
-			margin-bottom : 10px;
-			width : 300px;
-		}
-		.media .name{
-			text-align : center;
-			font-family : helvetica;
-			font-weight : bold;
-			text-shadow : -1px -1px 0 #CCC;
-		}
-		.media .close{
-			position : absolute;
-			top : -6px;
-			right : -6px;
-			height : 18px;
-			width : 18px;
-			background : url(close.png) no-repeat center center #EEE;
-			border : 3px solid #333;
-			border-radius : 50%;
-		}
-		#cache{
-			display : none;
-			position : absolute;
-			background : #111;
-			opacity : 0.8;
-			top : 0;
-			left : 0;
-			width : 100%;
-			height : 100%;
-			z-index : 2100000000;
-		}
-		#bubble{
-			position : absolute;
-			background : #FFF;
-			padding : 7px;
-			width : 30%;
-			left : 35%;
-			bottom : 20px;
-			text-align : center;
-			font-size : 20px;
-			border-radius : 3px;
-			box-shadow : 3px 3px 10px #777;
-			transition : all ease-out .3s;
-			z-index : 2100000020;
-		}
-		#bubble.hided{
-			opacity : 0;
-			bottom : -60px;
-		}
-		#bubble.redalert{
-			color : #800;
-		}
-		#bubble.greenalert{
-			color : #080;
-		}
-	</style>
-	<style id="maxHeight"></style>
-</head>
-<body>
-	<div id="holder"></div>
-	<div id="classic">
-		<input type="file" id="fileInput" multiple />
-		<input type="button" value="Browse" onclick="openBrowser();"/>
-	</div>
-	<div id="empty">Drag'n'drop file here to display them</div>
-	<div id="cache"></div>
-	<div id="bubble" class="hided">Nothing to say =)</div>
-	<script>
-		var maxHeight = document.getElementById("maxHeight");
-		var holder = document.getElementById("holder");
-		var empty = document.getElementById("empty");
-		var fileInput = document.getElementById("fileInput");
-		var cache = document.getElementById("cache");
-		var bubble = document.getElementById("bubble");
-		var drag = {
-			start : function(ev, elem){
-				ev.preventDefault();
-				this.elem = elem;
-				if(elem.style.zIndex < n) elem.style.zIndex = ++n;
-				this.dx = ev.clientX-elem.offsetLeft;
-				this.dy = ev.clientY-elem.offsetTop;
-				this.moved = false;
-			},
-			move : function(ev){
-				if(this.elem && !enbiged){
-					this.elem.style.top = (ev.clientY-this.dy)+"px";
-					this.elem.style.left = (ev.clientX-this.dx)+"px";
-					this.moved = true;
-				}
-			},
-			stop : function(){
-				this.elem = false;
-			}
-		};
-		var bubbleHiding = 0;
-		window.addEventListener("resize", function(){
-			setMaxHeight();
-		});
-		setMaxHeight();
-		window.addEventListener("mousemove", function(ev){ drag.move(ev); });
-		window.addEventListener("mouseup", function(){ drag.stop(); });
-		window.addEventListener("click", function(){
-			if(enbiged){
-				enbiged.classList.remove("enbiged");
-				cache.style.display = "none";
-				enbiged = false;
-			}
-		});
-		// don't work with event listener (??)
-		window.ondragover = function(){ holder.className = "hovered"; return false; };
-		window.ondragleave = function(){ holder.className = ""; return false; };
-		window.ondragend = function(){ holder.className = ""; return false; };
-		window.ondrop = function(e){
-			e.preventDefault();
-			holder.className = "";
-			mediaFactory(e.dataTransfer.files);
-			return false;
-		};
-		
-		fileInput.addEventListener("change", function(){
-			mediaFactory(this.files);
-		});
-		
-		function mediaFactory(files){
-			for(var i=0;i<files.length;++i){
-				new Media(files[i]);
-			}
-		}
-		
-		bubble.addEventListener("mouseover", function(){
-			clearTimeout(bubbleHiding);
-		});
-		bubble.addEventListener("mouseout", function(){
-			bubbleHiding();
-		});
-		
-		var n = 0,
-            enbiged = 0;
-		function Media(file){
-			this.name = file.name;
-			this.type = file.type;
-			try{
-				this.element = prepareHTML(file);
-				var reader = new FileReader();
-				reader.media = this;
-				reader.onload = function(ev){
-					if(!this.EMPTY) this.media.render(ev.target.result);
-				};
-				reader.readAsDataURL(file);
-			}
-			catch(e){
-				bubbling(e, bubbling.WARN);
-			}
-		
-			this.render = function(data){
-				var polaroid = document.createElement("div");
-				polaroid.className = "media";
-				polaroid.draggable = "true";
-				polaroid.addEventListener("mousedown", function(ev){
-					drag.start(ev, this);
-				});
-				polaroid.addEventListener("click", function(e){
-					if(!drag.moved){
-						if(!enbiged){
-							this.classList.add("enbiged");
-							enbiged = this;
-							cache.style.display = "block";
-							e.stopPropagation();
-						}
-					}
-				});
-				
-				if(this.element.type == "text"){
-					this.element.innerHTML = atob(data.substr(data.indexOf(",")+1))
-						.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-					empty.style.display = "none";
-				}
-				else{
-					this.element.src = data;
-				}
-				
-				if(this.element.type == "audio"){
-					this.element.oncanplaythrough = function(){
-						empty.style.display = "none";
-					};
-				}
-				else{
-					this.element.onload = function(){
-						empty.style.display = "none";
-					};
-				}
-				
-				var close = document.createElement("div");
-				close.className = "close";
-				close.addEventListener("mousedown", function(e){
-					e.stopPropagation();
-				});
-				close.addEventListener("click", function(e){
-					e.stopPropagation();
-					enbiged = false;
-					holder.removeChild(this.parentNode);
-					cache.style.display = "none";
-					if(!holder.hasChildNodes()){
-						empty.style.display = "";
-						n = 0;
-					}
-				});
-				
-				var name = document.createElement("div");
-				name.className = "name";
-				name.innerHTML = this.name;
-				
-				polaroid.appendChild(this.element);
-				polaroid.appendChild(name);
-				polaroid.appendChild(close);
-				holder.appendChild(polaroid);
-				
-				polaroid.style.transform = "rotate("+(rand(10)-5)+"deg)";
-				polaroid.style.top = rand(holder.clientHeight-polaroid.clientHeight-20)+"px";
-				polaroid.style.left = rand(holder.clientWidth-polaroid.clientWidth-20)+"px";
-				++n;
-			};
-		}
-		
-		function prepareHTML(file){
-			var elem = false;
-			var ext = file.name.substr(file.name.lastIndexOf(".")+1);
-			var type = file.type.substr(0, file.type.indexOf("/"));
-			switch(type){
-				case "image":
-					elem = new Image();
-					break;
-				case "video":
-					elem = new Video();
-					elem.onclick = function(e){ e.stopPropagation(); };
-					break;
-				case "audio":
-					elem = new Audio();
-					elem.controls = true;
-					elem.onclick = function(e){ e.stopPropagation(); };
-					break;
-				case "text":
-					elem = document.createElement("pre");
-			}
-			if(!elem){ // handle unreadable mime
-				switch(ext){
-					case "png":
-					case "jpeg":
-					case "jpg":
-					case "gif":
-					case "tiff":
-					case "ico":
-						elem = new Image();
-						elem.type = "image";
-						break;
-					case "mov":
-					case "avi":
-					case "mp4":
-					case "wmv":
-					case "mpeg":
-						elem = new Video();
-						elem.type = "video";
-						elem.onclick = function(e){ e.stopPropagation(); };
-						break;
-					case "mp3":
-					case "wav":
-					case "wma":
-					case "ogg":
-						elem = new Audio();
-						elem.type = "audio";
-						elem.controls = true;
-						elem.onclick = function(e){ e.stopPropagation(); };
-						break;
-					case "txt":
-                    case "log":
-					case "js":
-					case "xml":
-					case "htm":
-					case "html":
-					case "xhtml":
-					case "json":
-					case "css":
-					case "csv":
-						elem = document.createElement("pre");
-						elem.type = "text";
-				}
-			}
-			else elem.type = type;
-			if(!elem) throw "Unsuported format (" + file.type + ")";
-			else if(file.type == "application/octet-stream") throw "This file pretend to be another format !";
-			return elem;
-		}
-		
-		function setMaxHeight(){
-			maxHeight.innerHTML = "div.media.enbiged *:first-child{max-height:"+(holder.clientHeight-40)*90/100+"px;}";
-		}
-		
-		function openBrowser(){
-			fileInput.click();
-		}
-		
-		function bubbling(mess, type){
-			bubble.innerHTML = mess;
-			bubble.className = type;
-			bubbleHiding = setTimeout(function(){
-				bubble.classList.add("hided");
-			}, 1200+(mess.length*20));
-		}
-		bubbling.WARN = "redalert";
-		bubbling.OK = "greenalert";
-		
-		function rand(max){
-			return Math.ceil(Math.random()*max*10)/10;
-		}
-	</script>
-</body>
+    <head>
+        <title>Media Table</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <style>
+            html, body{
+                height : 100%;
+                margin : 0;
+                padding : 0;
+                overflow : hidden;
+            }
+            #holder{
+                background : #999;
+                overflow : hidden;
+                height : 100%;
+                transition : all ease-out .3s;
+            }
+            #holder.hovered{
+                background : #BBB;
+            }
+            #classic{
+                position : absolute;
+                top : 0;
+                left : 40%;
+                width : 20%;
+                padding : 7px;
+                background : #FFF;
+                border-radius : 0 0 3px 3px;
+                box-shadow : 3px 3px 10px #777;
+            }
+            #classic input[type="button"]{
+                position : relative;
+                width : 100%;
+                border : none;
+                background : #EEE;
+                box-shadow : 2px 2px 0 #777;
+                padding : 5px 0;
+                cursor : pointer;
+            }
+            #classic input[type="button"]:hover{
+                background : #F8F8EE;
+            }
+            #classic input[type="button"]:active{
+                top : 1px;
+                left : 1px;
+                box-shadow : 1px 1px 0 #777;
+            }
+            #classic #fileInput{
+                display : none;
+            }
+            #empty{
+                position : absolute;
+                color : #FFF;
+                top : 40%;
+                width : 100%;
+                font-size : 50px;
+                text-align : center;
+                text-shadow : 2px 2px 0 #777;
+            }
+            .media{
+                position : absolute;
+                padding : 10px;
+                background : #FFF;
+                box-shadow : 2px 2px 10px #333;
+                cursor : pointer;
+                z-index : 1;
+                max-width : 300px;
+            }
+            .media pre{
+                white-space : pre-wrap;
+            }
+            div.media.enbiged{
+                top : 5% !important;
+                left : 5% !important;
+                transform : none !important;
+                max-width : 90%;
+                z-index : 2100000010 !important;
+            }
+            div.media *:first-child{
+                position : relative;
+                display : block;
+                max-width : 300px;
+                width : auto;
+                margin : 0 auto;
+                max-height : 94%;
+            }
+            div.media.enbiged *:first-child{
+                max-width : none;
+            }
+            #holder .media audio{
+                margin-bottom : 10px;
+                width : 300px;
+            }
+            .media .name{
+                text-align : center;
+                font-family : helvetica;
+                font-weight : bold;
+                text-shadow : -1px -1px 0 #CCC;
+            }
+            .media .close{
+                position : absolute;
+                top : -6px;
+                right : -6px;
+                height : 18px;
+                width : 18px;
+                background : url(close.png) no-repeat center center #EEE;
+                border : 3px solid #333;
+                border-radius : 50%;
+            }
+            #cache{
+                display : none;
+                position : absolute;
+                background : #111;
+                opacity : 0.8;
+                top : 0;
+                left : 0;
+                width : 100%;
+                height : 100%;
+                z-index : 2100000000;
+            }
+            #bubble{
+                position : absolute;
+                background : #FFF;
+                padding : 7px;
+                width : 30%;
+                left : 35%;
+                bottom : 20px;
+                text-align : center;
+                font-size : 20px;
+                border-radius : 3px;
+                box-shadow : 3px 3px 10px #777;
+                transition : all ease-out .3s;
+                z-index : 2100000020;
+            }
+            #bubble.hided{
+                opacity : 0;
+                bottom : -60px;
+            }
+            #bubble.redalert{
+                color : #800;
+            }
+            #bubble.greenalert{
+                color : #080;
+            }
+        </style>
+        <style id="maxHeight"></style>
+    </head>
+    <body>
+        <div id="holder"></div>
+        <div id="classic">
+            <input type="file" id="fileInput" multiple />
+            <input type="button" value="Browse" onclick="openBrowser();"/>
+        </div>
+        <div id="empty">Drag'n'drop file here to display them</div>
+        <div id="cache"></div>
+        <div id="bubble" class="hided">Nothing to say =)</div>
+        <script>
+            var maxHeight = document.getElementById("maxHeight");
+            var holder = document.getElementById("holder");
+            var empty = document.getElementById("empty");
+            var fileInput = document.getElementById("fileInput");
+            var cache = document.getElementById("cache");
+            var bubble = document.getElementById("bubble");
+            var drag = {
+                start: function (ev, elem){
+                    ev.preventDefault();
+                    this.elem = elem;
+                    if(elem.style.zIndex < n)
+                        elem.style.zIndex = ++n;
+                    this.dx = ev.clientX - elem.offsetLeft;
+                    this.dy = ev.clientY - elem.offsetTop;
+                    this.moved = false;
+                },
+                move: function (ev){
+                    if(this.elem && !enbiged){
+                        this.elem.style.top = (ev.clientY - this.dy) + "px";
+                        this.elem.style.left = (ev.clientX - this.dx) + "px";
+                        this.moved = true;
+                    }
+                },
+                stop: function (){
+                    this.elem = false;
+                }
+            };
+            var bubbleHiding = 0;
+            window.addEventListener("resize", function (){
+                setMaxHeight();
+            });
+            setMaxHeight();
+            window.addEventListener("mousemove", function (ev){
+                drag.move(ev);
+            });
+            window.addEventListener("mouseup", function (){
+                drag.stop();
+            });
+            window.addEventListener("click", function (){
+                if(enbiged){
+                    enbiged.classList.remove("enbiged");
+                    cache.style.display = "none";
+                    enbiged = false;
+                }
+            });
+            // don't work with event listener (??)
+            window.ondragover = function (){
+                holder.className = "hovered";
+                return false;
+            };
+            window.ondragleave = function (){
+                holder.className = "";
+                return false;
+            };
+            window.ondragend = function (){
+                holder.className = "";
+                return false;
+            };
+            window.ondrop = function (e){
+                e.preventDefault();
+                holder.className = "";
+                mediaFactory(e.dataTransfer.files);
+                return false;
+            };
+
+            fileInput.addEventListener("change", function (){
+                mediaFactory(this.files);
+            });
+
+            function mediaFactory(files){
+                for(var i = 0; i < files.length; ++i){
+                    new Media(files[i]);
+                }
+            }
+
+            bubble.addEventListener("mouseover", function (){
+                clearTimeout(bubbleHiding);
+            });
+            bubble.addEventListener("mouseout", function (){
+                bubbleHiding();
+            });
+
+            var n = 0,
+                enbiged = 0;
+            function Media(file){
+                this.name = file.name;
+                this.type = file.type;
+                try{
+                    this.element = prepareHTML(file);
+                    var reader = new FileReader();
+                    reader.media = this;
+                    reader.onload = function (ev){
+                        if(!this.EMPTY)
+                            this.media.render(ev.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+                catch(e){
+                    bubbling(e, bubbling.WARN);
+                }
+
+                this.render = function (data){
+                    var polaroid = document.createElement("div");
+                    polaroid.className = "media";
+                    polaroid.draggable = "true";
+                    polaroid.addEventListener("mousedown", function (ev){
+                        drag.start(ev, this);
+                    });
+                    polaroid.addEventListener("click", function (e){
+                        if(!drag.moved){
+                            if(!enbiged){
+                                this.classList.add("enbiged");
+                                enbiged = this;
+                                cache.style.display = "block";
+                                e.stopPropagation();
+                            }
+                        }
+                    });
+
+                    if(this.element.type == "text"){
+                        this.element.innerHTML = atob(data.substr(data.indexOf(",") + 1))
+                            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        empty.style.display = "none";
+                    }
+                    else{
+                        this.element.src = data;
+                    }
+
+                    if(this.element.type == "audio"){
+                        this.element.oncanplaythrough = function (){
+                            empty.style.display = "none";
+                        };
+                    }
+                    else{
+                        this.element.onload = function (){
+                            empty.style.display = "none";
+                        };
+                    }
+
+                    var close = document.createElement("div");
+                    close.className = "close";
+                    close.addEventListener("mousedown", function (e){
+                        e.stopPropagation();
+                    });
+                    close.addEventListener("click", function (e){
+                        e.stopPropagation();
+                        enbiged = false;
+                        holder.removeChild(this.parentNode);
+                        cache.style.display = "none";
+                        if(!holder.hasChildNodes()){
+                            empty.style.display = "";
+                            n = 0;
+                        }
+                    });
+
+                    var name = document.createElement("div");
+                    name.className = "name";
+                    name.innerHTML = this.name;
+
+                    polaroid.appendChild(this.element);
+                    polaroid.appendChild(name);
+                    polaroid.appendChild(close);
+                    holder.appendChild(polaroid);
+
+                    polaroid.style.transform = "rotate(" + (rand(10) - 5) + "deg)";
+                    polaroid.style.top = rand(holder.clientHeight - polaroid.clientHeight - 20) + "px";
+                    polaroid.style.left = rand(holder.clientWidth - polaroid.clientWidth - 20) + "px";
+                    ++n;
+                };
+            }
+
+            function prepareHTML(file){
+                var elem = false;
+                var ext = file.name.substr(file.name.lastIndexOf(".") + 1);
+                var type = file.type.substr(0, file.type.indexOf("/"));
+                switch(type){
+                    case "image":
+                        elem = new Image();
+                        break;
+                    case "video":
+                        elem = new Video();
+                        elem.onclick = function (e){
+                            e.stopPropagation();
+                        };
+                        break;
+                    case "audio":
+                        elem = new Audio();
+                        elem.controls = true;
+                        elem.onclick = function (e){
+                            e.stopPropagation();
+                        };
+                        break;
+                    case "text":
+                        elem = document.createElement("pre");
+                }
+                if(!elem){ // handle unreadable mime
+                    switch(ext){
+                        case "png":
+                        case "jpeg":
+                        case "jpg":
+                        case "gif":
+                        case "tiff":
+                        case "ico":
+                            elem = new Image();
+                            elem.type = "image";
+                            break;
+                        case "mov":
+                        case "avi":
+                        case "mp4":
+                        case "wmv":
+                        case "mpeg":
+                            elem = new Video();
+                            elem.type = "video";
+                            elem.onclick = function (e){
+                                e.stopPropagation();
+                            };
+                            break;
+                        case "mp3":
+                        case "wav":
+                        case "wma":
+                        case "ogg":
+                            elem = new Audio();
+                            elem.type = "audio";
+                            elem.controls = true;
+                            elem.onclick = function (e){
+                                e.stopPropagation();
+                            };
+                            break;
+                        case "txt":
+                        case "log":
+                        case "js":
+                        case "xml":
+                        case "htm":
+                        case "html":
+                        case "xhtml":
+                        case "json":
+                        case "css":
+                        case "csv":
+                            elem = document.createElement("pre");
+                            elem.type = "text";
+                    }
+                }
+                else
+                    elem.type = type;
+                if(!elem)
+                    throw "Unsuported format (" + file.type + ")";
+                else if(file.type == "application/octet-stream")
+                    throw "This file pretend to be another format !";
+                return elem;
+            }
+
+            function setMaxHeight(){
+                maxHeight.innerHTML = "div.media.enbiged *:first-child{max-height:" + (holder.clientHeight - 40) * 90 / 100 + "px;}";
+            }
+
+            function openBrowser(){
+                fileInput.click();
+            }
+
+            function bubbling(mess, type){
+                bubble.innerHTML = mess;
+                bubble.className = type;
+                bubbleHiding = setTimeout(function (){
+                    bubble.classList.add("hided");
+                }, 1200 + (mess.length * 20));
+            }
+            bubbling.WARN = "redalert";
+            bubbling.OK = "greenalert";
+
+            function rand(max){
+                return Math.ceil(Math.random() * max * 10) / 10;
+            }
+        </script>
+    </body>
 </html>
