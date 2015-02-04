@@ -11,6 +11,9 @@
                 width: 1200px;
                 margin: 30px auto 0;
             }
+            #level{
+                background: #EEE;
+            }
             canvas{
                 display: block;
                 position: absolute;
@@ -29,6 +32,8 @@
             bricks.over = [];
             
             function start(){
+                console.log(Date.now());
+                
                 house = new House();
                 for(var i=0;i<5;++i)
                     bricks.push(new Brick());
@@ -85,10 +90,10 @@
                 this.move = 0;
             }
             House.level = {
-                val: 14890,
-                date: 1422976379621
+                val: 9898,
+                date: 1423038066468
             };
-            House.speed = 0;
+            House.speed = 200*12/365.25/24/3600000;
             House.max = 150000;
             House.asset = new Image("house.png");
             
