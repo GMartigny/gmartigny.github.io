@@ -44,8 +44,10 @@ ContextMenu.createMenu.group = function(g){
 ContextMenu.createMenu.option = function(n, f){
     var i = document.createElement("button");
     i.innerHTML = n;
-    i.addEventListener("click", f);
-    i.addEventListener("click", ContextMenu.callHide);
+    i.addEventListener("click", function(){
+        f();
+        ContextMenu.callHide();
+    });
     return i;
 };
 ContextMenu.createMenu.noaction = function(n){
@@ -76,8 +78,7 @@ ContextMenu.prototype.setOptions = function(options){
     this.refreshHTML();
 };
 ContextMenu.opened = false;
-ContextMenu.prototype.show = function(x, y){
-    this.menu.style.left = x;
+ContextMenu.prototype.show = function(x, y){    this.menu.style.left = x;
     this.menu.style.top = y;
     document.body.appendChild(this.menu);
 
@@ -87,12 +88,16 @@ ContextMenu.prototype.show = function(x, y){
         this.menu.style.left = document.body.offsetWidth - this.menu.offsetWidth;
 
     ContextMenu.opened = this;
-    window.addEventListener("click", ContextMenu.callHide);
+    window.addEventListener("mousedown", ContextMenu.callHide);
+    this.menu.addEventListener("mousedown", function(e){
+        e.stopPropagation();
+    });
 };
-ContextMenu.callHide = function(){
-    ContextMenu.opened.hide.call(ContextMenu.opened);
+ContextMenu.callHide = function(e){
+    if(ContextMenu.opened)
+        ContextMenu.opened.hide.call(ContextMenu.opened);
 };
 ContextMenu.prototype.hide = function(){
     this.menu.remove();
-    window.removeEventListener("click", ContextMenu.callHide);
+    window.removeEventListener("mousedown", ContextMenu.callHide);
 };
