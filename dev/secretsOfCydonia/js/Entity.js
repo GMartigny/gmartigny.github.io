@@ -7,18 +7,25 @@ EntityManager.prototype.renderAll = function(){
         this.entities[i].render();
     }
 };
-EntityManager.Chest = 0;
 
-function Entity(can, img, id){
-    this.layer = c;
-    this.img = i;
+function Entity(ctx, pos){
+    this.layer = ctx;
     
-    this.id = id;
+    this.anim = 0;
+    this.animSpeed = 0;
+    this.pos = pos;
+    this.moveSpeed = 0;
 }
-Entity.prototype.render = function(){
-    
+Entity.prototype.render = function(x, y){
+    var c = GameController.cell;
+    this.layer.drawImage(this.img,
+        this.anim, 0, c, c,
+        this.pos.x, this.pos.y, c, c);
 };
 
-function Ent_Chest(){
-    
+
+function FireFly(img){
+    this.img = img;
+    this.animSpeed = 0.1;
 }
+FireFly.prototype = Object.create(Entity.prototype);

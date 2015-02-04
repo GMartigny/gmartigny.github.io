@@ -106,7 +106,7 @@ ViewManager.prototype.render = function(tiles, x, y){
             if(hexa && (t = this.getTile(hexa)))
                 this.layer.ctx.drawImage(tiles,
                     c*t.x, c*t.y, c, c,
-                    round((i-dx)*c), round((j-dy)*c), c, c);
+                    floor((i-dx)*c), floor((j-dy)*c), c, c);
         }
     }
     this.anim += this.spd;
