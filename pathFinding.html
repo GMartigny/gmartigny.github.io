@@ -180,7 +180,7 @@
                     var self = this;
                     this.running = setTimeout(function(){
                         self.path.call(self);
-                    }, 50);
+                    }, 30);
                 }
             };
             PathFinder.prototype.reset = function(){
@@ -218,25 +218,23 @@
                 else return false;
             };
             Grid.prototype.around = function(tile){
-                var res = [], x = tile.pos.x, y = tile.pos.y;
-                var t = this.get(x-1, y);
+                var res = [], x = tile.pos.x, y = tile.pos.y,
+                    t = this.get(x-1, y);
                 if(t) res.push(t);
-                var t = this.get(x+1, y);
+                t = this.get(x+1, y);
                 if(t) res.push(t);
-                var t = this.get(x, y-1);
+                t = this.get(x, y-1);
                 if(t) res.push(t);
-                var t = this.get(x, y+1);
+                t = this.get(x, y+1);
                 if(t) res.push(t);
                 return res;
             };
             Grid.prototype.forEach = function(f){
                 var rows = this.tiles.length,
                     cols = this.tiles[0].length;
-                for(var i=0;i<rows;++i){
-                    for(var j=0;j<cols;++j){
+                for(var i=0;i<rows;++i)
+                    for(var j=0;j<cols;++j)
                         f(this.tiles[i][j]);
-                    }
-                }
             };
             Grid.prototype.render = function(){
                 this.tiles.forEach(function(l){
