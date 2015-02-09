@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            /* CUBE */
+            .cube{
+                position: relative;
+                -webkit-perspective: 400px;
+                -webkit-perspective-origin: 50% 50%;
+                width: 100px;
+                height: 100px;
+                margin: 20px auto;
+            }
+            .cube:before, .cube:after{
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                transition: all ease-in-out .5s;
+                background-image: -webkit-radial-gradient(30% 20%, rgba(255, 255, 255, .5) 0, rgba(255, 255, 255, 0) 70%);
+            }
+            .cube:before{
+                transform: translateY(-100%) rotateX(90deg);
+                transform-origin: 50% 100%;
+                background-color: red;
+            }
+            .cube:hover:before{
+                transform: translateY(0) rotateX(0);
+            }
+            .cube:after{
+                background-color: green;
+                transform-origin: 50% 0;
+            }
+            .cube:hover:after{
+                transform: translateY(100%) rotateX(-90deg);
+                z-index: -2;
+            }
+            /* UNFOLD */
+            ul{
+                list-style: none;
+                padding: 0;
+                background: #888;
+            }
+            .blue .section, .blue .item{
+                background-color: #027da8;
+            }
+            .red .section, .red .item{
+                background-color: #a50f3f;
+            }
+            .unfold{
+                width: 250px;
+                margin: 20px auto;
+                font-size: 30px;
+            }
+            .unfold .item, .unfold .section{
+                color: #FFF;
+                padding: 0 30px;
+                margin: 0;
+                line-height: 30px;
+                vertical-align: middle;
+            }
+            .unfold ul{
+                -webkit-perspective: 300px;
+                -webkit-perspective-origin: 50% 50%;
+                
+                display: flex;
+                flex-flow: column nowrap;
+            }
+            .unfold ul li{
+                height: 1em;
+                transition: height ease-out 1s;
+            }
+            .unfold > li:hover ul li{
+                height: 2em;
+            }
+            .unfold .item{
+                background-image: linear-gradient(rgba(255, 255, 255, .2) 0, rgba(255, 255, 255, 0) 100%);
+                transform: rotateX(45deg);
+                transform-origin: 50% 100%;
+            }
+            .unfold ul li:nth-child(odd) .item{
+                background-image: linear-gradient(rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, 0) 100%);
+                transform: rotateX(-45deg);
+                transform-origin: 50% 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>User interaction expériences</h1>
+        <div class="cube"></div>
+        <ul class="unfold">
+            <li class="blue">
+                <div class="section">Section</div>
+                <ul>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                </ul>
+            </li>
+            <li class="red">
+                <div class="section">Section 2</div>
+                <ul>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                    <li><div class="item">Item</div></li>
+                </ul>
+            </li>
+        </ul>
+    </body>
+</html>
