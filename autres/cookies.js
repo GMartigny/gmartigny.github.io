@@ -62,8 +62,10 @@ Game.customLogic.push(function(){
             best.val = val;
         }
     }
-    if(worst.object) worst.object.l.classList.add("worst"); worst.val = null;
-    if(best.object) best.object.l.classList.add("best"); best.val = null;
+    if(worst.object) worst.object.l.classList.add("worst");
+    worst.object = null; worst.val = null;
+    if(best.object) best.object.l.classList.add("best");
+    best.object = null; best.val = null;
 
     for(var u in Game.Upgrades){
         val = C.simu.buyUpgrade(u);
@@ -76,10 +78,16 @@ Game.customLogic.push(function(){
             best.val = val;
         }
     }
+    if(worst.object) worst.object.l.classList.add("worst"); worst.val = null;
+    if(best.object) best.object.l.classList.add("best"); best.val = null;
 });
 Game.customInit = function(){
     var s = document.createElement("style");
     s.type = "text/css";
     s.innerHTML =   ".product .title.worst{ color: #EDC0C0 } " +
-                    ".product .title.best{ color: #F5EA5A }";
+                    ".product .title.best{ color: #F5EA5A } " +
+                    "#upgrades .upgrade:after{ content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid #BBB} " +
+                    ".upgrade.worst:after{ border-color: #EDC0C0; } " +
+                    ".upgrade.best:after{ border-color: #F5EA5A; }";
+    document.head.appendChild(s);
 };
