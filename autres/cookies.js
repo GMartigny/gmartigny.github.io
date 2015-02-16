@@ -15,25 +15,27 @@ C = {
             if(bui){
                 return this.buy(bui);
             }
-            return 0;
+            return false;
         },
         buyUpgrade: function(name){
             var up = Game.Upgrades[name];
             if(up && !up.bought){
                 return this.buy(up);
             }
-            return 0;
+            return false;
         },
         buy: function(what){
             this.saveAchievements();
             var cps = Game.cookiesPs,
                 nCps = 0;
-            what.bought++;
+            what.amount+=1;
+            what.bought+=1;
             if (what.buyFunction) what.buyFunction();
             Game.CalculateGains();
             nCps = Game.cookiesPs;
 
-            what.bought--;
+            what.amount-=1;
+            what.bought-=1;
             this.restoreAchievements();
             Game.CalculateGains();
             
@@ -53,7 +55,7 @@ Game.customLogic.push(function(){
         val = 0;
     // All buildings
     for (var o in Game.Objects){
-        val = C.simu.buyBuilding(o);
+        val = C.simu.buyBuilding(o) / o.getPrice();
         if(worst.val === null || worst.val > val){
             worst.object = o;
             worst.val = val;
@@ -70,7 +72,7 @@ Game.customLogic.push(function(){
     
     // All upgrades
     for(var u in Game.Upgrades){
-        val = C.simu.buyUpgrade(u);
+        val = C.simu.buyUpgrade(u) / u.getPrice();
         if(worst.val === null || worst.val > val){
             worst.object = u;
             worst.val = val;
