@@ -51,6 +51,7 @@ Game.customLogic.push(function(){
             val: null
         },
         val = 0;
+    // All buildings
     for (var o in Game.Objects){
         val = C.simu.buyBuilding(o);
         if(worst.val === null || worst.val > val){
@@ -66,7 +67,8 @@ Game.customLogic.push(function(){
     worst.object = null; worst.val = null;
     if(best.object) best.object.l.classList.add("best");
     best.object = null; best.val = null;
-
+    
+    // All upgrades
     for(var u in Game.Upgrades){
         val = C.simu.buyUpgrade(u);
         if(worst.val === null || worst.val > val){
@@ -78,8 +80,8 @@ Game.customLogic.push(function(){
             best.val = val;
         }
     }
-    if(worst.object) worst.object.l.classList.add("worst"); worst.val = null;
-    if(best.object) best.object.l.classList.add("best"); best.val = null;
+//    if(worst.object) worst.object.l.classList.add("worst"); worst.val = null;
+//    if(best.object) best.object.l.classList.add("best"); best.val = null;
 });
 Game.customInit = function(){
     var s = document.createElement("style");
