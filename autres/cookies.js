@@ -1,6 +1,6 @@
 // Game.LoadMod("http://gmartigny.github.com/autres/cookies.js");
 
-$("#support").remove();
+l("support").remove();
 
 C = {
     simu: {
