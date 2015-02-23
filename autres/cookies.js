@@ -1,4 +1,4 @@
-// Game.LoadMod("http://gmartigny.github.com/autres/cookies.js");
+// Game.LoadMod("http://gmartigny.github.com/autres/cookies.js?"+Date.now());
 
 l("support").remove();
 
@@ -10,15 +10,13 @@ C = {
         restoreAchievements: function(){
             Game.Achievements = this.achs;
         },
-        buyBuilding: function(name){
-            var bui = Game.Objects[name];
+        buyBuilding: function(bui){
             if(bui){
                 return this.buy(bui);
             }
             return false;
         },
-        buyUpgrade: function(name){
-            var up = Game.Upgrades[name];
+        buyUpgrade: function(up){
             if(up && !up.bought){
                 return this.buy(up);
             }
@@ -55,6 +53,7 @@ Game.customLogic.push(function(){
         val = 0;
     // All buildings
     for (var o in Game.Objects){
+        o = Game.Objects[o];
         if(!o.locked){
             val = C.simu.buyBuilding(o) / o.getPrice();
             if(worst.val === null || worst.val > val){
