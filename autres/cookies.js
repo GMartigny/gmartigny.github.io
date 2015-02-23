@@ -55,14 +55,16 @@ Game.customLogic.push(function(){
         val = 0;
     // All buildings
     for (var o in Game.Objects){
-        val = C.simu.buyBuilding(o) / o.getPrice();
-        if(worst.val === null || worst.val > val){
-            worst.object = o;
-            worst.val = val;
-        }
-        if(best.val === null || best.val < val){
-            best.object = o;
-            best.val = val;
+        if(!o.locked){
+            val = C.simu.buyBuilding(o) / o.getPrice();
+            if(worst.val === null || worst.val > val){
+                worst.object = o;
+                worst.val = val;
+            }
+            if(best.val === null || best.val < val){
+                best.object = o;
+                best.val = val;
+            }
         }
     }
     if(worst.object) worst.object.l.classList.add("worst");
@@ -71,17 +73,17 @@ Game.customLogic.push(function(){
     best.object = null; best.val = null;
     
     // All upgrades
-    for(var u in Game.Upgrades){
-        val = C.simu.buyUpgrade(u) / u.getPrice();
-        if(worst.val === null || worst.val > val){
-            worst.object = u;
-            worst.val = val;
-        }
-        if(best.val === null || best.val < val){
-            best.object = u;
-            best.val = val;
-        }
-    }
+//    for(var u in Game.Upgrades){
+//        val = C.simu.buyUpgrade(u) / u.getPrice();
+//        if(worst.val === null || worst.val > val){
+//            worst.object = u;
+//            worst.val = val;
+//        }
+//        if(best.val === null || best.val < val){
+//            best.object = u;
+//            best.val = val;
+//        }
+//    }
 //    if(worst.object) worst.object.l.classList.add("worst"); worst.val = null;
 //    if(best.object) best.object.l.classList.add("best"); best.val = null;
 });
