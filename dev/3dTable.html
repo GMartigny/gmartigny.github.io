@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>3D Table</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            *{
+                position: relative;
+                box-sizing: border-box;
+            }
+            table{
+                border-collapse: collapse;
+            }
+            th, td{
+                padding: 5px;
+                width: 80px;
+                height: 30px;
+                margin-left: -1px;
+            }
+            thead tr{
+                width: 240px;
+                height: 2px;
+            }
+            th{
+                display: inline-block;
+                float: left;
+                border: 1px solid #222;
+            }
+            tr{
+                display: block;
+            }
+            td{
+                display: inline-block;
+                float: left;
+                height: 80px;
+                border: 1px solid #999;
+            }
+            
+            .d3{
+                position: relative;
+                width: 1px;
+                margin: 240px auto 0;
+                perspective: 1000px;
+                perspective-origin: 0 0;
+            }
+            
+            .d3 table{
+                position: absolute;
+                top: 0;
+                left: 0;
+                perspective: 1000px;
+                perspective-origin: 100% 0;
+                transform-origin: 0 0;
+            }
+            .d3 tbody{
+                transform-origin: 0 0;
+            }
+            
+            .d3 table:first-child{
+                transform: rotateZ(-90deg) rotateY(-45deg);
+            }
+            .d3 table:first-child tbody{
+                transform: rotateX(45deg);
+            }
+            .d3 table:first-child td{
+                transform: rotateZ(90deg);
+            }
+            
+            .d3 table:nth-child(2){
+                transform: translateX(30px)
+                    rotateZ(30deg) rotateY(-45deg);
+            }
+            .d3 table:nth-child(2) tbody{
+                transform: rotateX(45deg);
+            }
+            .d3 table:nth-child(2) td{
+                transform: rotateZ(-90deg);
+            }
+            
+            .d3 table:nth-child(3){
+                transform: translateX(15px) translateY(26px)
+                    rotateZ(150deg) rotateY(-45deg);
+            }
+            .d3 table:nth-child(3) tbody{
+                transform: rotateX(45deg);
+            }
+            .d3 table:nth-child(3) th{
+                transform: rotateZ(180deg);
+            }
+            .d3 table:nth-child(3) td{
+                transform: rotateZ(180deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="d3">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fire</th>
+                        <th>Water</th>
+                        <th>Earth</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>flame</td>
+                    <td>drop</td>
+                    <td>dust</td>
+                </tr>
+                <tr>
+                    <td>lavaball</td>
+                    <td>wave</td>
+                    <td>rock</td>
+                </tr>
+                <tr>
+                    <td>blaze</td>
+                    <td>ice storm</td>
+                    <td>quake</td>
+                </tr>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Weak</th>
+                        <th>Medium</th>
+                        <th>Strong</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>fronde</td>
+                    <td>gun</td>
+                    <td>bazooka</td>
+                </tr>
+                <tr>
+                    <td>shaman</td>
+                    <td>mage</td>
+                    <td>avatar</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>guardian</td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Launcher</th>
+                        <th>Bender</th>
+                        <th>Spirit</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>firethrower</td>
+                    <td>burner</td>
+                    <td>feufolet</td>
+                </tr>
+                <tr>
+                    <td>hydrant</td>
+                    <td>flooder</td>
+                    <td>blob</td>
+                </tr>
+                <tr>
+                    <td>catapult</td>
+                    <td>walker</td>
+                    <td>golem</td>
+                </tr>
+            </table>
+        </div>
+        <script>
+            
+        </script>
+    </body>
+</html>
