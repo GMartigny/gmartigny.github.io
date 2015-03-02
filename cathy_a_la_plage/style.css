@@ -1,0 +1,196 @@
+*{
+    position: relative;
+}
+
+body, html{
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+#sky{
+    height: 80%;
+    background: linear-gradient(#9ec4f3 0, #d9e5fb 100%);
+    overflow: hidden;
+}
+
+#sun{
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    top: calc(100% - 100px);
+    left: 80%;
+    border-radius: 50%;
+    background: radial-gradient(#f8e4a0 40%, #ffd242 100%);
+    transition: top ease-out 4s, left ease-in-out 4s;
+}
+
+#ocean{
+    height: 20%;
+    background: linear-gradient(#1e3165 0, #5066a5 100%)
+}
+
+#island{
+    width: 50%;
+    height: 45%;
+    top: -4%;
+    left: 3%;
+    background-image: linear-gradient(rgba(250, 184, 61, 0) 0, rgba(250, 184, 61, .8) 100%), url(img/sand.png);
+    background-color: #fbeb8d;
+    border-radius: 50%;
+}
+
+.palm{
+    height: 0;
+    position: absolute;
+    transition: height ease-out .5s;
+}
+#slant{
+    bottom: 50px;
+    left: 51%;
+    transition-delay: 1s;
+}
+#strait{
+    bottom: 25px;
+    left: 18%;
+    transition-delay: 1.9s;
+}
+#little{
+    bottom: 41px;
+    left: 5%;
+    transition-delay: 1.3s;
+}
+
+.rise{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity linear 4s;
+}
+#sky .rise{
+    background: #ee792f;
+    opacity: .5;
+}
+#ocean .rise{
+    background: #eeaf2f;
+    opacity: .3;
+}
+
+.ready .rise{
+    opacity: 0 !important;
+}
+.ready #sun{
+    top: 10%;
+    left: 10%;
+}
+.ready #slant{
+    height: 470px;
+}
+.ready #strait{
+    height: 642px;
+}
+.ready #little{
+    height: 229px;
+}
+
+#anim{
+    position: absolute;
+    left: 120%;
+    bottom: 73%;
+    width: 233px;
+    height: 259px;
+    background: url(img/row.png);
+    
+    transition: left ease-out 3s 4s;
+}
+
+.ready #anim{
+    left: 46%;
+    
+    animation: anim infinite alternate 4s 8s;
+    -webkit-animation: anim infinite alternate 4s 8s;
+}
+
+@-webkit-keyframes anim{
+    0%{
+        left: 35%;
+        background: url(img/cool.png);
+        width: 236px;
+        height: 268px;
+    }
+    49%{
+        background: url(img/cool.png);
+    }
+    50%{
+        background: url(img/drink.png);
+    }
+    100%{
+        left: 35%;
+        background: url(img/drink.png);
+        width: 236px;
+        height: 268px;
+    }
+}
+
+#text{
+    position: absolute;
+    top: 10%;
+    right: 3%;
+    overflow: hidden;
+    height: 0;
+    transition: height ease-out 1.5s 8s;
+}
+#text p{
+    font-size: 30px;
+}
+#text h1{
+    font-size: 36px;
+}
+
+.ready #text{
+    height: 60%;
+}
+
+.ready .dance{
+    text-shadow: 0 0 10px #FFF;
+    animation: dance ease-in-out infinite alternate 1.5s 4s;
+    -webkit-animation: dance ease-in-out infinite alternate 1.5s 4s;
+}
+
+@-webkit-keyframes dance{
+    0%{
+        color: #2a8300;
+        transform: rotateZ(-4deg);
+    }
+    100%{
+        color: #d08700;
+        transform: rotateZ(4deg);
+    }
+}
+
+.red{
+    color: #eb293a;
+}
+.blue{
+    color: #133a66;
+}
+.purple{
+    color: #ad3aa6;
+}
+.green{
+    color: #1f621f;
+}
+
+.tel{
+    font-weight: bold;
+    color: #f17800;
+}
+#text a{
+    font-weight: bold;
+    color: #055956;
+}
+#text a:hover{
+    color: #591105;
+}
