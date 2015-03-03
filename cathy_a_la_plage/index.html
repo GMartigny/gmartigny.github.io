@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="style.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
     </head>
     <body>
         <div id="sky">
@@ -17,7 +18,15 @@
                 <img src="img/p_little.png" id="little" class="palm" alt="" width="324"/>
                 <img src="img/p_strait.png" id="strait" class="palm" alt="" width="375"/>
             </div>
-            <div id="anim"></div>
+            <div id="anim">
+                <div class="blah" id="row">Fini de ramer</div>
+                <div class="blah" id="cool">Il est l’heure de<br/>prendre son pied</div>
+                <div class="blah" id="drink">Et de se<br/>la couler douce</div>
+            </div>
+            <div id="sign">
+                <img src="img/sign.png" alt=""/>
+                Cathy
+            </div>
             <div class="rise"></div>
         </div>
         <div id="text">
@@ -31,7 +40,7 @@
                 au <span class="tel">09.52.92.25.03</span> ou <span class="tel">07.82.45.07.79</span></p>
         </div>
         <script>
-            var imgs = ["sand", "p_strait", "p_slant", "p_little", "row", "cool", "drink"],
+            var imgs = ["sand", "p_strait", "p_slant", "p_little", "row", "cool", "drink", "sign"],
                 ready = 0;
             
             imgs.forEach(function(s){

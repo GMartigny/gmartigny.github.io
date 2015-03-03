@@ -6,6 +6,7 @@ body, html{
     height: 100%;
     margin: 0;
     overflow: hidden;
+    font-family: 'Gloria Hallelujah', cursive;
 }
 
 #sky{
@@ -34,7 +35,7 @@ body, html{
     width: 50%;
     height: 45%;
     top: -4%;
-    left: 3%;
+    left: 2%;
     background-image: linear-gradient(rgba(250, 184, 61, 0) 0, rgba(250, 184, 61, .8) 100%), url(img/sand.png);
     background-color: #fbeb8d;
     border-radius: 50%;
@@ -109,8 +110,8 @@ body, html{
 .ready #anim{
     left: 46%;
     
-    animation: anim infinite alternate 4s 8s;
-    -webkit-animation: anim infinite alternate 4s 8s;
+    animation: anim infinite alternate 4s 9s;
+    -webkit-animation: anim infinite alternate 4s 9s;
 }
 
 @-webkit-keyframes anim{
@@ -137,20 +138,20 @@ body, html{
 #text{
     position: absolute;
     top: 10%;
-    right: 3%;
+    right: 2%;
     overflow: hidden;
     height: 0;
-    transition: height ease-out 1.5s 8s;
+    transition: height ease-out 1.5s 16s;
 }
 #text p{
-    font-size: 30px;
+    font-size: 26px;
 }
 #text h1{
-    font-size: 36px;
+    font-size: 31px;
 }
 
 .ready #text{
-    height: 60%;
+    height: 80%;
 }
 
 .ready .dance{
@@ -181,6 +182,7 @@ body, html{
 }
 .green{
     color: #1f621f;
+    margin-top: 70px;
 }
 
 .tel{
@@ -193,4 +195,58 @@ body, html{
 }
 #text a:hover{
     color: #591105;
+}
+
+.blah{
+    position: absolute;
+    top: -10%;
+    left: 69%;
+    background: #FFF;
+    border-radius: 50%;
+    border: 2px solid #333;
+    padding: 15px 25px;
+    line-height: 20px;
+    opacity: 0;
+    white-space: nowrap;
+}
+.ready #row{
+    -webkit-animation: display linear 1 4s 5s forwards;
+}
+.ready #cool{
+    -webkit-animation: display linear infinite 8s 7s;
+}
+.ready #drink{
+    -webkit-animation: display linear infinite 8s 11s;
+}
+@-webkit-keyframes display{
+    50%{
+        opacity: 0;
+    }
+    55%{
+        opacity: 1;
+    }
+    95%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+
+#sign{
+    position: absolute;
+    right: -400px;
+    top: 2%;
+    transition: right ease-out 1s 17s;
+    color: #FFF;
+    font-size: 15px;
+    text-align: center;
+}
+.ready #sign{
+    right: 50px;
+}
+#sign img{
+    height: 90%;
+    display: block;
+    
 }
