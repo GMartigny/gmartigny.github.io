@@ -117,19 +117,19 @@ body, html{
 @-webkit-keyframes anim{
     0%{
         left: 35%;
-        background: url(img/cool.png);
+        background: url(img/drink.png);
         width: 236px;
         height: 268px;
     }
     49%{
-        background: url(img/cool.png);
+        background: url(img/drink.png);
     }
     50%{
-        background: url(img/drink.png);
+        background: url(img/cool.png);
     }
     100%{
         left: 35%;
-        background: url(img/drink.png);
+        background: url(img/cool.png);
         width: 236px;
         height: 268px;
     }
