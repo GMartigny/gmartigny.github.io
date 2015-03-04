@@ -179,10 +179,12 @@ body, html{
 }
 .purple{
     color: #ad3aa6;
+    text-align: center;
 }
-.green{
+#text .green{
     color: #1f621f;
     margin-top: 70px;
+    font-size: 19px;
 }
 
 .tel{
