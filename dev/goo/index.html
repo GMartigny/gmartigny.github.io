@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gooy menu</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+    </head>
+    <body>
+        <div id="border">
+            <input type="checkbox" id="burger"/>
+            <label class="burger" for="burger">
+                <span class="bars"></span>
+            </label>
+            <ul id="blob">
+                <li><a href="#">Vacances</a></li>
+                <li><a href="#">Voyages</a></li>
+                <li><a href="#">Restaurant</a></li>
+                <li><a href="#">Achats</a></li>
+            </ul>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+                <filter id="goo">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+                    <feColorMatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"/>
+                    <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+                </filter>
+            </defs>
+        </svg>
+</body>
+</html>
