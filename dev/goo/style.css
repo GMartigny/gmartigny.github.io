@@ -21,8 +21,8 @@ a:hover{
 
 #border{
     position: absolute;
-    right: calc(100% - 1px);
-    background: #29E;
+    right: calc(100% - 10px);
+    border-right: 10px solid #29E;
     -webkit-filter: url("#goo");
 }
 
@@ -59,25 +59,29 @@ a:hover{
     box-shadow: 0 6px 0 #333, 0 -6px 0 #333;
 }
 
-#blob{
+ul{
     list-style: none;
     padding: 0;
+}
+#menu{
     margin-top: 60px;
 }
-#blob li{
+#menu li{
     position: relative;
     color: #FFF;
     background: #29E;
-    padding: 10px 20px;
+    padding: 20px 30px;
     border-radius: 50px;
     margin: 20px 0;
     left: 0;
     text-align: center;
     z-index: 1;
-
     transition: left ease-out .2s;
 }
-#blob li:after{
+#menu li:hover{
+    background: #3AF;
+}
+#menu li:after{
     position: absolute;
     content: "";
     width: 100%;
@@ -88,55 +92,91 @@ a:hover{
     background: #29E;
     z-index: -1;
     margin: 0;
+    border-radius: 100px;
+}
+#menu li:hover:after{
+    background: #3AF;
+}
+#menu li ul{
+    position: absolute;
+    top: 53px;
+    left: 20%;
+    z-index: -1;
+    transition: left cubic-bezier(.17, .88, .32, 1.27) .5s,
+        top cubic-bezier(.17, .88, .32, 1.27) .5s;
+}
+#menu li li{
+    margin: 0;
+    margin-top: -48px;
+    transition: margin cubic-bezier(.17, .88, .32, 1.27) .5s;
+    padding: 15px 20px;
 }
 
-#burger:checked ~ #blob li{
+#menu > li:hover ul{
+    left: 100%;
+    top: -60px;
+}
+#menu > li:hover li{
+    margin-top: 10px;
+    left: 12px;
+}
+#menu > li:hover li:nth-child(2){
+    left: 24px;
+}
+
+#burger:checked ~ #menu > li{
     left: calc(100% + 20px);
     transition-timing-function: cubic-bezier(.17, .88, .32, 1.27);
     transition-duration: .5s;
 }
-#burger:checked ~ #blob li:nth-child(2){
+#burger:checked ~ #menu > li:nth-child(2){
     transition-delay: .1s;
 }
-#burger:checked ~ #blob li:nth-child(3){
+#burger:checked ~ #menu > li:nth-child(3){
     transition-delay: .2s;
 }
-#burger:checked ~ #blob li:nth-child(4){
+#burger:checked ~ #menu > li:nth-child(4){
     transition-delay: .3s;
 }
+#burger:checked ~ #menu > li:nth-child(5){
+    transition-delay: .4s;
+}
 
-#burger:checked ~ #blob li:after{
+#burger:checked ~ #menu > li:after, #menu > li:hover li:after{
     -webkit-animation: flow 1 1.2s .4s linear;
 }
-#burger:checked ~ #blob li:nth-child(2):after{
+#burger:checked ~ #menu > li:nth-child(2):after{
     -webkit-animation-delay: .5s;
 }
-#burger:checked ~ #blob li:nth-child(3):after{
+#burger:checked ~ #menu > li:nth-child(3):after{
     -webkit-animation-delay: .6s;
 }
-#burger:checked ~ #blob li:nth-child(4):after{
+#burger:checked ~ #menu > li:nth-child(4):after{
     -webkit-animation-delay: .7s;
+}
+#burger:checked ~ #menu > li:nth-child(5):after{
+    -webkit-animation-delay: .8s;
 }
 @-webkit-keyframes flow{
     0%{
         margin-left: 0;
     }
     10%{
-        margin-left: -3.5%;
+        margin-left: -9px;
     }
     30%{
-        margin-left: 3.5%;
+        margin-left: 8px;
     }
     50%{
-        margin-left: -2.5%;
+        margin-left: -7px;
     }
     70%{
-        margin-left: 2.5%;
+        margin-left: 4px;
     }
     90%{
-        margin-left: -1.5%;
+        margin-left: -1px;
     }
     100%{
-        margin-left: .5%;
+        margin-left: 1px;
     }
 }

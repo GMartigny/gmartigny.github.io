@@ -12,19 +12,38 @@
             <label class="burger" for="burger">
                 <span class="bars"></span>
             </label>
-            <ul id="blob">
-                <li><a href="#">Vacances</a></li>
-                <li><a href="#">Voyages</a></li>
-                <li><a href="#">Restaurant</a></li>
-                <li><a href="#">Achats</a></li>
+            <ul id="menu">
+                <li><a href="#">Home</a></li>
+                <li>Product
+                    <ul>
+                        <li><a href="#">Demo</a></li>
+                        <li><a href="#">How&nbsp;to</a></li>
+                        <li><a href="#">Users</a></li>
+                    </ul>
+                </li>
+                <li>Pricing
+                    <ul>
+                        <li><a href="#">Gastro</a></li>
+                        <li><a href="#">Taverne</a></li>
+                        <li><a href="#">Pizza</a></li>
+                    </ul>
+                </li>
+                <li>About&nbsp;us
+                    <ul>
+                        <li><a href="#">Team</a></li>
+                        <li><a href="#">Project</a></li>
+                        <li><a href="#">Stuff</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Contact</a></li>
             </ul>
         </div>
 
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
             <defs>
                 <filter id="goo">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
-                    <feColorMatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+                    <feColorMatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -9" result="goo"/>
                     <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
                 </filter>
             </defs>
