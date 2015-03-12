@@ -24,6 +24,7 @@ a:hover{
     right: 100%;
     background: #29E;
     -webkit-filter: url("#goo");
+    filter: url("./index.html#goo");
 }
 #burger:checked ~ #border{
     right: calc(100% - 1px);
