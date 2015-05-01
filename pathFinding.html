@@ -214,10 +214,13 @@
                 }
                 
                 this.start = this.tiles[0][0];
-                this.start.state = 3;
                 this.finish = this.tiles[rows-1][cols-1];
-                this.finish.state = 4;
+                this.setBounds();
             }
+            Grid.prototype.setBounds = function(){
+                this.start.state = 3; this.start.render();
+                this.finish.state = 4; this.finish.render();
+            };
             Grid.prototype.get = function(x, y){
                 if(this.tiles[y])
                     return this.tiles[y][x] || false;
@@ -250,24 +253,21 @@
                 });
             };
             Grid.prototype.randomize = function(){
-                var self = this;
                 this.forEach(function(t){
-                    if(t !== self.start && t !== self.finish){
-                        t.state = (Math.random()+1.25)<<0;
-                        t.render();
-                    }
+                    t.state = (Math.random()+1.25)<<0;
+                    t.render();
                 });
+                this.setBounds();
             };
             Grid.prototype.maze = function(){
-                var self = this,
-                    walls = [];
+                var walls = [];
                 this.forEach(function(t){
                     if(t.pos.x%2 || t.pos.y%2){
                         t.state = 2;
                         if(t.pos.x%2 != t.pos.y%2)
                             walls.push(t);
                     }
-                    else if(t !== self.start && t!== self.finish)
+                    else
                         t.state = 1;
                     t.render();
                 });
@@ -277,14 +277,15 @@
                         w.render();
                     }
                 });
+                this.setBounds();
             };
             Grid.prototype.reset = function(){
                 this.forEach(function(t){
-                    if(t.state != 3 && t.state != 4)
-                        t.state = 1;
+                    t.state = 1;
                     t.comeFrom = false;
                     t.render();
-                })
+                });
+                this.setBounds();
             };
             
             // TILE
