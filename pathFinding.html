@@ -12,7 +12,7 @@
                 background: #111;
             }
             #menu{
-                width: 10%;
+                width: 12%;
                 height: 100%;
                 float: left;
                 color: #FFF;
@@ -28,7 +28,7 @@
             }
             #can{
                 display: block;
-                width: 90%;
+                width: 88%;
                 height: 100%;
                 cursor: crosshair;
             }
@@ -38,7 +38,8 @@
         <div id="menu">
             <ul>
                 <li>Clic and drag to draw obstacle</li>
-                <li><kbd>space</kbd> randomize all tiles</li>
+                <li><kbd>space</kbd> randomize tiles</li>
+                <li><kbd>ctrl</kbd>+<kbd>space</kbd> randomize (maze style)</li>
                 <li><kbd>enter</kbd> start the path finder</li>
                 <li><kbd>esc</kbd> reset everything</li>
             </ul>
@@ -102,8 +103,12 @@
                     }
                 }
                 else if(e.keyCode == 32){ // space
-                    if(!finder.running)
-                        finder.grid.randomize();
+                    if(!finder.running){
+                        if(e.ctrlKey)
+                            finder.grid.maze();
+                        else
+                            finder.grid.randomize();
+                    }
                 }
                 else if(e.keyCode == 27){ // escape
                     finder.reset();
@@ -117,6 +122,7 @@
                 this.running = false;
                 this.pointer = false;
             }
+            PathFinder.TIMEOUT = 70;
             PathFinder.prototype.find = function(){
                 this.evaluate();
                 this.step();
@@ -142,7 +148,7 @@
                         var self = this;
                         this.running = setTimeout(function(){
                             self.step.call(self);
-                        }, 99);
+                        }, PathFinder.TIMEOUT);
                     }
                 }
                 else{
@@ -180,7 +186,7 @@
                     var self = this;
                     this.running = setTimeout(function(){
                         self.path.call(self);
-                    }, 30);
+                    }, PathFinder.TIMEOUT/2);
                 }
             };
             PathFinder.prototype.reset = function(){
@@ -245,24 +251,40 @@
             };
             Grid.prototype.randomize = function(){
                 var self = this;
-                this.tiles.forEach(function(l){
-                    l.forEach(function(t){
-                        if(t !== self.start && t !== self.finish){
-                            t.state = (Math.random()+1.25)<<0;
-                            t.render();
-                        }
-                    });
+                this.forEach(function(t){
+                    if(t !== self.start && t !== self.finish){
+                        t.state = (Math.random()+1.25)<<0;
+                        t.render();
+                    }
+                });
+            };
+            Grid.prototype.maze = function(){
+                var self = this,
+                    walls = [];
+                this.forEach(function(t){
+                    if(t.pos.x%2 || t.pos.y%2){
+                        t.state = 2;
+                        if(t.pos.x%2 != t.pos.y%2)
+                            walls.push(t);
+                    }
+                    else if(t !== self.start && t!== self.finish)
+                        t.state = 1;
+                    t.render();
+                });
+                walls.forEach(function(w){
+                    if(Math.random()<0.55){
+                        w.state = 1;
+                        w.render();
+                    }
                 });
             };
             Grid.prototype.reset = function(){
-                this.tiles.forEach(function(l){
-                    l.forEach(function(t){
-                        if(t.state != 3 && t.state != 4)
-                            t.state = 1;
-                        t.comeFrom = false;
-                        t.render();
-                    });
-                });
+                this.forEach(function(t){
+                    if(t.state != 3 && t.state != 4)
+                        t.state = 1;
+                    t.comeFrom = false;
+                    t.render();
+                })
             };
             
             // TILE
