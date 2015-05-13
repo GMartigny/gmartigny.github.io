@@ -73,7 +73,7 @@
             </aside>
         </div>
         <script>
-            var url = "thawing-inlet-8604.herokuapp.com",
+            var url = "socket-cat-server.herokuapp.com",
                 w = document.getElementById("welcome");
             
             document.body.onload = function(){
@@ -87,8 +87,9 @@
             function SocketManager(url){
                 var self = this;
                 this.socket = new WebSocket(url);
+                log("socket created");
                 this.socket.onopen = function(){
-                    console.log("connection open");
+                    log("connection open");
                 };
                 this.socket.onerror = function(){
                     self.html.informe("Something fishy happend");
@@ -118,9 +119,11 @@
                 
                 switch(data.type){
                     case "list":
+                        log("get connected list")
                         this.html.setList(data.value);
                         break;
                     case "hs-isok":
+                        log("all set, you can chat");
                         this.html.addList(data.value.nick, data.value.color, true);
                         this.activateChat();
                         break;
@@ -131,9 +134,11 @@
                         this.html.informe(data.value);
                         break;
                     case "arrive":
+                        log("someone arrive");
                         this.html.addList(data.value.nick, data.value.color);
                         break;
                     case "leave":
+                        log("someone leave");
                         this.html.removeList(data.value.nick, data.value.color);
                         break;
                     case "message":
@@ -230,6 +235,9 @@
             
             function htmlescape(str){
                 return str.replace("<", "&lt;").replace(">", "&gt;");
+            }
+            function log(m){
+                console.log(m);
             }
         </script>
     </body>
