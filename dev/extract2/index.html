@@ -10,22 +10,28 @@
         <div id="holder">
             <canvas id="back" width="500" height="700"></canvas>
             <canvas id="player" width="500" height="700"></canvas>
+            <canvas id="over" width="500" height="700"></canvas>
+            <div id="fps"></div>
+            <div id="loading">0%</div>
         </div>
         <script src="../../res/js/gameLib.js"></script>
+        <script src="../../res/js/fps.js"></script>
         <script>
+            var fps = getById("fps");
             (function(){
+                var loading = getById("loading");
                 var media = loadMedia([
                     {src: "js/Game.js", name: "Game", type: "script", weight: 1},
                     {src: "js/Save.js", name: "Save", type: "script", weight: 1},
                     {src: "js/Player.js", name: "Player", type: "script", weight: 1},
-                    {src: "js/View.js", name: "View", type: "script", weight: 1}
+                    {src: "js/View.js", name: "View", type: "script", weight: 1},
+                    {src: "js/Entities.js", name: "Entities", type: "script", weight: 1}
                 ], function(per){
+                    loading.innerHTML = per+"%";
                     if(per >= 100){
                         var canvas = prepareCanvas("holder");
                         new GameManager(media, canvas);
-                    }
-                    else{
-                        
+                        loading.classList.add("hidden");
                     }
                 });
             })();
