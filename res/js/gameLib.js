@@ -318,7 +318,7 @@ var sqrt = Math.sqrt,
     SQRT2 = sqrt(2) / 2;
 
 function random(from, to){
-    return round(r()*(to - from)+from);
+    return r()*(to - from)+from;
 }
 
 Array.prototype.out = function(o){
