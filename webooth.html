@@ -26,6 +26,7 @@
                 margin: 40px auto 0;
                 right: 0;
                 left: 0;
+                text-align: center;
             }
             canvas{
                 display: block;
@@ -65,7 +66,7 @@
             <button class="switch" id="noise">Noise</button>
             <canvas id="output" width="600" height="450" title="click me to snapshot"></canvas>
         </div>
-        <script src="../res/js/gameLib.js"></script>
+        <script src="res/js/gameLib.js"></script>
         <script>
             var video = new Video(),
                 buffer = {
@@ -78,7 +79,7 @@
                 video.src = window.URL.createObjectURL(stream);
                 video.play();
             }, function(){
-//                alert("User media not enabled");
+                alert("User media not enabled");
             });
             
             var switchs = document.getElementsByClassName("switch");
