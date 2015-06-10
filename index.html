@@ -90,6 +90,7 @@
         <canvas id="can"></canvas>
         <ul id="wheel">
             <!-- Canvas -->
+            <li id="webooth"><a href="webooth.html" title="Play with your camera and some filters"><img src="" alt="webooth thumbnail"/></a></li>
             <li id="pathfinder"><a href="pathFinding.html" title="A* path finding algorythm"><img src="" alt="path finder thumbnail"/></a></li>
             <li id="extract"><a href="extract" title="My first web arcade game"><img src="" alt="extract game thumbnail"/></a></li>
             <li id="fizzle"><a href="fizzle" title="Turn your text into little fizzle bubble =)"><img src="" alt="bubble fizzle thumbnail"/></a></li>
@@ -272,8 +273,46 @@
                 stream = 0,
                 PI2 = Math.PI*2,
                 r = Math.random;
+        
+            function Bubble(x, y, z){
+                this.pos = {
+                    x: x,
+                    y: y,
+                    z: z
+                };
+                this.vit = {
+                    x: 0,
+                    y: -rand(1, 1.2)
+                };
+                this.radius = rand(7, 20);
+            }
+            Bubble.prototype = {
+                render: function(){
+                    ctx.beginPath();
+                    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 1);
+                    ctx.moveTo(this.pos.x, this.pos.y-this.radius*0.7);
+                    ctx.arc(this.pos.x, this.pos.y, this.radius*0.7, -1.4, 3.3, 1);
+                    ctx.stroke();
+                    ctx.closePath();
+                    return this.move();
+                },
+                move: function(){
+                    this.pos.x += this.vit.x*this.pos.z;
+                    this.pos.y += this.vit.y*this.pos.z;
+
+                    this.vit.x += -1*stream;
+                    this.vit.x /= 1.08;
+
+                    var pop = 0;
+                    if(this.pos.y + this.radius+2 < 0) pop = 1;
+                    else if(this.pos.x + this.radius+100 < 0) pop = 1;
+                    else if(this.pos.x - this.radius-100 > can.width) pop = 1;
+
+                    return pop;
+                }
+            };
             
-            (function start(){
+            (function (){
                 
                 can.width = document.body.offsetWidth;
                 can.height = document.body.offsetHeight;
@@ -304,42 +343,6 @@
                 }
                 stream /= 1.07;
             }
-            
-            function Bubble(x, y, z){
-                this.pos = {
-                    x: x,
-                    y: y,
-                    z: z
-                };
-                this.vit = {
-                    x: 0,
-                    y: -rand(1, 1.2)
-                };
-                this.radius = rand(7, 20);
-            }
-            Bubble.prototype.render = function(){
-                ctx.beginPath();
-                ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 1);
-                ctx.moveTo(this.pos.x, this.pos.y-this.radius*0.7);
-                ctx.arc(this.pos.x, this.pos.y, this.radius*0.7, -1.4, 3.3, 1);
-                ctx.stroke();
-                ctx.closePath();
-                return this.move();
-            };
-            Bubble.prototype.move = function(){
-                this.pos.x += this.vit.x*this.pos.z;
-                this.pos.y += this.vit.y*this.pos.z;
-
-                this.vit.x += -1*stream;
-                this.vit.x /= 1.08;
-
-                var pop = 0;
-                if(this.pos.y + this.radius+2 < 0) pop = 1;
-                else if(this.pos.x + this.radius+100 < 0) pop = 1;
-                else if(this.pos.x - this.radius-100 > can.width) pop = 1;
-
-                return pop;
-            };
             
             function rand(f, t){
                 return (r()*(t-f)+f);
