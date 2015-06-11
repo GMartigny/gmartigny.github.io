@@ -1,3 +1,23 @@
+/*
+ * Create a custom context-menu
+ * Made by Guillaume Martigny
+ * 
+ * Just pass a structured object with the options.
+ * 
+ * 
+ * example :
+ *  element.contextMenu([
+ *      {
+ *          Option: foo,
+ *          List: [{
+ *              Item: function(){ ... }
+ *          }]
+ *      },
+ *      {
+ *          "Other group": bar
+ *      }
+ *  ]);
+ */
 HTMLElement.prototype.contextMenu = function(options){
     this.contextMenu = new ContextMenu(options);
     this.addEventListener("contextmenu", function(e){
@@ -68,36 +88,39 @@ ContextMenu.createMenu.dropdown = function(n, o){
     i.appendChild(s);
     return i;
 };
-ContextMenu.prototype.refreshHTML = function(){
-    if(this.menu)
-        this.menu.remove();
-    this.menu = ContextMenu.createMenu(this.options);
-};
-ContextMenu.prototype.setOptions = function(options){
-    this.options = options;
-    this.refreshHTML();
-};
 ContextMenu.opened = false;
-ContextMenu.prototype.show = function(x, y){    this.menu.style.left = x;
-    this.menu.style.top = y;
-    document.body.appendChild(this.menu);
-
-    if(y + this.menu.offsetHeight > document.body.offsetHeight)
-        this.menu.style.top = y - this.menu.offsetHeight;
-    if(x + this.menu.offsetWidth > document.body.offsetWidth)
-        this.menu.style.left = document.body.offsetWidth - this.menu.offsetWidth;
-
-    ContextMenu.opened = this;
-    window.addEventListener("mousedown", ContextMenu.callHide);
-    this.menu.addEventListener("mousedown", function(e){
-        e.stopPropagation();
-    });
-};
 ContextMenu.callHide = function(e){
     if(ContextMenu.opened)
         ContextMenu.opened.hide.call(ContextMenu.opened);
 };
-ContextMenu.prototype.hide = function(){
-    this.menu.remove();
-    window.removeEventListener("mousedown", ContextMenu.callHide);
+ContextMenu.prototype = {
+    refreshHTML: function(){
+        if(this.menu)
+            this.menu.remove();
+        this.menu = ContextMenu.createMenu(this.options);
+    },
+    setOptions: function(options){
+        this.options = options;
+        this.refreshHTML();
+    },
+    show: function(x, y){
+        this.menu.style.left = x;
+        this.menu.style.top = y;
+        document.body.appendChild(this.menu);
+
+        if(y + this.menu.offsetHeight > document.body.offsetHeight)
+            this.menu.style.top = y - this.menu.offsetHeight;
+        if(x + this.menu.offsetWidth > document.body.offsetWidth)
+            this.menu.style.left = document.body.offsetWidth - this.menu.offsetWidth;
+
+        ContextMenu.opened = this;
+        window.addEventListener("mousedown", ContextMenu.callHide);
+        this.menu.addEventListener("mousedown", function(e){
+            e.stopPropagation();
+        });
+    },
+    hide: function(){
+        this.menu.remove();
+        window.removeEventListener("mousedown", ContextMenu.callHide);
+    }
 };
