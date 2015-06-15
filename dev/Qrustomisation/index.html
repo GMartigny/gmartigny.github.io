@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Qrustomisation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            #qr{
+                display: none;
+            }
+            #upload{
+                display: none;
+                padding: 1em 2em;
+                border-radius: 100px;
+            }
+            #upload:active{
+                outline: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <input type="file" id="qr" />
+            <button id="upload">Upload QrCode</button>
+        </div>
+        <script>
+            function QrReader(img){
+                var self = this;
+                var reader = new FileReader();
+                reader.readAsDataURL(img);
+                reader.onloadend = function(){
+                    console.log("file loaded");
+
+                    var img = new Image();
+                    img.src = this.result;
+
+                    var canIn = document.createElement("canvas");
+                    canIn.width = img.width;
+                    canIn.height = img.height;
+
+                    var ctx = canIn.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    document.body.appendChild(canIn);
+                    var data = ctx.getImageData(0, 0, canIn.width, canIn.height).data;
+
+                    var previous = new Pixel(255, 255, 255);
+                    var from = 0, to = 0;
+                    for(var i=0, l=data.length;i<l && !to;i+=4){
+                        var pix = new Pixel(data[i], data[i+1], data[i+2]);
+                        if(from && pix.isLighter(previous))
+                            to = i/4;
+                        if(pix.isDarker(previous) && !from)
+                            from = i/4;
+                        previous = pix;
+                    }
+                    var cell = (to - from)/7+0.5<<0,
+                        w = canIn.width/cell+0.5<<0,
+                        color = pix;
+                    
+                    var canOut = document.createElement("canvas");
+                    canOut.width = img.width;
+                    canOut.height = img.height;
+                    ctx = canOut.getContext("2d");
+                    
+                    console.log("base", color.toString());
+                    var i = 0, j;
+                    while(data[j = (i+cell/2)*4<<0]){
+                        var pix = new Pixel(data[j], data[j+1], data[j+2]);
+                        console.log(pix.toString());
+                        i += cell;
+                        ctx.fillStyle = pix.equals(color)? "#FFF": "#000";
+                        ctx.fillRect((i%canIn.width), (i/canIn.width<<0), cell, cell);
+                    }
+//                    var s = (cell/2*(canIn.width+1));
+//                    for(var i=s, l=data.length;i<l;i+=4*cell){
+//                        var pix = new Pixel(data[i], data[i+1], data[i+2]);
+//                        var pos = pix.equals(color)? 2: 0;
+//                        ctx.fillRect((i/4%w)*cell, (i/4/w<<0)*cell, cell, cell);
+//                        ctx.drawImage(QrReader.tileset, 32*pos, 0, 32, 32, (i%w)/4*cell, (i/w<<0)/4*cell, cell, cell);
+//                    }
+                    document.body.appendChild(canOut);
+                };
+            }
+            QrReader.tileset = new Image();
+            QrReader.tileset.src = "tileset.png";
+            QrReader.tileset.onload = function(){
+                var up = document.getElementById("upload");
+                up.onclick = function(){
+                    document.getElementById("qr").click();
+                };
+                up.style.display = "block";
+            };
+            
+            function Pixel(r, g, b){
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+            Pixel.prototype = {
+                equals: function(p){
+                    return (this.r = p.r && this.g == p.g && this.b == p.b);
+                },
+                
+                isDarker: function(p){
+                    return (this.r+this.g+this.b < p.r+p.g+p.b);
+                },
+                isLighter: function(p){
+                    return (this.r+this.g+this.b > p.r+p.g+p.b);
+                },
+                
+                toString: function(){
+                    return "("+this.r+", "+this.g+", "+this.b+")";
+                }
+            };
+            
+            document.getElementById("qr").onchange = function(){
+                var file = this.files[0];
+                if(file.type.search("image") != -1){
+                    console.log("file accepted");
+                    
+                    new QrReader(file);
+                }
+                else{
+                    alert("File's not an image.");
+                }
+            };
+        </script>
+    </body>
+</html>
