@@ -10,6 +10,11 @@ ViewManager.prototype = {
         this.back.render();
         this.player.render();
         this.over.render();
+    },
+    animate: function(){
+        this.back.animate();
+        this.player.animate();
+        this.over.animate();
     }
 };
 
@@ -20,11 +25,13 @@ function View(ctx){
 View.prototype = {
     render: function(){
         this.ctx.clear();
-        this.draw();
+//        this.draw();
         var l = this.entities.length;
         while(l--){
             var entity = this.entities[l];
             entity.render();
+            if(this.moves)
+                entity.move();
             if(entity.isOut)
                 this.entities.out(entity);
             else{
@@ -39,6 +46,11 @@ View.prototype = {
                 }
             }
         }
+        this.moves = false;
+    },
+    animate: function(){
+        this.spawn();
+        this.moves = true;
     }
 };
 
@@ -51,7 +63,7 @@ function BackView(ctx){
     }
 }
 BackView.prototype = Object.create(View.prototype);
-BackView.prototype.draw = function(){
+BackView.prototype.spawn = function(){
     if(!(random(0, 300)<<0))
         this.entities.push(new Nebulae(this.ctx, random(0, this.ctx.canvas.width), -18));
     if(!(random(0, 200)<<0))
@@ -62,7 +74,7 @@ function PlayerView(ctx){
     View.call(this, ctx);
 }
 PlayerView.prototype = Object.create(View.prototype);
-PlayerView.prototype.draw = function(){
+PlayerView.prototype.spawn = function(){
     if(!(random(0, 50)<<0))
         this.entities.push(new Asteroid(this.ctx, random(0, this.ctx.canvas.width), -30))
 };
@@ -71,6 +83,6 @@ function OverView(ctx){
     View.call(this, ctx);
 }
 OverView.prototype = Object.create(View.prototype);
-OverView.prototype.draw = function(){
+OverView.prototype.spawn = function(){
     
 };

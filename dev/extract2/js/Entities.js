@@ -53,8 +53,6 @@ Asteroid.prototype.render = function(){
     this.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 0);
     this.ctx.fill();
     this.ctx.closePath();
-
-    this.move();
 };
 
 function Nebulae(ctx, x, y){
@@ -80,8 +78,6 @@ Nebulae.prototype.render = function(){
         self.ctx.fill();
     });
     this.ctx.globalAlpha = 1;
-
-    this.move();
 };
 
 function Star(ctx, x, y){
@@ -94,6 +90,4 @@ Star.prototype.render = function(){
     this.ctx.beginPath();
     this.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, PI2, 0);
     this.ctx.fill();
-    
-    this.move();
 };

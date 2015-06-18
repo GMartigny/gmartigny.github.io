@@ -1,6 +1,6 @@
 function GameManager(media, canvas){
     this.save = new SaveManager();
-    this.state = GameManager.MENU;
+    this.state = GameManager.PLAYING;
     this.view = new ViewManager(media, canvas);
     this.player = new PlayerManager(media, canvas.player.ctx);
     
@@ -17,6 +17,8 @@ function GameManager(media, canvas){
         if(e.keyCode == 32){ // space
             if(self.state == GameManager.PLAYING)
                 self.setState(GameManager.PLAYING_UPGRADES);
+            else if(self.state == GameManager.PLAYING_UPGRADES)
+                self.setState(GameManager.PLAYING);
         }
     };
     
@@ -40,6 +42,8 @@ GameManager.prototype = {
             self.loop.call(self);
         });
 
+        if(this.state == GameManager.PLAYING)
+            this.view.animate();
         this.view.render();
         this.player.render();
     },
