@@ -26,9 +26,14 @@
                 canM = document.getElementById("m"),
                 ctxM = canM.getContext("2d"),
                 pow = Math.pow,
+                ceil = function(x){
+                    return x+1<<0;
+                },
                 rand = Math.random;
             window.onload = function(){
                 resize();
+                canM.height = document.body.offsetHeight;
+                canM.width = document.body.offsetWidth;
                 (new Life()).render();
             };
             window.onresize = resize;
@@ -60,20 +65,23 @@
                     
                     ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.size, Cell.size);
                     
+                    var map = this.map;
                     this.cells.forEach(function(cell, pos){
-                        var x = pos[0], y = pos[1],
-                            around = this.neighbors(x, y);
-                        if(around.length < 1)
-                            cell.hp -= Cell.decayRate*3;
-                        else if(around.length < 3 && rand()<Cell.reproduceRate){
-                            var spaces = this.freeSpaces(x, y);
-                            if(spaces.length){
-                                var choosed = spaces[rand()*spaces.length<<0];
-                                this.put(choosed[0], choosed[1], new Cell());
+                        var x = pos[0], y = pos[1];
+                        
+                        if(cell.lives(x, y, map.get(Tile.round(x), Tile.round(y)).type)){
+                            var around = this.neighbors(x, y);
+                            if(around.length < 1)
+                                cell.hp -= Cell.decayRate*3;
+                            else if(around.length < 3 && rand()<Cell.reproduceRate){
+                                var spaces = this.freeSpaces(x, y);
+                                if(spaces.length){
+                                    var choosed = spaces[rand()*spaces.length<<0];
+                                    this.put(choosed[0], choosed[1], new Cell());
+                                }
                             }
                         }
-                        
-                        if(!cell.lives(x, y)){
+                        else{
                             this.remove(x, y);
                             cell.dies(x, y);
                         }
@@ -107,20 +115,20 @@
             }
             Cell.size = 15;
             Cell.accidentRate = 2e-3;
-            Cell.decayRate = 15e-4;
-            Cell.reproduceRate = 6e-3;
+            Cell.decayRate = 12e-4;
+            Cell.reproduceRate = 7e-3;
             Cell.round = function(x){
                 return (x/Cell.size<<0)*Cell.size;
             };
             Cell.prototype = {
-                lives: function(x, y){
-                    var survive = rand()<(Cell.accidentRate+(pow(1-this.hp, 2))*Cell.accidentRate)?false:true;
+                lives: function(x, y, conditions){
+                    var survive = !conditions||rand()<(Cell.accidentRate+(pow(1-this.hp, 2))*Cell.accidentRate)?false:true;
                     
                     if(survive){
                         var c = (this.hp*255+0.5<<0).toString(16);
                         ctxC.fillStyle = "#"+c+c+c;
                         ctxC.fillRect(x, y, Cell.size, Cell.size);
-                        this.hp -= Cell.decayRate;
+                        this.hp -= Cell.decayRate*pow(conditions, 2);
                         if(this.hp < 0.1)
                             survive = false;
                     }
@@ -135,14 +143,14 @@
             function Map(maxX, maxY){
                 this.grid = new Grid(maxX, maxY);
                 
-                for(var i=0, l=maxX*maxY/pow(Tile.size, 2);i<l;++i){
+                for(var i=0, l=ceil(maxX/Tile.size)*ceil(maxY/Tile.size);i<l;++i){
                     var y = (i*Tile.size/maxX<<0)*Tile.size;
-                    this.grid.put((i*Tile.size)%maxX, y, new Tile(0));
+                    this.grid.put((i*Tile.size)%maxX, y, new Tile(Tile.OCEAN));
                 }
                 
                 var island = i/2;
                 while(--island)
-                    this.grid.put(Tile.round(rand()*maxX), Tile.round(rand()*maxY), new Tile(1));
+                    this.grid.put(Tile.round(rand()*maxX), Tile.round(rand()*maxY), new Tile(rand()<0.25? Tile.DESERT: Tile.GROUND));
                 
                 this.draw();
             }
@@ -158,10 +166,13 @@
             };
             
             function Tile(type){
-                this.type = type; // 0: ocean, 1: ground, 2: desert
+                this.type = type;
             }
             Tile.size = Cell.size*2;
-            Tile.colors = ["#349", "#5C1", "#DD2"];
+            Tile.colors = ["#348", "#5C1", "#DD2"];
+            Tile.OCEAN = 0;
+            Tile.GROUND = 1;
+            Tile.DESERT = 2;
             Tile.round = function(x){
                 return (x/Tile.size<<0)*Tile.size;
             };
@@ -276,8 +287,6 @@
             function resize(){
                 canC.height = document.body.offsetHeight;
                 canC.width = document.body.offsetWidth;
-//                canM.height = document.body.offsetHeight;
-//                canM.width = document.body.offsetWidth;
             }
         </script>
     </body>
