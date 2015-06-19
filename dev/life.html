@@ -66,13 +66,14 @@
                     ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.size, Cell.size);
                     
                     var map = this.map;
+                    ctxC.fillStyle = "#FFF";
                     this.cells.forEach(function(cell, pos){
                         var x = pos[0], y = pos[1];
                         
                         if(cell.lives(x, y, map.get(Tile.round(x), Tile.round(y)).type)){
                             var around = this.neighbors(x, y);
                             if(around.length < 1)
-                                cell.hp -= Cell.decayRate*3;
+                                cell.hp -= Cell.decayRate*4;
                             else if(around.length < 3 && rand()<Cell.reproduceRate){
                                 var spaces = this.freeSpaces(x, y);
                                 if(spaces.length){
@@ -87,6 +88,7 @@
                         }
                     });
                     ctxC.globalAlpha = 1;
+                    
                     ctxC.fillStyle = "#FBB";
                     this.eggs.forEach(function(egg, pos){
                         ctxC.fillRect(pos[0], pos[1], Cell.size, Cell.size);
@@ -114,8 +116,8 @@
                 this.hp = 1;
             }
             Cell.size = 15;
-            Cell.accidentRate = 2e-3;
-            Cell.decayRate = 12e-4;
+            Cell.accidentRate = 17e-4;
+            Cell.decayRate = 1e-3;
             Cell.reproduceRate = 7e-3;
             Cell.round = function(x){
                 return (x/Cell.size<<0)*Cell.size;
@@ -125,11 +127,13 @@
                     var survive = !conditions||rand()<(Cell.accidentRate+(pow(1-this.hp, 2))*Cell.accidentRate)?false:true;
                     
                     if(survive){
-                        var c = (this.hp*255+0.5<<0).toString(16);
-                        ctxC.fillStyle = "#"+c+c+c;
+                        ctxC.globalAlpha = this.hp;
+
+                        ctxC.clearRect(x, y, Cell.size, Cell.size);
                         ctxC.fillRect(x, y, Cell.size, Cell.size);
-                        this.hp -= Cell.decayRate*pow(conditions, 2);
-                        if(this.hp < 0.1)
+                        
+                        this.hp -= Cell.decayRate*pow(conditions, 1.7);
+                        if(this.hp < 0.2)
                             survive = false;
                     }
                     
