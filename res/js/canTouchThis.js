@@ -10,8 +10,8 @@
  *  - dbltap : a double-tap occurs on the element
  *  - taphold : a long pressed touch occurs on the element
  *  - pinch : two moving touch in a same element
- */
-/*
+ *
+ *
  * example :
  *  document.addEventListener("swipe", function(ev){
  *      if(e.detail.direction == Touch.RIGHT){
