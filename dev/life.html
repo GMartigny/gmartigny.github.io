@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The randomness of Life</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            html, body{
+                margin: 0;
+                height: 100%;
+                overflow: hidden;
+            }
+            canvas{
+                display: block;
+                cursor: none;
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="m"></canvas>
+        <canvas id="c"></canvas>
+        <script>
+            var canC = document.getElementById("c"),
+                ctxC = canC.getContext("2d"),
+                canM = document.getElementById("m"),
+                ctxM = canM.getContext("2d"),
+                pow = Math.pow,
+                ceil = function(x){
+                    return x+1<<0;
+                },
+                rand = Math.random;
+            window.onload = function(){
+                resize();
+                canM.height = document.body.offsetHeight;
+                canM.width = document.body.offsetWidth;
+                (new Life()).render();
+            };
+            window.onresize = resize;
+            
+            function Life(){
+                this.cells = new Grid(canC.width, canC.height);
+                this.eggs = new Grid(canC.width, canC.height);
+                this.map = new Map(canC.width, canC.height);
+                
+                var self = this;
+                this.mouse = new MouseTracker();
+                this.mouse.down = function(){
+                    self.addEggs.call(self);
+                };
+                this.mouse.move = function(){
+                    if(this.isDown)
+                        self.addEggs.call(self);
+                };
+                this.mouse.up = function(){
+                    self.hatchEggs.call(self);
+                };
+            }
+            Life.prototype = {
+                render: function(){
+                    var self = this;
+                    requestAnimationFrame(function(){
+                        self.render.call(self);
+                    });
+                    
+                    ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.size, Cell.size);
+                    
+                    var map = this.map;
+                    ctxC.fillStyle = "#FFF";
+                    this.cells.forEach(function(cell, pos){
+                        var x = pos[0], y = pos[1];
+                        
+                        if(cell.lives(x, y, map.get(Tile.round(x), Tile.round(y)).type)){
+                            var around = this.neighbors(x, y);
+                            if(around.length < 1)
+                                cell.hp -= Cell.decayRate*4;
+                            else if(around.length < 3 && rand()<Cell.reproduceRate){
+                                var spaces = this.freeSpaces(x, y);
+                                if(spaces.length){
+                                    var choosed = spaces[rand()*spaces.length<<0];
+                                    this.put(choosed[0], choosed[1], new Cell());
+                                }
+                            }
+                        }
+                        else{
+                            this.remove(x, y);
+                            cell.dies(x, y);
+                        }
+                    });
+                    ctxC.globalAlpha = 1;
+                    
+                    ctxC.fillStyle = "#FBB";
+                    this.eggs.forEach(function(egg, pos){
+                        ctxC.fillRect(pos[0], pos[1], Cell.size, Cell.size);
+                    });
+                    
+                    ctxC.fillStyle = "#49B";
+                    ctxC.fillRect(Cell.round(this.mouse.getX()), Cell.round(this.mouse.getY()), Cell.size, Cell.size);
+                },
+                addEggs: function(){
+                    var x = Cell.round(this.mouse.buffer.x),
+                        y = Cell.round(this.mouse.buffer.y);
+                    if(!this.cells.get(x, y))
+                        this.eggs.put(x, y, new Cell());
+                },
+                hatchEggs: function(){
+                    var self = this;
+                    this.eggs.forEach(function(egg, pos){
+                        self.cells.put(pos[0], pos[1], egg);
+                    });
+                    this.eggs.empty();
+                }
+            };
+            
+            function Cell(){
+                this.hp = 1;
+            }
+            Cell.size = 15;
+            Cell.accidentRate = 17e-4;
+            Cell.decayRate = 1e-3;
+            Cell.reproduceRate = 7e-3;
+            Cell.round = function(x){
+                return (x/Cell.size<<0)*Cell.size;
+            };
+            Cell.prototype = {
+                lives: function(x, y, conditions){
+                    var survive = !conditions||rand()<(Cell.accidentRate+(pow(1-this.hp, 2))*Cell.accidentRate)?false:true;
+                    
+                    if(survive){
+                        ctxC.globalAlpha = this.hp;
+
+                        ctxC.clearRect(x, y, Cell.size, Cell.size);
+                        ctxC.fillRect(x, y, Cell.size, Cell.size);
+                        
+                        this.hp -= Cell.decayRate*pow(conditions, 1.7);
+                        if(this.hp < 0.2)
+                            survive = false;
+                    }
+                    
+                    return survive;
+                },
+                dies: function(x, y){
+                    ctxC.clearRect(x, y, Cell.size, Cell.size);
+                }
+            };
+            
+            function Map(maxX, maxY){
+                this.grid = new Grid(maxX, maxY);
+                
+                for(var i=0, l=ceil(maxX/Tile.size)*ceil(maxY/Tile.size);i<l;++i){
+                    var y = (i*Tile.size/maxX<<0)*Tile.size;
+                    this.grid.put((i*Tile.size)%maxX, y, new Tile(Tile.OCEAN));
+                }
+                
+                var island = i/2;
+                while(--island)
+                    this.grid.put(Tile.round(rand()*maxX), Tile.round(rand()*maxY), new Tile(rand()<0.25? Tile.DESERT: Tile.GROUND));
+                
+                this.draw();
+            }
+            Map.prototype = {
+                draw: function(){
+                    this.grid.forEach(function(tile, pos){
+                        tile.draw(pos[0], pos[1]);
+                    });
+                },
+                get: function(x, y){
+                    return this.grid.get(x, y);
+                }
+            };
+            
+            function Tile(type){
+                this.type = type;
+            }
+            Tile.size = Cell.size*2;
+            Tile.colors = ["#348", "#5C1", "#DD2"];
+            Tile.OCEAN = 0;
+            Tile.GROUND = 1;
+            Tile.DESERT = 2;
+            Tile.round = function(x){
+                return (x/Tile.size<<0)*Tile.size;
+            };
+            Tile.prototype = {
+                draw: function(x, y){
+                    ctxM.fillStyle = Tile.colors[this.type];
+                    ctxM.fillRect(x, y, Tile.size, Tile.size);
+                }
+            };
+            
+            function Grid(maxX, maxY){
+                this.all = {};
+                this.bounds = {
+                    x: maxX,
+                    y: maxY
+                };
+            }
+            Grid.prototype = {
+               put: function(x, y, o){
+                   this.all[x+'|'+y] = o;
+               },
+               get: function(x, y){
+                   return this.all[x+'|'+y];
+               },
+               neighbors: function(x, y){
+                   var n = [];
+                   
+                   var o = this.get(x, y-Cell.size);
+                   if(o) n.push(o);
+                   o = this.get(+x+Cell.size, y);
+                   if(o) n.push(o);
+                   o = this.get(x, +y+Cell.size);
+                   if(o) n.push(o);
+                   o = this.get(x-Cell.size, y);
+                   if(o) n.push(o);
+                   
+                   return n;
+               },
+               freeSpaces: function(x, y){
+                   var n = [],
+                       ax, ay;
+                   
+                   ax = x, ay = y-Cell.size;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = +x+Cell.size, ay = y;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = x, ay = +y+Cell.size;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = x-Cell.size, ay = y;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   
+                   return n;
+               },
+               remove: function(x, y){
+                   delete(this.all[x+'|'+y]);
+               },
+               empty: function(){
+                   this.all = {};
+               },
+               forEach: function(f){
+                   for(var pos in this.all){
+                       if(this.all.hasOwnProperty(pos)){
+                           f.call(this, this.all[pos], pos.split("|"));
+                       }
+                   }
+               }
+            };
+            
+            function MouseTracker(){
+                this.x = -100;
+                this.y = -100;
+                this.isDown = false;
+                this.buffer = {
+                    x: this.x, y: this.y
+                };
+                var self = this;
+                window.onmousemove = function(e){
+                    self.update.call(self, e.clientX, e.clientY);
+                    self.move.call(self);
+                };
+                window.onmousedown = function(){
+                    self.isDown = true;
+                    self.down.call(self);
+                };
+                window.onmouseup = function(){
+                    self.isDown = false;
+                    self.up.call(self);
+                };
+                window.onmouseout = function(){
+                    self.x = -100;
+                    self.y = -100;
+                };
+            }
+            MouseTracker.prototype = {
+                move: function(){},
+                down: function(){},
+                up: function(){},
+                update: function(x, y){
+                    this.x = x;
+                    this.y = y;
+                },
+                getX: function(){
+                    this.buffer.x = this.x;
+                    return this.x;
+                },
+                getY: function(){
+                    this.buffer.y = this.y;
+                    return this.y;
+                }
+            };
+            
+            function resize(){
+                canC.height = document.body.offsetHeight;
+                canC.width = document.body.offsetWidth;
+            }
+        </script>
+    </body>
+</html>
