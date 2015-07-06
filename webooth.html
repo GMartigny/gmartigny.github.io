@@ -106,9 +106,9 @@
                 raf(draw);
                 
                 var w = buffer.can.width,
-                    h = buffer.can.height,
-                    data = buffer.ctx.getImageData(0, 0, w, h);
+                    h = buffer.can.height;
                 buffer.ctx.drawImage(video, 0, 0, w, h);
+                var data = buffer.ctx.getImageData(0, 0, w, h);
                     
                 if(filter.count){
                     if(filter.reflect)
@@ -150,6 +150,7 @@
                 canvas.output.ctx.putImageData(data, 0, 0);
             }
             
+            /* global Pixel */
             Pixel.prototype.invert = function(){
                 this.r = 255 - this.r;
                 this.g = 255 - this.g;
@@ -168,10 +169,10 @@
                 this.g = (i * d + this.g * (1 - d))<<0;
                 this.b = (i * d + this.b * (1 - d))<<0;
             };
-            Pixel.prototype.noise = function(p){
-                this.r += random(-p, p);
-                this.g += random(-p, p);
-                this.b += random(-p, p);
+            Pixel.prototype.noise = function(nv){
+                this.r += random(-nv, nv);
+                this.g += random(-nv, nv);
+                this.b += random(-nv, nv);
             };
         </script>
     </body>
