@@ -10,6 +10,7 @@
                 padding: 0;
                 height: 100%;
                 background: #111;
+                font-family: monospace;
             }
             #menu{
                 width: 12%;
@@ -19,12 +20,18 @@
             }
             #menu li{
                 margin: 30px 0;
+                line-height: 20px;
             }
             #menu kbd{
                 background: #AAA;
                 padding: 1px 5px;
-                border-radius: 5px;
+                border-radius: 4px;
                 border: 3px outset #999;
+            }
+            #menu footer{
+                font-size: 12px;
+                padding: 30px 10px;
+                color: #AAA;
             }
             #can{
                 display: block;
@@ -35,7 +42,7 @@
         </style>
     </head>
     <body>
-        <div id="menu">
+        <aside id="menu">
             <ul>
                 <li>Clic and drag to draw obstacle</li>
                 <li><kbd>space</kbd> randomize tiles</li>
@@ -43,7 +50,8 @@
                 <li><kbd>enter</kbd> start the path finder</li>
                 <li><kbd>esc</kbd> reset everything</li>
             </ul>
-        </div>
+            <footer>Everything's slowed down to better visualize.</footer>
+        </aside>
         <canvas id="can"></canvas>
         <script>
             var can,
