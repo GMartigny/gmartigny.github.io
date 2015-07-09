@@ -17,7 +17,7 @@
                 padding: 0;
             }
             #wheel.ready{
-                transition: all linear .4s;
+                transition: top ease-out .4s;
                 top: calc(50% - 110px);
             }
             
@@ -37,8 +37,8 @@
             }
             #wheel.active li{
                 opacity: .1;
-                transform-origin: 50% 100%;
-                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 300%;
+                -webkit-transform-origin: 50% 300%;
             }
             #wheel li.current{
                 z-index: 1000;
@@ -84,6 +84,18 @@
                 background: linear-gradient(170deg, rgba(135,224,253,1) 0%,rgba(83,203,241,1) 34%,rgba(5,171,224,1) 100%);
                 display: block;
             }
+            
+            body > footer{
+                color: #EEE;
+                position: absolute;
+                bottom: -30px;
+                right: 0;
+                width: 37%;
+            }
+            #wheel.ready + footer{
+                transition: bottom ease-out .2s .3s;
+                bottom: 5px;
+            }
         </style>
     </head>
     <body>
@@ -118,6 +130,7 @@
             <a href="_others/">Unlisted works</a>
             <!-- -->
         </ul>
+        <footer>Everything's handcrafted with love by me.</footer>
         <script>
             var wheel = document.getElementById("wheel"),
                 elems = wheel.getElementsByTagName("li"),
