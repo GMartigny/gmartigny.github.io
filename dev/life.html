@@ -20,6 +20,7 @@
     <body>
         <canvas id="m"></canvas>
         <canvas id="c"></canvas>
+        <script src="../res/js/fps.js"></script>
         <script>
             var canC = document.getElementById("c"),
                 ctxC = canC.getContext("2d"),
@@ -29,18 +30,29 @@
                 ceil = function(x){
                     return x+1<<0;
                 },
-                rand = Math.random;
+                rand = Math.random,
+                fps;
+            
             window.onload = function(){
                 resize();
                 canM.height = document.body.offsetHeight;
                 canM.width = document.body.offsetWidth;
+                
+                ctxC.font = "15px sans-serif";
+                ctxC.textBaseline = "top";
+                fps = new FPS(function(n){
+                    ctxC.clearRect(5, 5, 50, 50);
+                    ctxC.fillStyle = "#000";
+                    ctxC.fillText(n, 5, 5); 
+                });
+                
                 (new Life()).render();
             };
             window.onresize = resize;
             
             function Life(){
-                this.cells = new Grid(canC.width, canC.height);
-                this.eggs = new Grid(canC.width, canC.height);
+                this.cells = new Grid(canC.width, canC.height, Cell.size);
+                this.eggs = new Grid(canC.width, canC.height, Cell.size);
                 this.map = new Map(canC.width, canC.height);
                 
                 var self = this;
@@ -62,6 +74,7 @@
                     requestAnimationFrame(function(){
                         self.render.call(self);
                     });
+                    fps.update();
                     
                     ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.size, Cell.size);
                     
@@ -115,7 +128,7 @@
             function Cell(){
                 this.hp = 1;
             }
-            Cell.size = 15;
+            Cell.size = 10;
             Cell.accidentRate = 17e-4;
             Cell.decayRate = 1e-3;
             Cell.reproduceRate = 7e-3;
@@ -144,17 +157,46 @@
                 }
             };
             
+            function distance(x1, y1, x2, y2){
+                var res = Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+                return res;
+            }
+            
             function Map(maxX, maxY){
-                this.grid = new Grid(maxX, maxY);
+                this.grid = new Grid(maxX, maxY, Tile.size);
                 
-                for(var i=0, l=ceil(maxX/Tile.size)*ceil(maxY/Tile.size);i<l;++i){
-                    var y = (i*Tile.size/maxX<<0)*Tile.size;
-                    this.grid.put((i*Tile.size)%maxX, y, new Tile(Tile.OCEAN));
+                var loss = 0.1,
+                    centerY = Tile.round(maxY/2<<0);
+                
+                for(var i=0;i<3;++i){
+                    var x = Tile.round(rand()*maxX<<0),
+                        expand = this.grid.freeSpaces(x, centerY),
+                        radius = (rand()*6+3)*Tile.size;
+                    
+                    this.grid.put(x, centerY, new Tile(Tile.GROUND));
+                    while(expand.length>0){
+                        var nexts = [],
+                            pos;
+                        while(pos = expand.pop()){
+                            if(rand()>loss){
+                                this.grid.put(pos[0], pos[1], new Tile(rand()<0.2?Tile.DESERT:Tile.GROUND));
+                                if(distance(pos[0], pos[1], x, centerY) < radius)
+                                    nexts = nexts.concat(this.grid.freeSpaces(pos[0], pos[1]));
+                            }
+                            else{
+                                this.grid.put(pos[0], pos[1], new Tile(Tile.OCEAN));
+                            }
+                        }
+                        expand = nexts;
+                    }
                 }
                 
-                var island = i/2;
-                while(--island)
-                    this.grid.put(Tile.round(rand()*maxX), Tile.round(rand()*maxY), new Tile(rand()<0.25? Tile.DESERT: Tile.GROUND));
+                for(var i=0, l=ceil(maxX/Tile.size)*ceil(maxY/Tile.size);i<l;++i){
+                    var x = (i*Tile.size)%maxX,
+                        y = (i*Tile.size/maxX<<0)*Tile.size;
+                    if(!this.grid.get(x, y))
+                        this.grid.put(x, y, new Tile(Tile.OCEAN));
+                }
                 
                 this.draw();
             }
@@ -172,7 +214,7 @@
             function Tile(type){
                 this.type = type;
             }
-            Tile.size = Cell.size*2;
+            Tile.size = Cell.size*3;
             Tile.colors = ["#348", "#5C1", "#DD2"];
             Tile.OCEAN = 0;
             Tile.GROUND = 1;
@@ -187,12 +229,13 @@
                 }
             };
             
-            function Grid(maxX, maxY){
+            function Grid(maxX, maxY, unit){
                 this.all = {};
                 this.bounds = {
                     x: maxX,
                     y: maxY
                 };
+                this.unit = unit;
             }
             Grid.prototype = {
                put: function(x, y, o){
@@ -204,13 +247,13 @@
                neighbors: function(x, y){
                    var n = [];
                    
-                   var o = this.get(x, y-Cell.size);
+                   var o = this.get(x, y-this.unit);
                    if(o) n.push(o);
-                   o = this.get(+x+Cell.size, y);
+                   o = this.get(+x+this.unit, y);
                    if(o) n.push(o);
-                   o = this.get(x, +y+Cell.size);
+                   o = this.get(x, +y+this.unit);
                    if(o) n.push(o);
-                   o = this.get(x-Cell.size, y);
+                   o = this.get(x-this.unit, y);
                    if(o) n.push(o);
                    
                    return n;
@@ -219,13 +262,13 @@
                    var n = [],
                        ax, ay;
                    
-                   ax = x, ay = y-Cell.size;
+                   ax = x, ay = y-this.unit;
                    if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
-                   ax = +x+Cell.size, ay = y;
+                   ax = +x+this.unit, ay = y;
                    if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
-                   ax = x, ay = +y+Cell.size;
+                   ax = x, ay = +y+this.unit;
                    if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
-                   ax = x-Cell.size, ay = y;
+                   ax = x-this.unit, ay = y;
                    if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
                    
                    return n;
