@@ -17,7 +17,7 @@ var Colors = [
     },
     {
         name: "Rutilus",    // Copper
-        code: "#F0B324"
+        code: "#DA8E29"
     },
     {
         name: "Flavus",     // Yellow
@@ -29,7 +29,7 @@ var Colors = [
     },
     {
         name: "Violaceus",  // Violet
-        code: "#C872FC"
+        code: "#D99DFD"
     },
     {
         name: "Caeruleus",  // Blue
@@ -41,12 +41,12 @@ var Colors = [
     },
     {
         name: "Argenteus",  // Silver
-        code: "#BFCED2"
+        code: "#ABBFC0"
     },
     {
         name: "Purpureus",  // Purple
         code: "#89099B"
-    }
+    },
 ];
 var Shapes = [
     {
@@ -77,4 +77,12 @@ var Shapes = [
         name: "Riga",       // Leaf
         src: "riga.png"
     },
+    {
+        name: "Progressum", // Shade
+        src: "progressum.png"
+    },
+    {
+        name: "Voluta",     // Volupte
+        src: "voluta.png"
+    }
 ];
