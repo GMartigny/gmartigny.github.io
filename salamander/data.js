@@ -4,7 +4,7 @@ var Colors = [
         code: "#2E1F14"
     },
     {
-        name: "Albus",       // White
+        name: "Albus",      // White
         code: "#FBFEFE"
     },
     {
@@ -46,7 +46,7 @@ var Colors = [
     {
         name: "Purpureus",  // Purple
         code: "#89099B"
-    },
+    }
 ];
 var Shapes = [
     {
@@ -66,11 +66,11 @@ var Shapes = [
         src: "nubes.png"
     },
     {
-        name: "Puslum",       // Puzzle
+        name: "Puslum",     // Puzzle
         src: "puslum.png"
     },
     {
-        name: "Folia",       // Leaf
+        name: "Folia",      // Leaf
         src: "folia.png"
     },
     {
@@ -84,5 +84,13 @@ var Shapes = [
     {
         name: "Voluta",     // Volupte
         src: "voluta.png"
+    },
+    {
+        name: "Sagitta",    // Arrow
+        src: "sagitta.png"
+    },
+    {
+        name: "Gamba",    // Arrow
+        src: "gamba.png"
     }
 ];
