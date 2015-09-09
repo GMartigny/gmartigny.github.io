@@ -22,7 +22,7 @@
     </head>
     <body>
         <button id="generate">Re-Generate</button>
-        <h1 id="name">Loading ...</h1>
+        <h1 id="name">Loading ... (<span id="percent">0</span>%)</h1>
         <canvas id="c" width="314" height="535"></canvas>
         <span id="poss"></span>
         <script src="../res/js/gameLib.js"></script>
@@ -33,8 +33,8 @@
             poss.innerHTML = (Colors.length * (Colors.length-1) * Shapes.length)+" possibilities";
             var images = Object.create(Shapes);
             images.push({
-                name: "base",
-                src: "base.png"
+                name: "overlay",
+                src: "overlay.png"
             });
             images.push({
                 name: "primary",
@@ -42,16 +42,18 @@
             });
             var button = getById("generate"),
                 title = getById("name"),
+                percent = getById("percent"),
                 can = getById("c"),
                 ctx = can.getContext("2d"),
                 media = loadMedia(images, function(p){
                     if(p >= 100){
                         button.style.display = "block";
+                        button.onclick = generate;
                         generate();
                     }
+                    else
+                        percent.innerHTML = p.toFixed();
                 });
-            
-            button.onclick = generate;
             
             function generate(){
                 var primColor = Colors[rand(Colors.length)],
@@ -59,7 +61,7 @@
                     secColor = Colors[rand(Colors.length)];
                 
                 while(secColor.name == primColor.name)
-                    secColor = Colors[rand(Colors.length)]
+                    secColor = Colors[rand(Colors.length)];
                 
                 ctx.clear();
                 
@@ -67,11 +69,10 @@
                 ctx.drawImage(ctx.compose(media.primary, primColor.code), 0, 0);
                 
                 // secondary layer
-                ctx.globalAlpha = 0.7;
                 ctx.drawImage(ctx.compose(media[shape.name], secColor.code), 0, 0);
                 
                 // eyes and shadow
-                ctx.drawImage(media.base, 0, 0);
+                ctx.drawImage(media.overlay, 0, 0);
                 
                 title.innerHTML = secColor.name + " " + shape.name + " " + primColor.name;
             }
@@ -80,20 +81,19 @@
                 return (Math.random()*max)<<0;
             }
             
+            // Draw the image as an alpha layer of a color
             CanvasRenderingContext2D.prototype.compose = function(image, color){
-                var canSec = document.createElement("canvas");
-                canSec.width = image.width;
-                canSec.height = image.height;
-                var ctxSec = canSec.getContext("2d");
+                var canTmp = document.createElement("canvas");
+                canTmp.width = image.width;
+                canTmp.height = image.height;
+                var ctxTmp = canTmp.getContext("2d");
                 
-                ctxSec.drawImage(image, 0, 0);
-                ctxSec.globalCompositeOperation = "source-atop";
-                ctxSec.fillStyle = color;
-                ctxSec.fillRect(0, 0, canSec.width, canSec.height);
+                ctxTmp.drawImage(image, 0, 0);
+                ctxTmp.globalCompositeOperation = "source-atop";
+                ctxTmp.fillStyle = color;
+                ctxTmp.fillRect(0, 0, canTmp.width, canTmp.height);
                 
-//                document.body.appendChild(canSec);
-                
-                return canSec;
+                return canTmp;
             };
         </script>
     </body>
