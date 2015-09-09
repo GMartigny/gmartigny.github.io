@@ -74,7 +74,7 @@ var Shapes = [
         src: "folia.png"
     },
     {
-        name: "Riga",       // Leaf
+        name: "Riga",       // Stroke
         src: "riga.png"
     },
     {
