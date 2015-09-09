@@ -90,7 +90,11 @@ var Shapes = [
         src: "sagitta.png"
     },
     {
-        name: "Gamba",    // Arrow
+        name: "Gamba",      // Legs
         src: "gamba.png"
+    },
+    {
+        name: "Hyrulis",    // Hyrule Eagle
+        src: "hyrulis.png"
     }
 ];
