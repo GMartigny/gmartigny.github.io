@@ -1,7 +1,7 @@
 var Colors = [
     {
         name: "Ebenus",     // Black
-        code: "#2E1F14"
+        code: "#160F09"
     },
     {
         name: "Albus",      // White
@@ -37,15 +37,23 @@ var Colors = [
     },
     {
         name: "Aureus",     // Gold
-        code: "#C9C15F"
+        code: "#C5BA30"
     },
     {
         name: "Argenteus",  // Silver
-        code: "#ABBFC0"
+        code: "#C0D1D2"
     },
     {
         name: "Purpureus",  // Purple
         code: "#89099B"
+    },
+    {
+        name: "Azureus",    // Lightblue
+        code: "#A3DBF2"
+    },
+    {
+        name: "Prasinus",    // Lightblue
+        code: "#46752A"
     }
 ];
 var Shapes = [
