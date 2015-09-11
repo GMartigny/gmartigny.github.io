@@ -143,7 +143,7 @@
             
             function generate(secColor, shape, primColor){
                 while(secColor.name == primColor.name)
-                    secColor = Colors[rand(Colors.length)];
+                    secColor = Colors[selectSec.value = rand(Colors.length)];
                 
                 ctx.clear();
                 
