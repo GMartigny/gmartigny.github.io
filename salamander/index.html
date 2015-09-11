@@ -6,7 +6,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             #generate{
-                margin: auto;
+                position: absolute;
+                top: 150px;
+                left: -272px;
+                transition: left ease-out .5s;
+            }
+            #generate.shown{
+                left: 10px;
+            }
+            fieldset{
+                border: 1px solid #BBB;
+                margin: 0;
+                padding: 10px;
+            }
+            .group label{
+                float: left;
+                width: 150px;
+            }
+            .group select{
+                width: 100px;
+                border: none;
+                border-bottom: 1px solid #222;
+            }
+            select .disabled{
                 display: none;
             }
             #name{
@@ -21,9 +43,27 @@
         </style>
     </head>
     <body>
-        <button id="generate">Re-Generate</button>
         <h1 id="name">Loading ... (<span id="percent">0</span>%)</h1>
         <canvas id="c" width="314" height="535"></canvas>
+        <aside id="generate">
+            <button id="regenerate">Re-Generate</button>
+            <fieldset><legend>Custom</legend>
+                <form id="custom">
+                    <div class="group">
+                        <label for="sec">Secondary color</label>
+                        <select id="sec" name="sec"></select>
+                    </div>
+                    <div class="group">
+                        <label for="shape">Shape</label>
+                        <select id="shape" name="shape"></select>
+                    </div>
+                    <div class="group">
+                        <label for="prim">Main color</label>
+                        <select id="prim" name="prim"></select>
+                    </div>
+                </form>
+            </fieldset>
+        </aside>
         <span id="poss"></span>
         <script src="../res/js/gameLib.js"></script>
         <script src="data.js"></script>
@@ -40,26 +80,62 @@
                 name: "primary",
                 src: "primary.png"
             });
-            var button = getById("generate"),
+            var button = getById("regenerate"),
                 title = getById("name"),
                 percent = getById("percent"),
                 can = getById("c"),
                 ctx = can.getContext("2d"),
                 media = loadMedia(images, function(p){
                     if(p >= 100){
-                        button.style.display = "block";
-                        button.onclick = generate;
-                        generate();
+                        getById("generate").className = "shown";
+                        update(true);
                     }
                     else
                         percent.innerHTML = p.toFixed();
                 });
             
-            function generate(){
-                var primColor = Colors[rand(Colors.length)],
-                    shape = Shapes[rand(Shapes.length)],
-                    secColor = Colors[rand(Colors.length)];
+            button.onclick = function(){
+                update(true);
+            };
+            var selectSec = getById("sec"),
+                selectShape = getById("shape"),
+                selectPrim = getById("prim");
+            Colors.forEach(function(col, k){
+                var html = '<option value="'+ k +'">'+ col.name +'</option>';
+                selectPrim.innerHTML += html;
+                selectSec.innerHTML += html;
+            });
+            Shapes.forEach(function(shp, k){
+                var html = '<option value="'+ k +'">'+ shp.name +'</option>';
+                selectShape.innerHTML += html;
+            });
+            selectSec.onchange = update;
+            selectShape.onchange = update;
+            selectPrim.onchange = update;
+            
+            function update(random){
+                title.innerHTML = "Hatching ...";
+                var dis = getByClass("disabled", selectSec)[0];
+                dis && (dis.className = "");
+                var dis = getByClass("disabled", selectPrim)[0];
+                dis && (dis.className = "");
                 
+                if(random === true){
+                    generate(
+                        Colors[selectSec.value = rand(Colors.length)],
+                        Shapes[selectShape.value = rand(Shapes.length)],
+                        Colors[selectPrim.value = rand(Colors.length)]
+                    );
+                }
+                else{
+                    generate(Colors[selectSec.value], Shapes[selectShape.value], Colors[selectPrim.value]);
+                }
+                
+                selectSec.options[selectPrim.value].className = "disabled";
+                selectPrim.options[selectSec.value].className = "disabled";
+            }
+            
+            function generate(secColor, shape, primColor){
                 while(secColor.name == primColor.name)
                     secColor = Colors[rand(Colors.length)];
                 
