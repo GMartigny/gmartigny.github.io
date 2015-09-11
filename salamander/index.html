@@ -97,6 +97,12 @@
             button.onclick = function(){
                 update(true);
             };
+            Colors.sort(function(a, b){
+                return a.name < b.name ? -1 : 1;
+            });
+            Shapes.sort(function(a, b){
+                return a.name < b.name ? -1 : 1;
+            });
             var selectSec = getById("sec"),
                 selectShape = getById("shape"),
                 selectPrim = getById("prim");
