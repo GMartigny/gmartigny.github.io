@@ -1,4 +1,5 @@
 {
     "jsOnce": "var arr = getTestArray(1000);\nvar each;",
-    "jsLoop": "arr.forEach(function(one){\n    each = one;\n});"
+    "jsLoop": "arr.forEach(function(one){\n    each = one;\n});",
+    "nbLoop": 1000
 }
