@@ -242,10 +242,10 @@ CanvasRenderingContext2D.prototype.makePath = function(act, fill, stroke){
         this.closePath();
 };
 
-function getDataFromImage(src, callBack, self){
+function getImageDataFromUrl(url, callBack, self){
     var can = document.createElement("canvas"),
         ctx = can.getContext("2d"),
-        img = new Image(src);
+        img = new Image(url);
 
     img.onload = function(){
         if(this.width && this.height){
