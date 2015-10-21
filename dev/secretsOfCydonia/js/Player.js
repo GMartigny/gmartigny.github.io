@@ -4,8 +4,8 @@ function Player(canvas, img){
     this.img = img;
     
     var save = [];
-    (localStorage.SoC_P && localStorage.SoC_P.hashCode() == localStorage.SoC_HP)?
-        save = localStorage.SoC_P.split(";") : save = [9, 7, Player.DIR_DOWN];
+    (localStorage.SoC_P && localStorage.SoC_P.hashCode() == localStorage.SoC_HP && false)?
+        save = localStorage.SoC_P.split(";") : save = [37, 44, Player.DIR_DOWN];
 	
     this.pos = {
         x: +save[0],
@@ -20,7 +20,7 @@ function Player(canvas, img){
 	};
 	
 	this.moving = false;
-    this.SPEED = 0.08;
+    this.SPEED = 0.1;
 }
 Player.DIR_DOWN = 0;
 Player.DIR_LEFT = 1;
