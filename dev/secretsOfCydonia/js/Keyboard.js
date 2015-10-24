@@ -21,17 +21,20 @@ KeyboardManager.DOWN = 83;
 KeyboardManager.LEFT = 81;
 KeyboardManager.ENTER = 13;
 KeyboardManager.SPACE = 32;
+KeyboardManager.ESCAPE = 27;
 
-KeyboardManager.prototype.keydown = function(e){
-    if(this.listening){
-        if(!this.isPressed(e.keyCode)) this.keys.push(e.keyCode);
+KeyboardManager.prototype = {
+    keydown: function(e){
+        if(this.listening){
+            if(!this.isPressed(e.keyCode)) this.keys.push(e.keyCode);
+        }
+    },
+    keyup: function(e){
+        if(this.listening){
+            this.keys.out(e.keyCode);
+        }
+    },
+    isPressed: function(key){
+        return (this.keys.indexOf(key) === -1)? false : true;
     }
-};
-KeyboardManager.prototype.keyup = function(e){
-    if(this.listening){
-        this.keys.out(e.keyCode);
-    }
-};
-KeyboardManager.prototype.isPressed = function(key){
-    return (this.keys.indexOf(key) === -1)? false : true;
 };

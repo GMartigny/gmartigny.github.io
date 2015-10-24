@@ -4,8 +4,8 @@ function Player(canvas, img){
     this.img = img;
     
     var save = [];
-    (localStorage.SoC_P && localStorage.SoC_P.hashCode() == localStorage.SoC_HP)?
-        save = localStorage.SoC_P.split(";") : save = [9, 7, 0];
+    (localStorage.SoC_P && localStorage.SoC_P.hashCode() == localStorage.SoC_HP && false)?
+        save = localStorage.SoC_P.split(";") : save = [37, 44, Player.DIR_DOWN];
 	
     this.pos = {
         x: +save[0],
@@ -20,7 +20,7 @@ function Player(canvas, img){
 	};
 	
 	this.moving = false;
-    this.SPEED = 0.08;
+    this.SPEED = 0.1;
 }
 Player.DIR_DOWN = 0;
 Player.DIR_LEFT = 1;
@@ -91,8 +91,6 @@ Player.prototype.render = function(){
     // draw charactere
     this.layer.ctx.clear();
     var step = round(2/PI*asin(sin(this.anim))+1);
-    this.layer.ctx.beginPath();
-//    this.layer.ctx.fillRect(this.display.x, this.display.y, 32, 32);
     this.layer.ctx.drawImage(this.img,
         GameController.cell*round(step), GameController.cell*this.dir, GameController.cell, GameController.cell,
         this.display.x, this.display.y, GameController.cell, GameController.cell);

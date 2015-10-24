@@ -1,9 +1,9 @@
 <html>
     <head>
         <title>Secret of Cydonia</title>
-        <link rel="stylesheet" href="style.css"/>
-        <script src="js/gameLib.js"></script>
-        <script src="../../res/js/fps.js"></script>
+        <link rel="stylesheet" href="style.min.css"/>
+        <script src="../../res/js/gameLib.min.js"></script>
+        <script src="../../res/js/fps.min.js"></script>
     </head>
     <body>
         <div id="c">
@@ -13,42 +13,33 @@
             <canvas id="entities" width="800" height="608"></canvas>
             <canvas id="player" width="800" height="608"></canvas>
             <canvas id="over" width="800" height="608"></canvas>
-            <canvas id="super" width="800" height="608"></canvas>
+            <canvas id="overlay" width="800" height="608"></canvas>
             <div id="loading"><img src="res/loader.gif" alt="Loading"/></div>
         </div>
     <script>
-    var media = loadMedia([
-            {src: "js/Game.js", weight: 1},
-            {src: "js/Player.js", weight: 1},
-            {src: "js/View.js", weight: 1},
-            {src: "js/Entity.js", weight: 1},
-            {src: "js/Keyboard.js", weight: 1},
-            {src: "res/perso.png", weight: 2.5, name:"player"},
-            {src: "res/entities.png", weight: 1, name:"entities"},
-            {src: "res/tiles.png", weight:7.7, name: "tiles"},
-            {src: "res/links.json", weight:1, name: "links"}
-        ], function(r){
-            if(100 <= r) start();
-            else{
-                // update loading
+        var dev = true;
+        var media = loadMedia([
+                {src: "js/Game"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "js/Player"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "js/Map"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "js/View"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "js/Entity"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "js/Keyboard"+(dev? ".js": ".min.js"), weight: 1},
+                {src: "res/perso.png", weight: 2.5, name:"player"},
+                {src: "res/entities.png", weight: 1, name:"entities"},
+                {src: "res/tiles.png", weight: 7.7, name: "tiles"},
+                {src: "res/match.png", weight: 1, name: "match"},
+                {src: "res/links.json", weight: 1, name: "links"}
+            ], function(r){
+                if(100 <= r){
+                    new GameController(media);
+                    getById("loading").style.display = "none";
+                }
+                else{
+                    // update loading
+                }
             }
-        });
-
-    function start(){
-        new GameController(media);
-        getById("loading").style.display = "none";
-    }
-    
-    function prepareCanvas(holder){
-        var cs = holder.getElementsByTagName("canvas"),
-            objs = {};
-        for(var i=0;i<cs.length;++i){
-            objs[cs[i].id] = {};
-            objs[cs[i].id].can = cs[i];
-            objs[cs[i].id].ctx = cs[i].getContext("2d");
-        }
-        return objs;
-    }
+        );
     </script>
     </body>
 </html>

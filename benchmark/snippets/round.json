@@ -1,4 +1,5 @@
 {
     "jsOnce": "var each;",
-    "jsLoop": "each = Math.round(random(0, 100)/100);"
+    "jsLoop": "each = Math.round(random(0, 100)/100);",
+    "nbLoop": 10000
 }

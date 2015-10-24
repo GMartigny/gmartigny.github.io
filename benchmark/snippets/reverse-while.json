@@ -1,4 +1,5 @@
 {
     "jsOnce": "var arr = getTestArray(1000);\nvar each;",
-    "jsLoop": "var size = arr.length;\nwhile(size--){\n    each = arr[size-1];\n}"
+    "jsLoop": "var size = arr.length;\nwhile(size--){\n    each = arr[size-1];\n}",
+    "nbLoop": 1000
 }

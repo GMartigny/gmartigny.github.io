@@ -6,7 +6,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             #generate{
-                margin: auto;
+                position: absolute;
+                top: 150px;
+                left: -272px;
+                transition: left ease-out .5s;
+            }
+            #generate.shown{
+                left: 10px;
+            }
+            fieldset{
+                border: 1px solid #BBB;
+                margin: 0;
+                padding: 10px;
+            }
+            .group label{
+                float: left;
+                width: 150px;
+            }
+            .group select{
+                width: 100px;
+                border: none;
+                border-bottom: 1px solid #222;
+            }
+            select .disabled{
                 display: none;
             }
             #name{
@@ -21,9 +43,27 @@
         </style>
     </head>
     <body>
-        <button id="generate">Re-Generate</button>
-        <h1 id="name">Loading ...</h1>
+        <h1 id="name">Loading ... (<span id="percent">0</span>%)</h1>
         <canvas id="c" width="314" height="535"></canvas>
+        <aside id="generate">
+            <button id="regenerate">Re-Generate</button>
+            <fieldset><legend>Custom</legend>
+                <form id="custom">
+                    <div class="group">
+                        <label for="sec">Secondary color</label>
+                        <select id="sec" name="sec"></select>
+                    </div>
+                    <div class="group">
+                        <label for="shape">Shape</label>
+                        <select id="shape" name="shape"></select>
+                    </div>
+                    <div class="group">
+                        <label for="prim">Main color</label>
+                        <select id="prim" name="prim"></select>
+                    </div>
+                </form>
+            </fieldset>
+        </aside>
         <span id="poss"></span>
         <script src="../res/js/gameLib.js"></script>
         <script src="data.js"></script>
@@ -33,33 +73,77 @@
             poss.innerHTML = (Colors.length * (Colors.length-1) * Shapes.length)+" possibilities";
             var images = Object.create(Shapes);
             images.push({
-                name: "base",
-                src: "base.png"
+                name: "overlay",
+                src: "overlay.png"
             });
             images.push({
                 name: "primary",
                 src: "primary.png"
             });
-            var button = getById("generate"),
+            var button = getById("regenerate"),
                 title = getById("name"),
+                percent = getById("percent"),
                 can = getById("c"),
                 ctx = can.getContext("2d"),
                 media = loadMedia(images, function(p){
                     if(p >= 100){
-                        button.style.display = "block";
-                        generate();
+                        getById("generate").className = "shown";
+                        update(true);
                     }
+                    else
+                        percent.innerHTML = p.toFixed();
                 });
             
-            button.onclick = generate;
+            button.onclick = function(){
+                update(true);
+            };
+            Colors.sort(function(a, b){
+                return a.name < b.name ? -1 : 1;
+            });
+            Shapes.sort(function(a, b){
+                return a.name < b.name ? -1 : 1;
+            });
+            var selectSec = getById("sec"),
+                selectShape = getById("shape"),
+                selectPrim = getById("prim");
+            Colors.forEach(function(col, k){
+                var html = '<option value="'+ k +'">'+ col.name +'</option>';
+                selectPrim.innerHTML += html;
+                selectSec.innerHTML += html;
+            });
+            Shapes.forEach(function(shp, k){
+                var html = '<option value="'+ k +'">'+ shp.name +'</option>';
+                selectShape.innerHTML += html;
+            });
+            selectSec.onchange = update;
+            selectShape.onchange = update;
+            selectPrim.onchange = update;
             
-            function generate(){
-                var primColor = Colors[rand(Colors.length)],
-                    shape = Shapes[rand(Shapes.length)],
-                    secColor = Colors[rand(Colors.length)];
+            function update(random){
+                title.innerHTML = "Hatching ...";
+                var dis = getByClass("disabled", selectSec)[0];
+                dis && (dis.className = "");
+                var dis = getByClass("disabled", selectPrim)[0];
+                dis && (dis.className = "");
                 
+                if(random === true){
+                    generate(
+                        Colors[selectSec.value = rand(Colors.length)],
+                        Shapes[selectShape.value = rand(Shapes.length)],
+                        Colors[selectPrim.value = rand(Colors.length)]
+                    );
+                }
+                else{
+                    generate(Colors[selectSec.value], Shapes[selectShape.value], Colors[selectPrim.value]);
+                }
+                
+                selectSec.options[selectPrim.value].className = "disabled";
+                selectPrim.options[selectSec.value].className = "disabled";
+            }
+            
+            function generate(secColor, shape, primColor){
                 while(secColor.name == primColor.name)
-                    secColor = Colors[rand(Colors.length)]
+                    secColor = Colors[selectSec.value = rand(Colors.length)];
                 
                 ctx.clear();
                 
@@ -67,11 +151,10 @@
                 ctx.drawImage(ctx.compose(media.primary, primColor.code), 0, 0);
                 
                 // secondary layer
-                ctx.globalAlpha = 0.7;
                 ctx.drawImage(ctx.compose(media[shape.name], secColor.code), 0, 0);
                 
                 // eyes and shadow
-                ctx.drawImage(media.base, 0, 0);
+                ctx.drawImage(media.overlay, 0, 0);
                 
                 title.innerHTML = secColor.name + " " + shape.name + " " + primColor.name;
             }
@@ -80,20 +163,19 @@
                 return (Math.random()*max)<<0;
             }
             
+            // Draw the image as an alpha layer of a color
             CanvasRenderingContext2D.prototype.compose = function(image, color){
-                var canSec = document.createElement("canvas");
-                canSec.width = image.width;
-                canSec.height = image.height;
-                var ctxSec = canSec.getContext("2d");
+                var canTmp = document.createElement("canvas");
+                canTmp.width = image.width;
+                canTmp.height = image.height;
+                var ctxTmp = canTmp.getContext("2d");
                 
-                ctxSec.drawImage(image, 0, 0);
-                ctxSec.globalCompositeOperation = "source-atop";
-                ctxSec.fillStyle = color;
-                ctxSec.fillRect(0, 0, canSec.width, canSec.height);
+                ctxTmp.drawImage(image, 0, 0);
+                ctxTmp.globalCompositeOperation = "source-atop";
+                ctxTmp.fillStyle = color;
+                ctxTmp.fillRect(0, 0, canTmp.width, canTmp.height);
                 
-//                document.body.appendChild(canSec);
-                
-                return canSec;
+                return canTmp;
             };
         </script>
     </body>
