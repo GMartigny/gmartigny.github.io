@@ -22,10 +22,3 @@ Entity.prototype.render = function(x, y){
         this.anim, 0, c, c,
         this.pos.x, this.pos.y, c, c);
 };
-
-
-function FireFly(img){
-    this.img = img;
-    this.animSpeed = 0.1;
-}
-FireFly.prototype = Object.create(Entity.prototype);
