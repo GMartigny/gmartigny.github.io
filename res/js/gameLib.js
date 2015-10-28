@@ -154,6 +154,20 @@ function Image(url){
     elm.src = url;
     return elm;
 }
+Image.prototype.getData = function(){
+    var can = document.createElement("canvas"),
+        ctx = can.getContext("2d");
+    
+    if(this.width && this.height){
+        can.width = this.width;
+        can.height = this.height;
+        ctx.drawImage(img, 0, 0);
+        var data = ctx.getImageData(0, 0, can.width, can.height);
+        return data;
+    }
+    else
+        return false;
+};
 
 var Video = Video || function(src){
     var elm = document.createElement("video");
@@ -241,22 +255,6 @@ CanvasRenderingContext2D.prototype.makePath = function(act, fill, stroke){
     else
         this.closePath();
 };
-
-function getImageDataFromUrl(url, callBack, self){
-    var can = document.createElement("canvas"),
-        ctx = can.getContext("2d"),
-        img = new Image(url);
-
-    img.onload = function(){
-        if(this.width && this.height){
-            can.width = this.width;
-            can.height = this.height;
-            ctx.drawImage(img, 0, 0);
-            var data = ctx.getImageData(0, 0, can.width, can.height);
-            callBack.call(self, data);
-        }
-    };
-}
 
 // return the element matching id
 function getById(id){
