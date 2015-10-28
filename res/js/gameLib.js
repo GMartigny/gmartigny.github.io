@@ -161,7 +161,7 @@ Image.prototype.getData = function(){
     if(this.width && this.height){
         can.width = this.width;
         can.height = this.height;
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(this, 0, 0);
         var data = ctx.getImageData(0, 0, can.width, can.height);
         return data;
     }
