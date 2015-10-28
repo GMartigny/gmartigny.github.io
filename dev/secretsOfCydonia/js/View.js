@@ -2,21 +2,26 @@
 function ViewManager(canvas, tileSet, map){
     this.ready = false;
     
-    this.ground = new GroundView(canvas.ground.ctx, map);
-    this.block = new BlockView(canvas.block.ctx, map);
+    this.ground = new GroundView(canvas.ground.ctx);
+    this.block = new View(canvas.block.ctx, View.BLOCK_NAME);
+    this.under = new View(canvas.under.ctx, View.UNDER_NAME);
+    this.over = new View(canvas.over.ctx, View.OVER_NAME);
     this.layers = [
         this.ground,
-        new UnderView(canvas.under.ctx, map),
+        this.under,
         this.block,
         // Player's here //
-        new OverView(canvas.over.ctx, map)
+        this.over
     ];
     this.overlay = canvas.overlay;
     
-    getImageDataFromUrl("res/match.png", function(data){
-        View.match = data;
-    }, this);
+    var match = new Image("res/match.png");
+    match.onload = function(){
+        View.match = this.getData();
+    };
     View.tileSet = tileSet;
+    
+    this.setMap(map);
 }
 
 ViewManager.prototype = {
@@ -55,12 +60,8 @@ ViewManager.prototype = {
                 break;
         }
 
-        var cell = {};
         for(var i=0, l=ahead.length;i<l;++i){
-            cell = this.ground.data.get(ahead[i].x, ahead[i].y);
-            if(!cell || !cell.isOpac())
-                return true;
-            if(this.block.data.get(ahead[i].x, ahead[i].y).isOpac())
+            if(!this.ground.tileAt(ahead[i].x, ahead[i].y) || this.block.tileAt(ahead[i].x, ahead[i].y))
                 return true;
         }
         return false;
@@ -72,35 +73,39 @@ ViewManager.prototype = {
     }
 };
 
-function View(ctx, map, defaultHexa){
+function View(ctx, name){
     this.layer = ctx;
     this.data;
-    this.rendering = {};
-    this.defaultHexa = defaultHexa || false;
-    this.layer.fillStyle = defaultHexa;
+    this.name = name;
+    this.rendering;
     this.ready = false;
-    
-    this.getData(map);
 }
+View.GROUND_NAME = "grd";
+View.UNDER_NAME = "und";
+View.BLOCK_NAME = "blk";
+View.OVER_NAME = "ovr";
 View.match;
 View.tileSet;
 View.prototype = {
-    randomize: false,
     getData: function(map){
         this.ready = false;
-        getImageDataFromUrl("res/" + map + "/" + this.name + ".png", this.catchData, this);
+        var map = new Image("res/" + map + "/" + this.name + ".png");
+        var self = this;
+        map.onload = function(){
+            self.catchData.call(self, map.getData());
+        };
     },
     catchData: function(data){
         this.data = data;
         
         var can = document.createElement("canvas"),
-            ctx = can.getContext("2d"),
-            cell = GameController.cell;
-        can.width = data.width*cell;
-        can.height = data.height*cell;
+            ctx = can.getContext("2d");
+        this.rendering = ctx;
+        can.width = data.width*GameController.cell;
+        can.height = data.height*GameController.cell;
         var pix = {},
             hexa = "",
-            pos = {};
+            tilePos = {};
         for(var x=0, mx=data.width; x<mx; ++x){
             for(var y=0, my=data.height; y<my; ++y){
                 pix = data.get(x, y);
@@ -108,29 +113,34 @@ View.prototype = {
                     hexa = pix.getHexa();
                 else
                     hexa = 0;
-                if(hexa && (pos = this.getTilePos(hexa))){
-                    ctx.save();
-                    ctx.translate((x+0.5)*cell<<0, (y+0.5)*cell<<0);
-                    if(this.randomize)
-                        ctx.rotate((random(0, 3)<<0) * PI / 2);
-                    ctx.drawImage(View.tileSet, pos.x*cell<<0, pos.y*cell<<0, cell, cell, -0.5*cell<<0, -0.5*cell<<0, cell, cell);
-                    ctx.restore();
-                }
+                
+                if(hexa && (tilePos = this.getTilePos(hexa)))
+                    this.drawTile(x, y, tilePos);
             }
         }
-        this.rendering = can;
         
         this.ready = true;
     },
-    render: function(x, y){
+    drawTile: function(x, y, tilePos){
+        var cell = GameController.cell;
+        this.rendering.drawImage(View.tileSet, tilePos.x*cell<<0, tilePos.y*cell<<0, cell, cell, x*cell, y*cell, cell, cell);
+    },
+    tileAt: function(x, y){
+        var tile = this.data.get(x, y);
+        if(tile)
+            return tile.isOpac();
+        return false;
+    },
+    clear: function(){
         this.layer.clear();
+    },
+    render: function(x, y){
+        this.clear();
         
         var cell = GameController.cell,
             width = GameController.nbCol * cell,
             height = GameController.nbRow * cell;
-        if(this.defaultHexa)
-            this.layer.fillRect(0, 0, width, height);
-        this.layer.drawImage(this.rendering, (x-GameController.nbCol/2+1)*cell, (y-GameController.nbRow/2+1)*cell, width, height, 0, 0, width, height);
+        this.layer.drawImage(this.rendering.canvas, (x-GameController.nbCol/2+1)*cell, (y-GameController.nbRow/2+1)*cell, width, height, 0, 0, width, height);
         
         this.anim += this.spd;
     },
@@ -146,27 +156,20 @@ View.prototype = {
 };
 
 // Children
-function GroundView(ctx, map){
-    View.call(this, ctx, map, "#97d4f7");
-    this.randomize = true;
+function GroundView(ctx){
+    View.call(this, ctx, "grd");
+    this.layer.fillStyle = "#97d4f7";
 }
 GroundView.prototype = Object.create(View.prototype);
-GroundView.prototype.name = "grd";
-
-function UnderView(ctx, map){
-    View.call(this, ctx, map);
-}
-UnderView.prototype = Object.create(View.prototype);
-UnderView.prototype.name = "und";
-
-function BlockView(ctx, map){
-    View.call(this, ctx, map);
-}
-BlockView.prototype = Object.create(View.prototype);
-BlockView.prototype.name = "blk";
-
-function OverView(ctx, map){
-    View.call(this, ctx, map);
-}
-OverView.prototype = Object.create(View.prototype);
-OverView.prototype.name = "ovr";
+GroundView.prototype.clear = function(){
+    this.layer.fillRect(0, 0, this.layer.canvas.width, this.layer.canvas.height);
+};
+GroundView.prototype.drawTile = function(x, y, tilePos){
+    var ctx = this.rendering,
+        cell = GameController.cell;
+    ctx.save();
+    ctx.translate((x+0.5)*cell<<0, (y+0.5)*cell<<0);
+    ctx.rotate((random(0, 3)<<0) * PI / 2);
+    ctx.drawImage(View.tileSet, tilePos.x*cell<<0, tilePos.y*cell<<0, cell, cell, -0.5*cell<<0, -0.5*cell<<0, cell, cell);
+    ctx.restore();
+};
