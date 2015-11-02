@@ -1,19 +1,43 @@
 <html>
     <head>
         <title>Secret of Cydonia</title>
-        <link rel="stylesheet" href="style.min.css"/>
         <script src="../../res/js/gameLib.min.js"></script>
         <script src="../../res/js/fps.min.js"></script>
+        <style>
+            body{
+                background : #888;
+                margin : 0;
+            }
+            #c{
+                position : relative;
+                background : url(res/title.png) no-repeat 50% 50%;
+                width : 100%;
+                height : 608px;
+                margin: 0 auto;
+            }
+            #c canvas{
+                position : absolute;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+            }
+
+            #loading{
+                position: relative;
+                top: 445px;
+                left: 400px;
+            }
+        </style>
     </head>
     <body>
         <div id="c">
-            <canvas id="ground" width="800" height="608"></canvas>
-            <canvas id="under" width="800" height="608"></canvas>
-            <canvas id="block" width="800" height="608"></canvas>
-            <canvas id="entities" width="800" height="608"></canvas>
-            <canvas id="player" width="800" height="608"></canvas>
-            <canvas id="over" width="800" height="608"></canvas>
-            <canvas id="overlay" width="800" height="608"></canvas>
+            <canvas id="ground"></canvas>
+            <canvas id="under"></canvas>
+            <canvas id="block"></canvas>
+            <canvas id="entities"></canvas>
+            <canvas id="player"></canvas>
+            <canvas id="over"></canvas>
+            <canvas id="overlay"></canvas>
             <div id="loading"><img src="res/loader.gif" alt="Loading"/></div>
         </div>
     <script>
@@ -57,6 +81,7 @@
      *      Objectives
      *  Buildings
      *      Inside
+     *  Music & sounds
      */
     </script>
     </body>
