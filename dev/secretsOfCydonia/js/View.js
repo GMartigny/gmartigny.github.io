@@ -8,7 +8,8 @@ function ViewManager(canvas, tileSet, map){
         this.ground,
         new UnderView(canvas.under.ctx, map),
         this.block,
-        // Player's here //
+        // Entities are there //
+        // Player's there //
         new OverView(canvas.over.ctx, map)
     ];
     this.overlay = canvas.overlay;
@@ -35,33 +36,37 @@ ViewManager.prototype = {
         }
     },
     isBlocked: function(x, y, dir){
-        var ahead = [];
+        var ahead = [],
+            horMargin = 0.1,
+            upMargin = 0.7,
+            downMargin = 0.1,
+            noFriction = Player.SPEED;
         switch(dir){
             case Player.DIR_UP:
-                ahead = [{x: floor(x+0.2), y: floor(y+0.3)}, // up left
-                    {x: ceil(x-0.2), y: floor(y+0.3)}]; // up right
+                ahead = [{x: (x+horMargin+noFriction), y: (y+upMargin)}, // up left
+                    {x: (x-horMargin-noFriction+1), y: (y+upMargin)}]; // up right
                 break;
             case Player.DIR_DOWN:
-                ahead = [{x: floor(x+0.2), y: ceil(y+0.08)}, // down left
-                    {x: ceil(x-0.2), y: ceil(y+0.08)}]; // down right
+                ahead = [{x: (x+horMargin+noFriction), y: (y-downMargin+1)}, // down left
+                    {x: (x-horMargin-noFriction+1), y: (y-downMargin+1)}]; // down right
                 break;
             case Player.DIR_LEFT:
-                ahead = [{x: floor(x+0.1), y: floor(y+0.4)}, // left up
-                    {x: floor(x+0.1), y: ceil(y-0.1)}]; // left down
+                ahead = [{x: (x+horMargin), y: (y+upMargin+noFriction)}, // left up
+                    {x: (x+horMargin), y: (y-downMargin-noFriction+1)}]; // left down
                 break;
             case Player.DIR_RIGHT:
-                ahead = [{x: ceil(x-0.1), y: floor(y+0.4)}, // right up
-                    {x: ceil(x-0.1), y: ceil(y-0.1)}]; // right down
+                ahead = [{x: (x-horMargin+1), y: (y+upMargin+noFriction)}, // right up
+                    {x: (x-horMargin+1), y: (y-downMargin-noFriction+1)}]; // right down
                 break;
         }
 
         var cell = {};
         for(var i=0, l=ahead.length;i<l;++i){
-            cell = this.ground.data.get(ahead[i].x, ahead[i].y);
+            cell = this.ground.data.get(floor(ahead[i].x), floor(ahead[i].y));
             if(!cell || !cell.isOpac())
-                return true;
-            if(this.block.data.get(ahead[i].x, ahead[i].y).isOpac())
-                return true;
+                return {x: ahead[i].x, y: ahead[i].y};
+            if(this.block.data.get(floor(ahead[i].x), floor(ahead[i].y)).isOpac())
+                return {x: ahead[i].x, y: ahead[i].y};
         }
         return false;
     },
@@ -78,6 +83,7 @@ function View(ctx, map, defaultHexa){
     this.rendering = {};
     this.defaultHexa = defaultHexa || false;
     this.layer.fillStyle = defaultHexa;
+    this.randomize = false;
     this.ready = false;
     
     this.getData(map);
@@ -85,7 +91,6 @@ function View(ctx, map, defaultHexa){
 View.match;
 View.tileSet;
 View.prototype = {
-    randomize: false,
     getData: function(map){
         this.ready = false;
         getImageDataFromUrl("res/" + map + "/" + this.name + ".png", this.catchData, this);
@@ -110,10 +115,10 @@ View.prototype = {
                     hexa = 0;
                 if(hexa && (pos = this.getTilePos(hexa))){
                     ctx.save();
-                    ctx.translate((x+0.5)*cell<<0, (y+0.5)*cell<<0);
+                    ctx.translate(floor((x+0.5)*cell), floor((y+0.5)*cell));
                     if(this.randomize)
-                        ctx.rotate((random(0, 3)<<0) * PI / 2);
-                    ctx.drawImage(View.tileSet, pos.x*cell<<0, pos.y*cell<<0, cell, cell, -0.5*cell<<0, -0.5*cell<<0, cell, cell);
+                        ctx.rotate(floor(random(0, 3)) * PI / 2);
+                    ctx.drawImage(View.tileSet, pos.x*cell, pos.y*cell, cell, cell, -floor(cell/2), -floor(cell/2), cell, cell);
                     ctx.restore();
                 }
             }
@@ -130,7 +135,7 @@ View.prototype = {
             height = GameController.nbRow * cell;
         if(this.defaultHexa)
             this.layer.fillRect(0, 0, width, height);
-        this.layer.drawImage(this.rendering, (x-GameController.nbCol/2+1)*cell, (y-GameController.nbRow/2+1)*cell, width, height, 0, 0, width, height);
+        this.layer.drawImage(this.rendering, (x)*cell, (y)*cell, width, height, 0, 0, width, height);
         
         this.anim += this.spd;
     },
