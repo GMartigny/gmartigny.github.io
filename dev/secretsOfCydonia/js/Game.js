@@ -2,9 +2,9 @@
 function GameController(media){
     this.map = new MapManager(media.links);
     
-    var canvas = prepareCanvas("c");
-    this.player = new Player(canvas.player, media.player);
-    this.entities = new EntityManager(canvas.entities, media.entities);
+    var canvas = prepareCanvas("c", GameController.nbCol*GameController.cell, GameController.nbRow*GameController.cell);
+    this.player = new Player(canvas.player.ctx, media.player);
+    this.entities = new EntityManager(canvas.entities.ctx, media.entities);
     this.view = new ViewManager(canvas, media.tiles, this.map.getMap());
     
     this.key = new KeyboardManager();
@@ -18,8 +18,8 @@ function GameController(media){
     this.render();
 }
 GameController.cell = 32;
-GameController.nbRow = 20;
-GameController.nbCol = 26;
+GameController.nbRow = 21;
+GameController.nbCol = 35;
 
 GameController.prototype.render = function(){
     var self = this;
@@ -31,9 +31,9 @@ GameController.prototype.render = function(){
         this.player.move(this.key, this.view);
         this.player.render();
 
-        this.entities.renderAll(this.player.pos.x, this.player.pos.y);
+        this.entities.renderAll(this.view, this.player);
 
-        this.view.renderAll(this.player.pos.x, this.player.pos.y);
+        this.view.renderAll(this.player.pos.x-this.player.display.x, this.player.pos.y-this.player.display.y);
 
         this.fps.update();
     }
