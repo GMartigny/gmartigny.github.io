@@ -1,0 +1,20 @@
+{
+    "firefly": {
+        "name": "Firefly",
+        "tileset": "firefly.png",
+        "moveSpeed": 0,
+        "animSpeed": 0.1
+    },
+    "chest": {
+        "name": "Chest",
+        "tileset": "chest.png",
+        "moveSpeed": 0,
+        "block": true
+    },
+    "sheep": {
+        "name": "Sheep",
+        "tileset": "sheep.png",
+        "moveSpeed": 0.1,
+        "moveStop": 0.5
+    }
+}

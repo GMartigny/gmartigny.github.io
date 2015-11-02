@@ -41,23 +41,25 @@
             <div id="loading"><img src="res/loader.gif" alt="Loading"/></div>
         </div>
     <script>
-        var dev = true;
-        var media = loadMedia([
-                {src: "js/Game"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "js/Player"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "js/Map"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "js/View"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "js/Entity"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "js/Keyboard"+(dev? ".js": ".min.js"), weight: 1},
-                {src: "res/perso.png", weight: 2.5, name:"player"},
-                {src: "res/entities.png", weight: 1, name:"entities"},
-                {src: "res/tiles.png", weight: 7.7, name: "tiles"},
-                {src: "res/match.png", weight: 1, name: "match"},
-                {src: "res/links.json", weight: 1, name: "links"}
+        var dev = true,
+            version = "0.1.5",
+            ext = (dev? ".js": ".min.js")+"?v="+version,
+            loader = getById("loading"),
+            media = loadMedia([
+                {src: "js/Game"+ext, weight: 1},
+                {src: "js/Player"+ext, weight: 1},
+                {src: "js/Map"+ext, weight: 1},
+                {src: "js/View"+ext, weight: 1},
+                {src: "js/Entity"+ext, weight: 1},
+                {src: "js/Keyboard"+ext, weight: 1},
+                {src: "res/perso.png"+"?v="+version, weight: 2.5, name:"player"},
+                {src: "res/tiles.png"+"?v="+version, weight: 7.7, name: "tiles"},
+                {src: "res/match.png"+"?v="+version, weight: 1, name: "match"},
+                {src: "res/links.json"+"?v="+version, weight: 1, name: "links"}
             ], function(r){
                 if(100 <= r){
                     new GameController(media);
-                    getById("loading").style.display = "none";
+                    loader.style.display = "none";
                 }
                 else{
                     // update loading

@@ -52,11 +52,3 @@ Entity.prototype = {
         }
     }
 };
-
-
-function FireFly(img, pos){
-    Entity.call(this, pos);
-    this.img = img;
-    this.animSpeed = 0.1;
-}
-FireFly.prototype = Object.create(Entity.prototype);
