@@ -10,10 +10,6 @@ function KeyboardManager(){
 	window.addEvent("keyup", function(e){
         self.keyup.call(self, e);
     });
-
-	this.toggleListen = function(){
-		this.listening = !this.listening;
-	};
 }
 KeyboardManager.UP = 90;
 KeyboardManager.RIGHT = 68;
@@ -36,5 +32,8 @@ KeyboardManager.prototype = {
     },
     isPressed: function(key){
         return (this.keys.indexOf(key) === -1)? false : true;
-    }
+    },
+    toggleListen: function(){
+		this.listening = !this.listening;
+	}
 };
