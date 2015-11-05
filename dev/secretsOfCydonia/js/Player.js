@@ -14,11 +14,6 @@ function Player(ctx, img){
     this.dir = +save[2];
     this.anim = 0;
 	
-	this.display = {
-		x : floor((GameController.nbCol-1)/2),
-		y : floor((GameController.nbRow-1)/2)
-	};
-	
 	this.moving = false;
 }
 Player.DIR_DOWN = 0;
@@ -28,13 +23,13 @@ Player.DIR_UP = 3;
 Player.SPEED = 0.1;
 
 Player.prototype = {
-    render: function(){
+    render: function(camera){
         this.layer.clear();
         var step = round(2/PI*asin(sin(this.anim))+1),
             cell = GameController.cell;
         this.layer.drawImage(this.img,
             cell*step, cell*this.dir, cell, cell,
-            this.display.x*cell, this.display.y*cell, cell, cell);
+            (this.pos.x-camera.x)*cell, (this.pos.y-camera.y)*cell, cell, cell);
     },
     move: function(keyboard, view){
         this.moving = false;
@@ -49,7 +44,7 @@ Player.prototype = {
                     this.moving = true;
                 }
                 else{
-                    this.pos.y = blocker.y-1;
+//                    this.pos.y = blocker.y-1;
                 }
             }
             else if(keyboard.isPressed(KeyboardManager.UP)){
@@ -59,15 +54,15 @@ Player.prototype = {
                     this.moving = true;
                 }
                 else{
-                    this.pos.y = blocker.y;
+//                    this.pos.y = blocker.y;
                 }
             }
             if(keyboard.isPressed(KeyboardManager.RIGHT)){
                 this.dir = Player.DIR_RIGHT;
                 if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
                     if(this.moving){
-                        dx = Player.SPEED*SQRT2;
                         dy *= SQRT2;
+                        dx = Player.SPEED*SQRT2;
                     }
                     else{
                         dx = Player.SPEED;
@@ -79,8 +74,8 @@ Player.prototype = {
                 this.dir = Player.DIR_LEFT;
                 if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
                     if(this.moving){
-                        dx = -Player.SPEED*SQRT2;
                         dy *= SQRT2;
+                        dx = -Player.SPEED*SQRT2;
                     }
                     else{
                         dx = -Player.SPEED;
@@ -88,7 +83,7 @@ Player.prototype = {
                     }
                 }
             }
-
+            
             if(this.moving){
                 this.pos.x += dx;
                 this.pos.y += dy;

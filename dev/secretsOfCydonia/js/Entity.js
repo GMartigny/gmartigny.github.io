@@ -3,10 +3,14 @@ function EntityManager(ctx, img){
     this.entities = [];
 }
 EntityManager.prototype = {
-    renderAll: function(view, player){
+    moveAll: function(player, view){
         this.entities.forEach(function(ent){
-            ent.render();
-            ent.move(view, player);
+            ent.move(player, view);
+        });
+    },
+    renderAll: function(camera){
+        this.entities.forEach(function(ent){
+            ent.render(camera);
         });
     }
 };
@@ -21,14 +25,14 @@ function Entity(pos, dir){
     this.dir = dir || Player.DIR_DOWN;
 }
 Entity.prototype = {
-    render: function(){
+    render: function(camera){
         var step = round(2/PI*asin(sin(this.anim))+1),
             cell = GameController.cell;
         this.layer.drawImage(this.img,
             cell*step, cell*this.dir, cell, cell,
-            this.display.x, this.display.y, cell, cell);
+            (this.pos.x-camera.x)*cell, (this.pos.y-camera.y)*cell, cell, cell);
     },
-    move: function(){
+    move: function(player, view){
         if(this.isMoving-- > 0){
             switch(this.dir){
                 case Player.DIR_UP:
