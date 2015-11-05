@@ -41,32 +41,37 @@ ViewManager.prototype = {
     },
     isBlocked: function(x, y, dir){
         var ahead = [],
+            max = 0,
             horMargin = 0.1,
             upMargin = 0.7,
             downMargin = 0,
             noFriction = Player.SPEED;
         switch(dir){
             case Player.DIR_UP:
-                ahead = [{x: floor(x+horMargin+noFriction), y: floor(y+upMargin)}, // up left
-                    {x: floor(x-horMargin-noFriction+1), y: floor(y+upMargin)}]; // up right
+                ahead = [{x: (x+horMargin+noFriction), y: (y+upMargin)}, // up left
+                    {x: (x+1-horMargin-noFriction), y: (y+upMargin)}]; // up right
+                max = floor(y+1)-upMargin;
                 break;
             case Player.DIR_DOWN:
-                ahead = [{x: floor(x+horMargin+noFriction), y: floor(y-downMargin+1)}, // down left
-                    {x: floor(x-horMargin-noFriction+1), y: floor(y-downMargin+1)}]; // down right
+                ahead = [{x: (x+horMargin+noFriction), y: (y+1-downMargin)}, // down left
+                    {x: (x+1-horMargin-noFriction), y: (y+1-downMargin)}]; // down right
+                max = floor(y)+downMargin;
                 break;
             case Player.DIR_LEFT:
-                ahead = [{x: floor(x+horMargin), y: floor(y+upMargin+noFriction)}, // left up
-                    {x: floor(x+horMargin), y: floor(y-downMargin-noFriction+1)}]; // left down
+                ahead = [{x: (x+horMargin), y: (y+upMargin+noFriction)}, // left up
+                    {x: (x+horMargin), y: (y+1-downMargin-noFriction)}]; // left down
+                max = floor(x+1)-horMargin;
                 break;
             case Player.DIR_RIGHT:
-                ahead = [{x: floor(x-horMargin+1), y: floor(y+upMargin+noFriction)}, // right up
-                    {x: floor(x-horMargin+1), y: floor(y-downMargin-noFriction+1)}]; // right down
+                ahead = [{x: (x+1-horMargin), y: (y+upMargin+noFriction)}, // right up
+                    {x: (x+1-horMargin), y: (y+1-downMargin-noFriction)}]; // right down
+                max = floor(x)+horMargin;
                 break;
         }
 
         for(var i=0, l=ahead.length;i<l;++i){
-            if(!this.ground.tileAt(ahead[i].x, ahead[i].y) || this.block.tileAt(ahead[i].x, ahead[i].y)){
-                return {x: ahead[i].x, y: ahead[i].y};
+            if(!this.ground.tileAt(floor(ahead[i].x), floor(ahead[i].y)) || this.block.tileAt(floor(ahead[i].x), floor(ahead[i].y))){
+                return max;
             }
         }
         return false;

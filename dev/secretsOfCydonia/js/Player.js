@@ -36,30 +36,30 @@ Player.prototype = {
         if(keyboard.keys.length){
             var dx = 0,
                 dy = 0,
-                blocker;
+                max;
             if(keyboard.isPressed(KeyboardManager.DOWN)){
                 this.dir = Player.DIR_DOWN;
-                if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
+                if(!(max = view.isBlocked(this.pos.x, this.pos.y+Player.SPEED, this.dir))){
                     dy = Player.SPEED;
                     this.moving = true;
                 }
                 else{
-//                    this.pos.y = blocker.y-1;
+                    this.pos.y = max;
                 }
             }
             else if(keyboard.isPressed(KeyboardManager.UP)){
                 this.dir = Player.DIR_UP;
-                if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
+                if(!(max = view.isBlocked(this.pos.x, this.pos.y-Player.SPEED, this.dir))){
                     dy = -Player.SPEED;
                     this.moving = true;
                 }
                 else{
-//                    this.pos.y = blocker.y;
+                    this.pos.y = max;
                 }
             }
             if(keyboard.isPressed(KeyboardManager.RIGHT)){
                 this.dir = Player.DIR_RIGHT;
-                if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
+                if(!(max = view.isBlocked(this.pos.x+Player.SPEED, this.pos.y, this.dir))){
                     if(this.moving){
                         dy *= SQRT2;
                         dx = Player.SPEED*SQRT2;
@@ -69,10 +69,13 @@ Player.prototype = {
                         this.moving = true;
                     }
                 }
+                else{
+                    this.pos.x = max;
+                }
             }
             else if(keyboard.isPressed(KeyboardManager.LEFT)){
                 this.dir = Player.DIR_LEFT;
-                if(!(blocker = view.isBlocked(this.pos.x, this.pos.y, this.dir))){
+                if(!(max = view.isBlocked(this.pos.x-Player.SPEED, this.pos.y, this.dir))){
                     if(this.moving){
                         dy *= SQRT2;
                         dx = -Player.SPEED*SQRT2;
@@ -81,6 +84,9 @@ Player.prototype = {
                         dx = -Player.SPEED;
                         this.moving = true;
                     }
+                }
+                else{
+                    this.pos.x = max;
                 }
             }
             
