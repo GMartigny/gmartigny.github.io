@@ -154,7 +154,7 @@ function Image(url){
     elm.src = url;
     return elm;
 }
-Image.prototype.getData = function(){
+HTMLImageElement.prototype.getData = function(){
     var can = document.createElement("canvas"),
         ctx = can.getContext("2d");
     
