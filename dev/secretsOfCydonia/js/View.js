@@ -42,7 +42,7 @@ ViewManager.prototype = {
     isBlocked: function(x, y, dir){
         var ahead = [],
             max = 0,
-            horMargin = 0.1,
+            horMargin = 0.2,
             upMargin = 0.7,
             downMargin = 0,
             noFriction = Player.SPEED;
