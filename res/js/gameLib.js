@@ -112,12 +112,16 @@ function defineFormat(name){
     return type;
 }
 
-function prepareCanvas(holder){
+function prepareCanvas(holder, width, height){
     var cs = getById(holder).getElementsByTagName("canvas"),
         l = cs.length,
         objs = {};
-
+    
     while(l--){
+        if(width && height){
+            cs[l].width = width;
+            cs[l].height = height;
+        }
         var o = {
             can: cs[l],
             ctx: cs[l].getContext("2d")
@@ -293,19 +297,19 @@ var sqrt = Math.sqrt,
         if(x > 0)
             return x << 0;
         else
-            return (x << 0) - 1;
+            return x - 1 << 0;
     },
     round = function(x){
         if(x > 0)
-            return (x + 0.5) << 0;
+            return x + 0.5 << 0;
         else
-            return (x - 0.5) << 0;
+            return x - 0.5 << 0;
     },
     ceil = function(x){
         if(x > 0)
-            return (x << 0) + 1;
+            return x + 1 << 0;
         else
-            return (x << 0);
+            return x << 0;
     },
     sin = Math.sin,
     asin = Math.asin,
@@ -339,10 +343,10 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
-function get(url, f){
+function get(url, callback){
     var xhr = new XMLHttpRequest();
     xhr.open("get", url);
-    xhr.onload = f;
+    xhr.onload = callback;
     xhr.send();
     return xhr;
 }

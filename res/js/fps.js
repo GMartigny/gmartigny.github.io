@@ -8,7 +8,7 @@ function FPS(tick, delay){
 }
 
 FPS.prototype.update = function(){
-    var now = Date.now();
+    var now = performance.now();
     if(this.count > this.delay){
         this.tick(1000 / (now - this.previous) << 0);
         this.count = 0;

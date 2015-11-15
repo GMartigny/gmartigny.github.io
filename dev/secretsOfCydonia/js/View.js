@@ -32,37 +32,47 @@ ViewManager.prototype = {
         });
         return this.ready = ok;
     },
-    renderAll: function(x, y){
+    renderAll: function(camera){
         if(this.ready){
             this.layers.forEach(function(view){
-                view.render(x, y);
+                view.render(camera);
             });
         }
     },
     isBlocked: function(x, y, dir){
-        var ahead = [];
+        var ahead = [],
+            max = 0,
+            horMargin = 0.1,
+            upMargin = 0.7,
+            downMargin = 0,
+            noFriction = Player.SPEED;
         switch(dir){
             case Player.DIR_UP:
-                ahead = [{x: floor(x+0.2), y: floor(y+0.3)}, // up left
-                    {x: ceil(x-0.2), y: floor(y+0.3)}]; // up right
+                ahead = [{x: (x+horMargin+noFriction), y: (y+upMargin)}, // up left
+                    {x: (x+1-horMargin-noFriction), y: (y+upMargin)}]; // up right
+                max = floor(y+1)-upMargin;
                 break;
             case Player.DIR_DOWN:
-                ahead = [{x: floor(x+0.2), y: ceil(y+0.08)}, // down left
-                    {x: ceil(x-0.2), y: ceil(y+0.08)}]; // down right
+                ahead = [{x: (x+horMargin+noFriction), y: (y+1-downMargin)}, // down left
+                    {x: (x+1-horMargin-noFriction), y: (y+1-downMargin)}]; // down right
+                max = floor(y)+downMargin;
                 break;
             case Player.DIR_LEFT:
-                ahead = [{x: floor(x+0.1), y: floor(y+0.4)}, // left up
-                    {x: floor(x+0.1), y: ceil(y-0.1)}]; // left down
+                ahead = [{x: (x+horMargin), y: (y+upMargin+noFriction)}, // left up
+                    {x: (x+horMargin), y: (y+1-downMargin-noFriction)}]; // left down
+                max = floor(x+1)-horMargin;
                 break;
             case Player.DIR_RIGHT:
-                ahead = [{x: ceil(x-0.1), y: floor(y+0.4)}, // right up
-                    {x: ceil(x-0.1), y: ceil(y-0.1)}]; // right down
+                ahead = [{x: (x+1-horMargin), y: (y+upMargin+noFriction)}, // right up
+                    {x: (x+1-horMargin), y: (y+1-downMargin-noFriction)}]; // right down
+                max = floor(x)+horMargin;
                 break;
         }
 
         for(var i=0, l=ahead.length;i<l;++i){
-            if(!this.ground.tileAt(ahead[i].x, ahead[i].y) || this.block.tileAt(ahead[i].x, ahead[i].y))
-                return true;
+            if(!this.ground.tileAt(floor(ahead[i].x), floor(ahead[i].y)) || this.block.tileAt(floor(ahead[i].x), floor(ahead[i].y))){
+                return max;
+            }
         }
         return false;
     },
@@ -134,13 +144,13 @@ View.prototype = {
     clear: function(){
         this.layer.clear();
     },
-    render: function(x, y){
+    render: function(camera){
         this.clear();
         
         var cell = GameController.cell,
             width = GameController.nbCol * cell,
             height = GameController.nbRow * cell;
-        this.layer.drawImage(this.rendering.canvas, (x-GameController.nbCol/2+1)*cell, (y-GameController.nbRow/2+1)*cell, width, height, 0, 0, width, height);
+        this.layer.drawImage(this.rendering.canvas, camera.x*cell, camera.y*cell, width, height, 0, 0, width, height);
         
         this.anim += this.spd;
     },
@@ -161,6 +171,7 @@ function GroundView(ctx){
     this.layer.fillStyle = "#97d4f7";
 }
 GroundView.prototype = Object.create(View.prototype);
+// overrides
 GroundView.prototype.clear = function(){
     this.layer.fillRect(0, 0, this.layer.canvas.width, this.layer.canvas.height);
 };
