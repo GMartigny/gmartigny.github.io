@@ -25,7 +25,9 @@
             #loading{
                 position: absolute;
                 top: 445px;
-                left: 400px;
+                left: 0;
+                right: 0;
+                text-align: center;
             }
         </style>
     </head>
@@ -46,6 +48,7 @@
             loader = getById("loading"),
             media = loadMedia([
                 {src: "js/Game"+ext, weight: 1},
+                {src: "js/Sound"+ext, weight: 1},
                 {src: "js/Player"+ext, weight: 1},
                 {src: "js/Map"+ext, weight: 1},
                 {src: "js/View"+ext, weight: 1},
