@@ -9,6 +9,8 @@ function GameController(media){
     
     this.key = new KeyboardManager();
     
+    this.music = new SoundManager();
+    
     var o = this.view.overlay;
     this.fps = new FPS(function(fps){
         o.ctx.clear();
