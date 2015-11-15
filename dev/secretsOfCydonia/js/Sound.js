@@ -1,0 +1,7 @@
+
+function SoundManager(){
+    
+}
+SoundManager.prototype = {
+    
+};
