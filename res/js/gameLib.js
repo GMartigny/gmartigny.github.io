@@ -1,21 +1,27 @@
-// load all media in a array and do a function (act) with weight as parameter for each
-// ex : [{src:"images/tileset.png", type:"image", weight:42}, "images/tileset2.png", {src:"images/j_e6a6aca6.png", weight:15, name:"tileset3"}]
-// return an object composed of the elements
-// in:	array<Object> || array<String> arr
-//		function act
-// out:	array<Object>
 var gamelib_loading_progress = 0;
+/**
+ * load all media in a array and do a function with weight as parameter for each
+ * @example [<br/>
+ * &nbsp;&nbsp;{src:"images/tileset.png", type:"image", weight:42},<br/>
+ * &nbsp;&nbsp;"images/tileset2.png",<br/>
+ * &nbsp;&nbsp;{src:"images/j_e6a6aca6.png", name:"tileset3"}<br/>]
+ * @param {Array} arr List of file to load.<br/>src: the source url<br/>type: the type of ressource<br/>weight: weight of the file<br/>name: a name for the ressource
+ * @param {Function} act A function executed for each file with the percentage as parameter
+ * @returns {Object} Each file
+ */
 function loadMedia(arr, act){
     gamelib_loading_progress = 0;
     act = act || function(){};
-    var sum = 0;
-    var src = "";
-    var type = "";
-    var name = "";
-    var output = {};
+    var weight = 0,
+        sum = 0,
+        src = "",
+        type = "",
+        name = "",
+        output = {};
 
     for(var i = 0; i < arr.length; ++i){
-        sum += arr[i].weight || 1;
+        weight = arr[i].weight || 1;
+        sum += weight;
         src = arr[i].src || arr[i];
         name = arr[i].name || src;
         type = arr[i].type || defineFormat(src);
@@ -34,30 +40,36 @@ function loadMedia(arr, act){
             case "script":
                 tmp = new Script(src);
                 break;
-            case "text":
+            case "json":
                 tmp = {};
-                get(src, function(e){
-                    gamelib_loading_progress += tmp.weight;
-                    var n = tmp.name;
-                    output[n] = this.response;
-                    act(gamelib_loading_progress / sum * 100, n);
-                });
+                break;
+            case "text":
+                tmp = "";
+                break;
         }
 
-        tmp.weight = arr[i].weight || 1;
-        tmp.name = name;
+        var callback = function(){
+            gamelib_loading_progress += weight;
+            act(gamelib_loading_progress / sum * 100, name);
+        };
         if(type == "audio"){
-            tmp.addEvent("canplaythrough", function(){
-                gamelib_loading_progress += this.weight;
-                act(gamelib_loading_progress / sum * 100, this.name);
-            }, false);
+            tmp.addEvent("canplaythrough", callback, false);
+        }
+        else if(type == "text"){
+            get(src, function(){
+                tmp = this.response;
+                callback();
+            });
+        }
+        else if(type == "json"){
+            get(src, function(){
+                tmp = JSON.parse(this.response);
+                callback();
+            });
         }
         else{
             try{
-                tmp.addEvent("load", function(){
-                    gamelib_loading_progress += this.weight;
-                    act(gamelib_loading_progress / sum * 100, this.name);
-                }, false);
+                tmp.addEvent("load", callback, false);
             }
             catch(e){}
         }
@@ -104,8 +116,10 @@ function defineFormat(name){
             case "js":
                 type = "script";
                 break;
-            case "txt":
             case "json":
+                type = "json";
+                break;
+            default :
                 type = "text";
         }
     }
