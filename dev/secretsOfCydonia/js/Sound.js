@@ -1,7 +1,0 @@
-
-function SoundManager(){
-    
-}
-SoundManager.prototype = {
-    
-};
