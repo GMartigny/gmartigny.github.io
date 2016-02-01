@@ -31,7 +31,7 @@ h1{
 }
 
 .niveau{
-    //box-shadow: 0 2px 7px #333;
+    /*box-shadow: 0 2px 7px #333;*/
 }
 .niveau.expanded{
     background-image: url(click.png);
@@ -85,7 +85,7 @@ ul{
     padding: 10px 20px;
     overflow: hidden;
     opacity: 0;
-    //box-shadow: 0 2px 7px #333;
+    /*box-shadow: 0 2px 7px #333;*/
 }
 
 .formation p{
