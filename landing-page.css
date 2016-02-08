@@ -98,14 +98,27 @@ body > footer{
 #tooltip{
     position: absolute;
     width: 300px;
-    bottom: calc(50% + 310px);
+    bottom: calc(50% + 260px);
     left: 0;
     right: 0;
     margin: 0 auto;
     text-align: center;
-    background: #333;
+    background: #444;
     color: #FFF;
     text-shadow: 1px 1px 5px #000;
     padding: 5px 10px;
-    /*opacity: 0;*/
+    opacity: 0;
+}
+#tooltip.shown{
+    opacity: 1;
+    bottom: calc(50% + 310px);
+    transition: all .2s ease-out 1s;
+}
+#tooltip:after{
+    content: "";
+    position: absolute;
+    border: 6px solid transparent;
+    border-top-color: #444;
+    top: 100%;
+    left: calc(50% - 6px);
 }
