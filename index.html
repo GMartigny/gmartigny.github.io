@@ -2,14 +2,14 @@
 <html>
     <head>
         <meta charset="UTF-8"/>
-        <title>All of my humble creations</title>
+        <title>Web Experiences</title>
         <style>
             body, html{
                 margin: 0;
                 height: 100%;
                 overflow: hidden;
             }
-            
+
             #wheel{
                 position: fixed;
                 width: 100%;
@@ -20,7 +20,7 @@
                 transition: top ease-out .4s;
                 top: calc(50% - 110px);
             }
-            
+
             #wheel li{
                 position: relative;
                 display: block;
@@ -46,7 +46,7 @@
             #wheel.active li.current{
                 opacity: 1;
             }
-            
+
             #wheel li a{
                 position: relative;
                 left: 0;
@@ -73,18 +73,18 @@
                 left: -250%;
                 top: -150%;
             }
-            
+
             #wheel li img{
                 width: 100%;
                 height: 100%;
                 border: none;
             }
-            
+
             #can{
                 background: linear-gradient(170deg, rgba(135,224,253,1) 0%,rgba(83,203,241,1) 34%,rgba(5,171,224,1) 100%);
                 display: block;
             }
-            
+
             body > footer{
                 color: #EEE;
                 position: absolute;
@@ -111,14 +111,13 @@
             <li id="draw"><a href="draw" title="You can now draw on your browser"><img src="" alt="draw tool thumbnail"/></a></li>
             <li id="bigbang"><a href="bigbang" title="Big-bang simulation"><img src="" alt="big-bang thumbnail"/></a></li>
             <li id="pixelsand"><a href="pixelSand.html" title="Experiment with a lot of particules"><img src="" alt="sand simulation thumbnail"/></a></li>
-            
+
             <!-- CSS -->
             <li id="slider"><a href="easy-slider" title="A developer-friendly way to make carrousel"><img src="" alt="easy-slider thumbnail"/></a></li>
             <li id="loader"><a href="fun-load" title="Some CSS loading animation"><img src="" alt="cool loader thumbnail"/></a></li>
             <li id="onediv"><a href="onediv" title="A tool to try the one div challenge"><img src="" alt="one-div generator thumbnail"/></a></li>
             <li id="powertext"><a href="power-text" title="Some CSS enhanced font"><img src="" alt="cool text thumbnail"/></a></li>
-            <li id="dongo"><a href="dongo.html" title="A little animated friend"><img src="" alt="CSS animated dongo thumbnail"/></a></li>
-            
+
             <!-- Others -->
             <li id="paralax"><a href="paralax" title="My try at paralax"><img src="" alt="my paralax thumbnail"/></a></li>
             <li id="jsonmap"><a href="map-to-json" title="An easy way to make your json map"><img src="" alt="json creator thumbnail"/></a></li>
@@ -126,7 +125,7 @@
             <li id="cantouchthis"><a href="canTouchThis.html" title="A touch events library"><img src="" alt="canTouchThis thumbnail"/></a></li>
             <li id="benchmark"><a href="benchmark" title="Quick way to compare JS functions"><img src="" alt="benchmark thumbnail"/></a></li>
             <li id="socketcats"><a href="socket-cats" title="Web chat using websocket on node.js"><img src="" alt="Socket Cats thumbnail"/></a></li>
-            
+
             <!-- Unlisted ->
             <a href="https://github.com/GMartigny/gmartigny.github.io/tree/master/-others">Unlisted works</a>
             <!-- -->
@@ -162,7 +161,7 @@
                     current = Array.prototype.indexOf.call(elems, currentEl);
                     makeRotate();
                 }
-                
+
                 setTimeout(function() {
                     wheel.classList.add("ready");
                     currentEl.classList.add("current");
@@ -172,7 +171,7 @@
             function updateCurrent(mod) {
                 current += mod;
                 var n = getN(current);
-                
+
                 stream = mod;
 
                 currentEl.classList.remove("current");
@@ -219,12 +218,12 @@
                 else if (e.keyCode == 38 || e.keyCode == 13) // up or enter
                     activate();
             };
-            
+
             // Touch
             var onGoingTouchs = [],
                 swipeDist = 200,
                 swipeTime = 150;
-        
+
             document.addEventListener("touchstart", function(e){
                 var now = Date.now();
                 handleTouch(e, function(t){
@@ -259,7 +258,7 @@
             document.addEventListener("touchend", handleStop, false);
             document.addEventListener("touchcancel", handleStop, false);
             document.addEventListener("touchleave", handleStop, false);
-            
+
             function handleStop(e){
                 handleTouch(e, function(t, i){
                     onGoingTouchs.splice(i, 1);
@@ -268,7 +267,7 @@
             function handleTouch(evt, each, stop){
                 if(stop) evt.preventDefault();
                 var tchs = evt.changedTouches;
-                
+
                 for(var i=0;i<tchs.length;++i){
                     each(tchs[i], i);
                 }
@@ -287,7 +286,7 @@
                 stream = 0,
                 PI2 = Math.PI*2,
                 r = Math.random;
-        
+
             function Bubble(x, y, z){
                 this.pos = {
                     x: x,
@@ -325,26 +324,26 @@
                     return pop;
                 }
             };
-            
+
             (function (){
-                
+
                 can.width = document.body.offsetWidth;
                 can.height = document.body.offsetHeight;
-                
+
                 for(var i=0;i<30;++i){
                     bubbles.push(new Bubble(rand(0, can.width), rand(0, can.height), rand(0.1, 1)));
                 }
-                
+
                 ctx.strokeStyle = "#FFF";
                 ctx.lineWidth = 2;
-                
+
                 draw();
             })();
-            
+
             function draw(){
                 requestAnimationFrame(draw);
                 ctx.clearRect(0, 0, can.width, can.height);
-                
+
                 var popped = 0;
                 for(var i=0;i<bubbles.length;++i){
                     if(bubbles[i].render()){
@@ -357,15 +356,15 @@
                 }
                 stream /= 1.07;
             }
-            
+
             function rand(f, t){
                 return (r()*(t-f)+f);
             }
-            
+
             window.onresize = function(){
                 can.width = document.body.offsetWidth;
                 can.height = document.body.offsetHeight;
-                
+
                 ctx.strokeStyle = "#FFF";
                 ctx.lineWidth = 2;
             };
