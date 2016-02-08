@@ -1,134 +1,151 @@
-<style type="text/css">
-    body{
-        margin: 0;
-        overflow: hidden;
-        background: #222;
-    }
-    .layer{
-        width: 100%;
-        height: 100%;
-        position: absolute;
-    }
-    .layer *{
-        position: relative;
-    }
-    #back{
-    }
-    #back img{
-        position: absolute;
-    }
-    #sat1 .sat, #sat2 .sat{
-        -webkit-filter: blur(1px);
-        -moz-filter: blur(1px);
-    }
-    #sat2 .sat{
-        width: 70px;
-    }
-    #sat3 .sat{
-        width: 100px;
-        -webkit-filter: blur(2px);
-    }
-    .sat{
-        -webkit-animation: rot linear infinite;
-        -moz-animation: rot linear infinite;
-    }
-    #subject{
-        position: relative;
-        display: block;
-        top: 200px;
-        width: 300px;
-        margin: 0 auto;
-        -webkit-transform: rotate(18deg);
-        -moz-transform: rotate(18deg);
-    }
-    @-webkit-keyframes rot{
-        0%{
-            -webkit-transform: rotate(0);
-        }
-        to{
-            -webkit-transform: rotate(360deg);
-        }
-    }
-    @-moz-keyframes rot{
-        0%{
-            -moz-transform: rotate(0);
-        }
-        to{
-            -moz-transform: rotate(360deg);
-        }
-    }
-    #mask{
-        background: radial-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 100%);
-    }
-</style>
-<body>
-    <div class="layer" id="back" data-depth="98"></div>
-    <div class="layer" id="sat1" data-depth="80"></div>
-    <div class="layer" id="main" data-depth="70">
-        <img src="earth.png" id="subject" alt="earth">
-    </div>
-    <div class="layer" id="sat2" data-depth="60"></div>
-    <div class="layer" id="sat3" data-depth="30"></div>
-    <div class="layer" id="mask"></div>
-    <script type="text/javascript">
-        var mouse = {
-            x: 0,
-            y: 0
-        };
-        var b = document.body;
-        var layers = document.getElementsByClassName("layer");
-
-        var back = document.getElementById("back");
-        var star;
-        for(var i = 0; i < 35; ++i){
-            star = new Image();
-            star.src = "star.png";
-            star.style.left = rand(20, b.clientWidth - 20) + "px";
-            star.style.top = rand(20, b.clientHeight - 20) + "px";
-            star.style.width = rand(10, 20) + "px";
-            back.appendChild(star);
-        }
-
-        var sat1 = document.getElementById("sat1");
-        var sat;
-        for(var i = 0; i < 4; i++){
-            sat1.appendChild(newSat());
-        }
-        var sat2 = document.getElementById("sat2");
-        for(var i = 0; i < 3; i++){
-            sat2.appendChild(newSat());
-        }
-        var sat3 = document.getElementById("sat3");
-        for(var i = 0; i < 2; i++){
-            sat3.appendChild(newSat());
-        }
-
-        window.onmousemove = function (e){
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-
-            var d;
-            for(var i = layers.length - 1; i >= 0; i--){
-                if(d = layers[i].getAttribute("data-depth")){
-                    layers[i].style.left = (mouse.x - (b.clientWidth / 2)) * (100 - d) / 100 + "px";
-                    layers[i].style.top = (mouse.y - (b.clientHeight / 2)) * (100 - d) / 100 + "px";
+<html>
+    <head>
+        <title>Paralax</title>
+        <style type="text/css">
+            body{
+                margin: 0;
+                overflow: hidden;
+                background: #222;
+            }
+            .layer{
+                width: 100%;
+                height: 100%;
+                position: absolute;
+            }
+            .layer *{
+                position: relative;
+            }
+            #back{
+            }
+            #back img{
+                position: absolute;
+            }
+            #sat1 .sat, #sat2 .sat{
+                -webkit-filter: blur(1px);
+                -moz-filter: blur(1px);
+                filter: blur(1px);
+            }
+            #sat2 .sat{
+                width: 70px;
+            }
+            #sat3 .sat{
+                width: 100px;
+                -webkit-filter: blur(2px);
+                -moz-filter: blur(2px);
+                filter: blur(2px);
+            }
+            .sat{
+                -webkit-animation: rot linear infinite;
+                -moz-animation: rot linear infinite;
+                animation: rot linear infinite;
+            }
+            #subject{
+                position: relative;
+                display: block;
+                top: 200px;
+                width: 300px;
+                margin: 0 auto;
+                -webkit-transform: rotate(18deg);
+                -moz-transform: rotate(18deg);
+            }
+            @-webkit-keyframes rot{
+                0%{
+                    -webkit-transform: rotate(0);
+                }
+                to{
+                    -webkit-transform: rotate(360deg);
                 }
             }
-        };
+            @-moz-keyframes rot{
+                0%{
+                    -moz-transform: rotate(0);
+                }
+                to{
+                    -moz-transform: rotate(360deg);
+                }
+            }
+            @keyframes rot{
+                0%{
+                    -moz-transform: rotate(0);
+                }
+                to{
+                    -moz-transform: rotate(360deg);
+                }
+            }
+            #mask{
+                background: radial-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 100%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="layer" id="back" data-depth="99"></div>
+        <div class="layer" id="sat1" data-depth="80"></div>
+        <div class="layer" id="main" data-depth="70">
+            <img src="earth.png" id="subject" alt="earth">
+        </div>
+        <div class="layer" id="sat2" data-depth="60"></div>
+        <div class="layer" id="sat3" data-depth="30"></div>
+        <div class="layer" id="mask"></div>
+        <script type="text/javascript">
+            var mouse = {
+                x: 0,
+                y: 0
+            };
+            var b = document.body;
+            var layers = document.getElementsByClassName("layer");
 
-        function newSat(){
-            sat = new Image();
-            sat.src = "satellite.png";
-            sat.className = "sat";
-            sat.style.left = b.clientWidth / 2 + rand(-200, 200) + "px";
-            sat.style.top = 350 + rand(-200, 200) + "px";
-            sat.style.WebkitAnimationDuration = rand(4000, 8000) + "ms";
-            sat.style.MozAnimationDuration = rand(4000, 8000) + "ms";
-            return sat;
-        }
+            var back = document.getElementById("back");
+            var star;
+            for(var i = 0; i < 35; ++i){
+                star = new Image();
+                star.src = "star.png";
+                star.style.left = rand(20, b.clientWidth - 20) + "px";
+                star.style.top = rand(20, b.clientHeight - 20) + "px";
+                star.style.width = rand(10, 20) + "px";
+                back.appendChild(star);
+            }
 
-        function rand(min, max){
-            return Math.random() * (max - min) + min + 0.5 << 0;
-        }
-    </script>
-</body>
+            var sat1 = document.getElementById("sat1");
+            var sat;
+            for(var i = 0; i < 4; i++){
+                sat1.appendChild(newSat());
+            }
+            var sat2 = document.getElementById("sat2");
+            for(var i = 0; i < 3; i++){
+                sat2.appendChild(newSat());
+            }
+            var sat3 = document.getElementById("sat3");
+            for(var i = 0; i < 2; i++){
+                sat3.appendChild(newSat());
+            }
+
+            window.onmousemove = function (e){
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+
+                var d;
+                for(var i = layers.length - 1; i >= 0; i--){
+                    if(d = layers[i].getAttribute("data-depth")){
+                        layers[i].style.left = (mouse.x - (b.clientWidth / 2)) * (100 - d) / 100 + "px";
+                        layers[i].style.top = (mouse.y - (b.clientHeight / 2)) * (100 - d) / 100 + "px";
+                    }
+                }
+            };
+
+            function newSat(){
+                sat = new Image();
+                sat.src = "satellite.png";
+                sat.className = "sat";
+                sat.style.left = b.clientWidth / 2 + rand(-200, 200) + "px";
+                sat.style.top = 350 + rand(-200, 200) + "px";
+                sat.style.WebkitAnimationDuration = rand(4000, 8000) + "ms";
+                sat.style.MozAnimationDuration = rand(4000, 8000) + "ms";
+                return sat;
+            }
+
+            function rand(min, max){
+                return Math.random() * (max - min) + min + 0.5 << 0;
+            }
+        </script>
+    </body>
+</html>
