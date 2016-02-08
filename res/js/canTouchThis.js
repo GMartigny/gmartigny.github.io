@@ -77,8 +77,8 @@ Touch.distance = function(x1, y1, x2, y2) {
 };
 Touch.getById = function(id) {
     if (id === undefined)
-        id = 1000;
-    for (var i = 0; i < Touch._onGoingTouch_.length; ++i)
+        return null;
+    for (var i = 0, l = Touch._onGoingTouch_.length ; i < l ; ++i)
         if (Touch._onGoingTouch_[i].identifier === id)
             return Touch._onGoingTouch_[i];
     return null;
@@ -94,7 +94,7 @@ Touch.getSibling = function(t) {
 };
 Touch.handleEvent = function(ev, each) {
     var tchs = ev.changedTouches;
-    for (var i = 0; i < tchs.length; ++i) {
+    for (var i = 0, l = tchs.length ; i < l ; ++i) {
         each(tchs[i]);
     }
 };
