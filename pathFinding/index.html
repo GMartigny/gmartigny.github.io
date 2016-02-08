@@ -51,6 +51,7 @@
                 <li><kbd>esc</kbd> reset everything</li>
             </ul>
             <footer>Everything's slowed down to better visualize.</footer>
+            <footer id="res"></footer>
         </aside>
         <canvas id="can"></canvas>
         <script>
@@ -62,7 +63,7 @@
                     down: false,
                     hover: false
                 };
-            
+
             window.onmousemove = function(e){
                 if(!finder.running){
                     mouse.x = (e.clientX-can.offsetLeft)/Tile.size<<0;
@@ -100,7 +101,6 @@
                 mouse.down = false;
             };
             window.onkeydown = function(e){
-                console.log(e.keyCode);
                 if(e.keyCode == 13){ // enter
                     if(!finder.running){
                         if(mouse.hover){
@@ -122,11 +122,13 @@
                     finder.reset();
                 }
             };
-            
+
             // PATHFINDER
             function PathFinder(grid){
                 this.grid = grid;
                 this.opened = [];
+                this.evaluated = 0;
+                this.path = 0;
                 this.running = false;
                 this.pointer = false;
             }
@@ -147,11 +149,12 @@
                             minDist = d;
                         }
                     }
-                    
+
+                    ++this.evaluated;
                     closest.state = 20;
                     this.opened.splice(this.opened.indexOf(closest), 1);
                     closest.render();
-                    
+
                     if(this.evaluate(closest)){
                         var self = this;
                         this.running = setTimeout(function(){
@@ -172,7 +175,7 @@
                     if(t.state != 2 && t.state != 3 && t.state != 10 && t.state != 20){
                         if(t === self.grid.finish){
                             self.pointer = tile;
-                            self.path();
+                            self.makePath();
                             again = false;
                         }
                         else{
@@ -186,16 +189,21 @@
                 });
                 return again;
             };
-            PathFinder.prototype.path = function(){
+            PathFinder.prototype.makePath = function(){
                 if(this.pointer.comeFrom){
+                    ++this.path;
+                    this.pointer.comeFrom.goTo = this.pointer;
                     this.pointer.state = 30;
-                    this.pointer.render();
-                    this.pointer = this.pointer.comeFrom;
                     var self = this;
                     this.running = setTimeout(function(){
-                        self.path.call(self);
+                        self.makePath.call(self);
                     }, PathFinder.TIMEOUT/2);
                 }
+                else{
+                    document.getElementById("res").innerHTML = "efficiency : " + (this.path/this.evaluated).toFixed(2)
+                }
+                this.pointer.render();
+                this.pointer = this.pointer.comeFrom;
             };
             PathFinder.prototype.reset = function(){
                 if(this.running){
@@ -206,11 +214,11 @@
                 }
                 this.grid.reset();
             };
-            
+
             // GRID
             function Grid(ctx, w, h){
                 this.tiles = [];
-                
+
                 var rows = h/Tile.size<<0,
                     cols = w/Tile.size<<0;
                 for(var i=0;i<rows;++i){
@@ -220,7 +228,7 @@
                         this.tiles[i].push(new Tile(ctx, j, i));
                     }
                 }
-                
+
                 this.start = this.tiles[0][0];
                 this.finish = this.tiles[rows-1][cols-1];
                 this.setBounds();
@@ -262,7 +270,7 @@
             };
             Grid.prototype.randomize = function(){
                 this.forEach(function(t){
-                    t.state = (Math.random()+1.25)<<0;
+                    t.state = (Math.random()+1.3)<<0;
                     t.render();
                 });
                 this.setBounds();
@@ -291,11 +299,13 @@
                 this.forEach(function(t){
                     t.state = 1;
                     t.comeFrom = false;
+                    t.goTo = false;
                     t.render();
                 });
                 this.setBounds();
+                document.getElementById("res").innerHTML = "";
             };
-            
+
             // TILE
             function Tile(ctx, x, y){
                 this.ctx = ctx;
@@ -306,6 +316,7 @@
                 this.state = 1;
                 this.weight = 0;
                 this.comeFrom = false;
+                this.goTo = false;
             }
             Tile.size = 20;
             Tile.prototype.render = function(){
@@ -335,17 +346,18 @@
                     case 30: // Path
                         this.ctx.fillStyle = "#2F2";
                 }
-                
+
                 var s = Tile.size;
                 this.ctx.beginPath();
                 this.ctx.rect(this.pos.x*s, this.pos.y*s, Tile.size-1, Tile.size-1);
                 this.ctx.stroke();
                 this.ctx.fill();
-                
-                if(this.comeFrom){
+
+                if(this.comeFrom || this.goTo){
+                    var other = this.goTo || this.comeFrom;
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.pos.x*s+s/2, this.pos.y*s+s/2);
-                    this.ctx.lineTo(this.comeFrom.pos.x*s+s/2, this.comeFrom.pos.y*s+s/2);
+                    this.ctx.lineTo(other.pos.x*s+s/2, other.pos.y*s+s/2);
                     this.ctx.stroke();
                     this.ctx.closePath();
                 }
@@ -353,16 +365,16 @@
             Tile.prototype.distance = function(t){
                 return Math.sqrt(Math.pow(this.pos.x - t.pos.x, 2) + Math.pow(this.pos.y - t.pos.y, 2));
             };
-            
+
             (function(){
                 can = document.getElementById("can");
                 can.width = can.offsetWidth;
                 can.height = can.offsetHeight;
-                
+
                 var ctx = can.getContext("2d");
                 ctx.strokeStyle = "#333";
                 ctx.lineWidth = 1;
-                
+
                 var grid = new Grid(ctx, can.width, can.height);
                 grid.render();
                 finder = new PathFinder(grid);
