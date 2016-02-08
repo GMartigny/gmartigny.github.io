@@ -1,7 +1,7 @@
 /*
  * Javascript lightweight library for mobile touch event
  * Made by Guillaume Martigny
- * 
+ *
  * New possible events
  *  - grab : a moving touch occurs on the element
  *  - drag : the element is moved around
@@ -14,14 +14,14 @@
  *
  * example :
  *  document.addEventListener("swipe", function(ev){
- *      if(e.detail.direction == Touch.RIGHT){
+ *      if(ev.detail.direction == Touch.RIGHT){
  *          goToPrevious();
  *      }
- *      else if(e.detail.direction == Touch.RIGHT){
+ *      else if(ev.detail.direction == Touch.RIGHT){
  *          goToNext();
  *      }
  *  };
- *  
+ *
  *  nb: It may be a good idea to make your page non-scalable to prevent tap delay
  *  <meta name="viewport" content="width=device-width,user-scalable=no">
  */
