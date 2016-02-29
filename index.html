@@ -115,15 +115,12 @@
                 }, 400);
             }
 
-            window.onwheel = function(e) {
-                if (e.wheelDelta == 120) // up
-                    updateCurrent(-1);
-                else if (e.wheelDelta == -120) // down
-                    updateCurrent(+1);
-            };
+            window.addEventListener("wheel", function(e){
+                updateCurrent((e.deltaY<0 ? -1 : 1));
+            });
             window.onkeydown = function(e) {
                 if (e.keyCode == 39) // right
-                    updateCurrent(+1);
+                    updateCurrent(1);
                 else if (e.keyCode == 37) // left
                     updateCurrent(-1);
                 else if (e.keyCode == 38 || e.keyCode == 13) // up or enter
@@ -134,7 +131,7 @@
             document.addEventListener("swipe", function(e){
                 switch(e.detail.direction){
                     case Touch.RIGHT:
-                        updateCurrent(+1);
+                        updateCurrent(1);
                         break;
                     case Touch.LEFT:
                         updateCurrent(-1);
