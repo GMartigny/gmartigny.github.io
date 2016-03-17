@@ -44,27 +44,29 @@ function loadMedia(arr, act){
                 tmp = {};
                 break;
             case "text":
-                tmp = "";
+                tmp = {};
                 break;
         }
 
+        tmp.name = name;
+        tmp.weight = weight;
         var callback = function(){
-            gamelib_loading_progress += weight;
-            act(gamelib_loading_progress / sum * 100, name);
+            gamelib_loading_progress += this.weight;
+            act(gamelib_loading_progress / sum * 100, this.name);
         };
         if(type == "audio"){
             tmp.addEvent("canplaythrough", callback, false);
         }
         else if(type == "text"){
             get(src, function(){
-                tmp = this.response;
-                callback();
+                output[tmp.name] = this.response;
+                callback.call(tmp);
             });
         }
         else if(type == "json"){
             get(src, function(){
-                tmp = JSON.parse(this.response);
-                callback();
+                output[tmp.name] = JSON.parse(this.response);
+                callback.call(tmp);
             });
         }
         else{
@@ -334,7 +336,24 @@ var sqrt = Math.sqrt,
     SQRT2 = sqrt(2) / 2;
 
 function random(from, to){
+    from = from || 0;
+    if(to === undefined){
+        to = from;
+        from = 0;
+    }
     return r()*(to - from)+from;
+}
+
+function size(array){
+    if(array instanceof Array)
+        return array.length;
+    else{
+        var sum = 0;
+        for(var k in array)
+            if(array.hasOwnProperty(k))
+                ++sum;
+        return sum;
+    }
 }
 
 Array.prototype.out = function(o){
