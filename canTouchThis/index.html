@@ -64,7 +64,7 @@
                 background: #86ED29;
                 box-shadow: 0 0 3px #CFF8AB;
             }
-            
+
             * > .handle{
                 position: absolute;
                 width: 100%;
@@ -90,14 +90,14 @@
                 background: #13B4C6;
                 box-shadow: 0 0 3px #60E1F0;
             }
-            
+
             #menu.drag{
                 transition: none;
             }
             #menu.max{
                 height: 100%;
             }
-            
+
             #main{
                 position: relative;
                 width: 100%;
@@ -108,7 +108,7 @@
             #main.hightlight{
                 background: #EE9;
             }
-            
+
             #content{
                 position: fixed;
                 top: 200px;
@@ -125,7 +125,7 @@
             #content.big{
                 transform: scale(1.5);
             }
-            
+
             pre{
                 display: inline-block;
                 padding: 8px;
@@ -159,7 +159,7 @@
                 But, it can be tricky to make it real on your favorite browser. Here come canTouchThis.js, a really simple javascript library that let you handle touch events
                 as any other event.
             </p>
-            
+
             <h2>New events :</h2>
             <p>
                 We all know and love javascript events, so canTouchThis.js keep the same spirit.
@@ -167,7 +167,7 @@
             </p>
             Available events :
             <ul>
-                <li>grab : a moving touch occurs on the element</li>
+                <li>grab : a touch occurs on the element</li>
                 <li>drag : the element is moved around</li>
                 <li>drop : the touch end</li>
                 <li>swipe : the element is quickly drag to a direction</li>
@@ -187,7 +187,7 @@
     showNext();
   }
 };</code></pre>
-            
+
             <h2>Browser support :</h2>
             <p>
                 The script use some new features supported only by most modern browser.
@@ -201,7 +201,7 @@
                 switchs = document.getElementsByClassName("switch"),
                 main = document.getElementById("main"),
                 content = document.getElementById("content");
-            
+
             // extend top menu (swipe)
             menuHandle.addEventListener("grab", function(e){
                 this.parentNode.classList.add("drag");
@@ -224,7 +224,7 @@
                 else if(p.offsetHeight < document.body.offsetHeight*0.75 && !e.detail.direction) p.classList.remove("max");
                 p.style.height = "";
             });
-            
+
             // turn switchs on/off (tap)
             for(var i=0;i<switchs.length;++i){
                 switchs[i].addEventListener("click", function(){
@@ -242,13 +242,13 @@
             });
             switchList.addEventListener("drag", function(e){
                 var x = startList.x+(e.detail.pageX-e.detail.startX);
-                
+
                 if(x > 0) x = 0;
                 else if(x < this.offsetWidth-startList.width) x = this.offsetWidth-startList.width;
-                
+
                 this.children[0].style.marginLeft = x+"px";
             });
-            
+
             // drag content element (drag)
             var startContent = {
                 x:0, y:0,
@@ -264,12 +264,12 @@
                 this.classList.remove("big");
                 var x = startContent.x+(e.detail.pageX-e.detail.startX),
                     y = startContent.y+(e.detail.pageY-e.detail.startY);
-                
+
                 if(x < 0) x = 0;
                 else if(x > document.body.offsetWidth-this.offsetWidth) x = document.body.offsetWidth-this.offsetWidth;
                 if(y < 29) y = 29;
                 else if(y > document.body.offsetHeight-this.offsetHeight) y = document.body.offsetHeight-this.offsetHeight;
-                
+
                 this.style.left = x+"px";
                 this.style.top = y+"px";
             });
@@ -280,7 +280,7 @@
             content.addEventListener("dbltap", function(){
                 this.classList.toggle("big");
             });
-            
+
             // change color on hold (prevent bubbling)
             var colors = ["#29CF7C", "#CF9229", "#5329CF", "#29BBCF"];
             content.addEventListener("holdtap", function(e){
@@ -295,13 +295,13 @@
             main.addEventListener("drop", function(){
                 this.classList.remove("hightlight");
             });
-            
+
             // enlarge content (pinch)
             content.addEventListener("pinch", function(e){
                 var r = e.detail.distanceFromSibling/startContent.d;
                 this.style.transform = "scale("+r+")";
             });
-            
+
             // mouse version
             var dragged = false;
             content.addEventListener("mousedown", function(e){

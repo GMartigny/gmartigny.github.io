@@ -3,7 +3,7 @@
  * Made by Guillaume Martigny
  *
  * New possible events
- *  - grab : a moving touch occurs on the element
+ *  - grab : a touch occurs on the element
  *  - drag : the element is moved around
  *  - drop : the touch end
  *  - swipe : the element is quickly drag to a direction
@@ -133,8 +133,6 @@ document.addEventListener("touchmove", function(ev) {
     var now = Date.now();
     Touch.handleEvent(ev, function(t) {
         var touch = Touch.getById(t.identifier);
-
-        touch.target.removeEventListener("mousemove");
 
         if (touch) {
             touch.pageX = t.pageX;
