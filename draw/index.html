@@ -89,7 +89,7 @@
                 },
                 newTab = document.getElementById("openning");
 
-            (function start(){
+            (function(){
                 canDraw.width = canTmp.width = canMouse.width = document.body.offsetWidth;
                 canDraw.height = canTmp.height = canMouse.height = document.body.offsetHeight;
                 ctxDraw.fillStyle = "#FFFFFF";
@@ -98,7 +98,7 @@
 
                 ctxMouse.strokeStyle = "#888888";
                 ctxMouse.fillStyle = "#888888";
-                
+
                 var img = new Image();
                 img.src = "colors.png";
                 img.onload = function(){
@@ -112,7 +112,7 @@
             function draw(){
                 requestAnimationFrame(draw);
                 ctxMouse.clearRect(0, 0, canMouse.width, canMouse.height);
-                
+
                 if(mouse.hover){
                     ctxMouse.beginPath();
                     ctxMouse.arc(mouse.x, mouse.y, 1, 0, 2 * Math.PI, 1);
@@ -126,7 +126,7 @@
                 if(mouse.pressed){
                     tools.classList.add("hide");
                     ctxDraw.lineWidth = mouse.rad * 2;
-                    
+
                     if(mouse.pressed == 2){ // middle
                         ctxDraw.fillStyle = "#FFF";
                         ctxDraw.fillRect(0, 0, canTmp.width, canTmp.height);
@@ -149,35 +149,19 @@
                         ctxDraw.stroke();
                         ctxDraw.arc(mouse.x, mouse.y, mouse.rad, 0, 2 * Math.PI, 1);
                         ctxDraw.fill();
+                        ctxDraw.closePath();
 
                         drawBuff.x = mouse.x;
                         drawBuff.y = mouse.y;
                     }
                 }
             }
-            
+
             // Suivi de la souris //
             window.onmousemove = function(e)
             {
                 mouse.x = e.clientX;
                 mouse.y = e.clientY;
-                
-                if(mouse.color){
-                    var x = e.clientX - canColors.offsetLeft,
-                        y = e.clientY - canColors.offsetTop;
-                    if(x < 0) x = 0;
-                    else if(x > canColors.width-1) x = canColors.width-1;
-                    if(y < 0) y = 0;
-                    else if(y > canColors.height-1) y = canColors.height-1;
-                    
-                    var c = getPixel(x, y);
-                    if(mouse.color == 1){
-                        mouse.left = selLeft.style.background = c;
-                    }
-                    else if(mouse.color == 3){
-                        mouse.right = selRight.style.background = c;
-                    }
-                }
             };
             canMouse.onmouseenter = function(){
                 mouse.hover = 1;
@@ -187,7 +171,25 @@
             };
             // Selection de la couleur //
             canColors.onmousedown = function(e){
-                mouse.color = e.button + 1;
+                mouse.colorPick = e.button + 1;
+                selectColor(e);
+            };
+            canColors.onmousemove = selectColor;
+            function selectColor(){
+                var x = mouse.x - canColors.offsetLeft,
+                    y = mouse.y - canColors.offsetTop;
+                if(x < 0) x = 0;
+                else if(x > canColors.width-1) x = canColors.width-1;
+                if(y < 0) y = 0;
+                else if(y > canColors.height-1) y = canColors.height-1;
+
+                var c = getPixel(x, y);
+                if(mouse.colorPick == 1){
+                    mouse.left = selLeft.style.background = c;
+                }
+                else if(mouse.colorPick == 3){
+                    mouse.right = selRight.style.background = c;
+                }
             };
             switchColor.onclick = function(){
                 var t = mouse.left;
@@ -199,24 +201,24 @@
             // Dessin //
             canMouse.onmousedown = function(e){
                 e.preventDefault();
-                
+
                 ctxTmp.drawImage(canDraw, 0, 0);
-                
+
                 drawBuff.x = mouse.x = e.clientX;
                 drawBuff.y = mouse.y = e.clientY;
                 mouse.pressed = e.button + 1;
             };
             window.onmouseup = function(){
                 mouse.pressed = 0;
-                mouse.color = 0;
+                mouse.colorPick = 0;
                 tools.classList.remove("hide");
             };
             // Suivi de la taille de la page //
             window.onresize = function(){
                 canDraw.width = canTmp.width = canMouse.width = document.body.offsetWidth;
                 canDraw.height = canTmp.height = canMouse.height = document.body.offsetHeight;
-                
-                ctxDraw.fillStyle = "#FFFFFF";
+
+                ctxDraw.fillStyle = "#FFF";
                 ctxDraw.fillRect(0, 0, canDraw.width, canDraw.height);
             };
             // Suppression menu clic-droit //
@@ -249,7 +251,7 @@
                 }
                 return true;
             };
-            
+
             function changeSize(x){
                 mouse.rad -= x;
                 if(mouse.rad < 5)
