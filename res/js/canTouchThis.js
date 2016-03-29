@@ -146,6 +146,7 @@ document.addEventListener("touchmove", function(ev) {
                 touch.target.dispatchEvent(cev);
             }
             if (touch.moved) {
+                ev.preventDefault();
                 if (touch.sibling) {
                     touch.distanceFromSibling = Touch.distance(touch.pageX, touch.pageY, touch.sibling.pageX, touch.sibling.pageY);
 
