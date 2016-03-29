@@ -207,7 +207,7 @@
                 this.parentNode.classList.add("drag");
             });
             menuHandle.addEventListener("drag", function(e){
-                e.stopPropagation();
+                e.preventDefault();
                 var p = this.parentNode;
                 p.style.height = e.detail.pageY+15+"px";
                 p.classList.remove("max");
@@ -261,6 +261,7 @@
                 if(e.detail.distanceFromSibling) startContent.d =  e.detail.distanceFromSibling;
             });
             content.addEventListener("drag", function(e){
+                e.preventDefault();
                 this.classList.remove("big");
                 var x = startContent.x+(e.detail.pageX-e.detail.startX),
                     y = startContent.y+(e.detail.pageY-e.detail.startY);
