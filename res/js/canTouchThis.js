@@ -26,7 +26,7 @@
  *  <meta name="viewport" content="width=device-width,user-scalable=no">
  */
 
-function Touch(t) {
+function Touch(t){
     var now = Date.now();
     this.identifier = t.identifier === undefined ? 1000 : t.identifier;
     this.target = t.target;
@@ -40,8 +40,7 @@ function Touch(t) {
     this.sibling = Touch.getSibling(this);
     this.distanceFromSibling = this.sibling ? Touch.distance(this.pageX, this.pageY, this.sibling.pageX, this.sibling.pageY) : undefined;
 
-    this.swipe = false;
-    this.swipeDirection = 0;
+    this.hasSwiped = false;
 
     this.startTime = now;
     this.holdDuration = 0;
@@ -59,7 +58,8 @@ Touch.LEFT = 8;
 // private
 Touch._onGoingTouch_ = [];
 Touch._lastTap_ = {
-    x: 0, y: 0,
+    x: 0,
+    y: 0,
     t: 0
 };
 
@@ -72,107 +72,128 @@ Touch.dblTapMaxDuration = 300;
 Touch.holdTapDuration = 750;
 
 // Public functions
-Touch.distance = function(x1, y1, x2, y2) {
+Touch.distance = function(x1, y1, x2, y2){
     return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
 };
-Touch.getById = function(id) {
-    if (id === undefined)
+Touch.getById = function(id){
+    if(id === undefined)
         return null;
-    for (var i = 0, l = Touch._onGoingTouch_.length ; i < l ; ++i)
-        if (Touch._onGoingTouch_[i].identifier === id)
+    for(var i = 0,
+        l = Touch._onGoingTouch_.length; i < l; ++i)
+        if(Touch._onGoingTouch_[i].identifier === id)
             return Touch._onGoingTouch_[i];
     return null;
 };
-Touch.getSibling = function(t) {
-    for (var i = Touch._onGoingTouch_.length - 1; i >= 0; --i) {
-        if (Touch._onGoingTouch_[i].target === t.target) {
+Touch.getSibling = function(t){
+    for(var i = Touch._onGoingTouch_.length - 1; i >= 0; --i){
+        if(Touch._onGoingTouch_[i].target === t.target){
             Touch._onGoingTouch_[i].sibling = t;
             return Touch._onGoingTouch_[i];
         }
     }
     return null;
 };
-Touch.handleEvent = function(ev, each) {
+Touch.handleEvent = function(ev, each){
     var tchs = ev.changedTouches;
-    for (var i = 0, l = tchs.length ; i < l ; ++i) {
+    for(var i = 0,
+        l = tchs.length; i < l; ++i){
         each(tchs[i]);
     }
 };
-Touch.add = function(t) {
+Touch.add = function(t){
     var touch = new Touch(t);
     Touch._onGoingTouch_.push(touch);
     return touch;
 };
-Touch.remove = function(t) {
+Touch.remove = function(t){
     clearTimeout(t.timer);
 
     var p = Touch._onGoingTouch_.indexOf(t);
-    if (p !== -1)
+    if(p !== -1)
         Touch._onGoingTouch_.splice(p, 1);
 
     return Touch._onGoingTouch_.length;
 };
 
 // Event listener
-document.addEventListener("touchstart", function(ev) {
-    Touch.handleEvent(ev, function(t) {
+document.addEventListener("touchstart", function(ev){
+    Touch.handleEvent(ev, function(t){
         var touch = Touch.add(t);
 
-        touch.timer = setTimeout(function() {
+        touch.timer = setTimeout(function(){
             var touch = Touch.getById(t.identifier);
-            if (touch && !touch.moved) {
+            if(touch && !touch.moved){
                 touch.holdDuration = Date.now() - touch.startTime;
-                var cev = new CustomEvent("holdtap", {bubbles: true, cancelable: true, detail: touch});
+                var cev = new CustomEvent("holdtap", {
+                    bubbles: true,
+                    cancelable: true,
+                    detail: touch
+                });
                 touch.target.dispatchEvent(cev);
             }
         }, Touch.holdTapDuration);
     });
 }, 0);
 
-document.addEventListener("touchmove", function(ev) {
+document.addEventListener("touchmove", function(ev){
     var now = Date.now();
-    Touch.handleEvent(ev, function(t) {
+    Touch.handleEvent(ev, function(t){
         var touch = Touch.getById(t.identifier);
 
-        if (touch) {
+        if(touch){
             touch.pageX = t.pageX;
             touch.pageY = t.pageY;
             touch.holdDuration = now - touch.startTime;
 
-            if (!touch.moved && Touch.distance(touch.pageX, touch.pageY, touch.startX, touch.startY) > Touch.tapMaxDistance) {
+            if(!touch.moved && Touch.distance(touch.pageX, touch.pageY, touch.startX, touch.startY) > Touch.tapMaxDistance){
                 touch.moved = true;
 
-                var cev = new CustomEvent("grab", {bubbles: true, cancelable: true, detail: touch});
+                var cev = new CustomEvent("grab", {
+                    bubbles: true,
+                    cancelable: true,
+                    detail: touch
+                });
                 touch.target.dispatchEvent(cev);
             }
-            if (touch.moved) {
-                if (touch.sibling) {
+            if(touch.moved){
+                if(touch.sibling){
                     touch.distanceFromSibling = Touch.distance(touch.pageX, touch.pageY, touch.sibling.pageX, touch.sibling.pageY);
 
-                    var cev = new CustomEvent("pinch", {cancelable: true, detail: touch});
+                    var cev = new CustomEvent("pinch", {
+                        cancelable: true,
+                        detail: touch
+                    });
                     touch.target.dispatchEvent(cev);
                 }
-                var cev = new CustomEvent("drag", {bubbles: true, cancelable: true, detail: touch});
+                var cev = new CustomEvent("drag", {
+                    bubbles: true,
+                    cancelable: true,
+                    detail: touch
+                });
                 touch.target.dispatchEvent(cev);
             }
 
-            if (now - touch.regTime < Touch.swipeMaxTime) {
+            if(!touch.hasSwiped && now - touch.regTime < Touch.swipeMaxTime){
                 touch.direction = 0;
-                if (touch.pageX < touch.regX - Touch.swipeMinDistance)
+                if(touch.pageX < touch.regX - Touch.swipeMinDistance)
                     touch.direction = Touch.LEFT;
-                else if (touch.pageX > touch.regX + Touch.swipeMinDistance)
+                else if(touch.pageX > touch.regX + Touch.swipeMinDistance)
                     touch.direction = Touch.RIGHT;
-                if (touch.pageY < touch.regY - Touch.swipeMinDistance)
+                if(touch.pageY < touch.regY - Touch.swipeMinDistance)
                     touch.direction += Touch.UP;
-                else if (touch.pageY > touch.regY + Touch.swipeMinDistance)
+                else if(touch.pageY > touch.regY + Touch.swipeMinDistance)
                     touch.direction += Touch.DOWN;
 
-                if (touch.direction) {
-                    var cev = new CustomEvent("swipe", {bubbles: true, cancelable: true, detail: touch});
+                if(touch.direction){
+                    touch.hasSwiped = true;
+                    var cev = new CustomEvent("swipe", {
+                        bubbles: true,
+                        cancelable: true,
+                        detail: touch
+                    });
                     touch.target.dispatchEvent(cev);
                 }
-            }
-            else {
+            } else{
                 touch.regTime = now;
                 touch.regX = touch.pageX;
                 touch.regY = touch.pageY;
@@ -181,28 +202,36 @@ document.addEventListener("touchmove", function(ev) {
     });
 }, 0);
 
-document.addEventListener("touchend", function(ev) {
+document.addEventListener("touchend", function(ev){
     var now = Date.now();
-    Touch.handleEvent(ev, function(t) {
+    Touch.handleEvent(ev, function(t){
         var touch = Touch.getById(t.identifier);
 
-        if (touch) {
+        if(touch){
             var cev;
-            if (!touch.moved && now < touch.startTime + Touch.holdTapDuration) {
+            if(!touch.moved && now < touch.startTime + Touch.holdTapDuration){
 
-                if (now < Touch._lastTap_.t + Touch.dblTapMaxDuration &&
-                        Touch.distance(touch.pageX, touch.pageY, Touch._lastTap_.x, Touch._lastTap_.y) < Touch.tapMaxDistance) {
-                    cev = new CustomEvent("dbltap", {bubbles: true, cancelable: true, detail: touch});
+                if(now < Touch._lastTap_.t + Touch.dblTapMaxDuration &&
+                    Touch.distance(touch.pageX, touch.pageY, Touch._lastTap_.x, Touch._lastTap_.y) < Touch.tapMaxDistance){
+                    cev = new CustomEvent("dbltap", {
+                        bubbles: true,
+                        cancelable: true,
+                        detail: touch
+                    });
                     touch.target.dispatchEvent(cev);
                 }
 
                 Touch._lastTap_ = {
-                    x: touch.pageX, y: touch.pageY,
+                    x: touch.pageX,
+                    y: touch.pageY,
                     t: now
                 };
-            }
-            else {
-                cev = new CustomEvent("drop", {bubbles: true, cancelable: true, detail: touch});
+            } else{
+                cev = new CustomEvent("drop", {
+                    bubbles: true,
+                    cancelable: true,
+                    detail: touch
+                });
                 touch.target.dispatchEvent(cev);
             }
             Touch.remove(touch);
@@ -210,21 +239,25 @@ document.addEventListener("touchend", function(ev) {
     });
 }, 0);
 
-document.addEventListener("touchcancel", function(ev) {
-    Touch.handleEvent(ev, function(t) {
+document.addEventListener("touchcancel", function(ev){
+    Touch.handleEvent(ev, function(t){
         var touch = Touch.getById(t.identifier);
-        if (touch) {
-            var cev = new CustomEvent("drop", {bubbles: true, cancelable: true, detail: touch});
+        if(touch){
+            var cev = new CustomEvent("drop", {
+                bubbles: true,
+                cancelable: true,
+                detail: touch
+            });
             touch.target.dispatchEvent(cev);
 
             Touch.remove(touch);
         }
     });
 }, 0);
-document.addEventListener("touchleave", function(ev) {
-    Touch.handleEvent(ev, function(t) {
+document.addEventListener("touchleave", function(ev){
+    Touch.handleEvent(ev, function(t){
         var touch = Touch.getById(t.identifier);
-        if (touch) {
+        if(touch){
             Touch.remove(touch);
         }
     });
