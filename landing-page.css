@@ -87,7 +87,7 @@ body, html{
 body > footer{
     color: #EEE;
     position: absolute;
-    bottom: -30px;
+    bottom: -1em;
     right: 0;
     width: 37%;
 }
@@ -121,4 +121,19 @@ body > footer{
     border-top-color: #444;
     top: 100%;
     left: calc(50% - 6px);
+}
+
+@media (max-width: 800px){
+    #wheel.ready{
+        top: calc(50% - 70px);
+    }
+    #wheel li{
+        width: 200px;
+        height: 200px;
+        margin-bottom: -200px;
+    }
+    body > footer{
+        width: 100%;
+        text-align: center;
+    }
 }
