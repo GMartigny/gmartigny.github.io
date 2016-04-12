@@ -9,6 +9,10 @@ body, html{
     overflow: hidden;
 }
 
+.github-fork-ribbon:before{
+    background-color: #999;
+}
+
 #wheel{
     position: fixed;
     width: 100%;
@@ -135,5 +139,17 @@ body > footer{
     body > footer{
         width: 100%;
         text-align: center;
+    }
+    #tooltip{
+        bottom: calc(50% + 120px);
+        width: 250px;
+    }
+    #tooltip.shown{
+        bottom: calc(50% + 170px);
+    }
+}
+@media (max-height: 440px){
+    body #tooltip{
+        display: none;
     }
 }
