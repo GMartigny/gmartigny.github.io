@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>[W]r[I][Te] [W][I][Th] [At][O]m[S]</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+        <style>
+            body{
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+            }
+            *{
+                box-sizing: border-box;
+            }
+            main{
+                position: relative;
+                width: 816px;
+                margin: 50px auto 0;
+            }
+            #in, #out{
+                width: 100%;
+            }
+            .element, .separator{
+                display: inline-block;
+                height: 64px;
+                margin: 2px;
+                vertical-align: middle;
+            }
+            .separator{
+                width: 18px;
+            }
+            .element{
+                width: 64px;
+                font-size: 25px;
+                border: 2px solid #333;
+            }
+            .element *{
+                text-align: center;
+            }
+            .element *:not(.symbol){
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            .element .atomicNumber{
+                font-size: .4em;
+                text-align: left;
+                padding-left: .2em;
+            }
+            .element .symbol{
+                font-weight: bold;
+                margin-top: -.1em;
+            }
+            .element .name{
+                font-size: .35em;
+            }
+            .element .atomicMass{
+                font-size: .3em;
+            }
+            .copy{
+                position: absolute;
+                left: 100%;
+            }
+            #hiddenTxt{
+                position: absolute;
+                bottom: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>Elements</h1>
+            <input type="text" id="in" value=""/>
+            <button class="copy" id="copyTxt">Copy as text</button>
+            <!--<button class="copy" id="copyImg">Copy as image</button>-->
+            <div id="out"></div>
+        </main>
+        <textarea id="hiddenTxt"></textarea>
+        <script>
+            var input = document.getElementById("in"),
+                output = document.getElementById("out"),
+                txt = document.getElementById("hiddenTxt");
+
+            var request = new XMLHttpRequest();
+            request.onload = function(){
+                try{
+                    var data = JSON.parse(this.responseText)
+                        .sort(function(a, b){
+                            return b.symbol.length - a.symbol.length;
+                        });
+
+                    var reg = new RegExp("(" + data.map(function(el){
+                        return el.symbol;
+                    }).join("|") + ")", "gi");
+
+                    var access = {};
+                    data.forEach(function(el){
+                        access[el.symbol.toLowerCase()] = {
+                            atomicNumber: el.atomicNumber,
+                            symbol: el.symbol,
+                            name: el.name,
+                            atomicMass: el.atomicMass
+                        };
+                    });
+
+                    input.onkeyup = function(){
+                        var value = this.value.toString();
+                        var escaped = value.replace(/\W+/gi, "+");
+                        location.hash = "#" + escaped;
+                        output.innerHTML = escaped.replace(reg, function(match){
+                            var el = access[match.toLowerCase()],
+                                str = "<div class='element'>";
+                            for(var info in el){
+                                str += "<div class='" + info + "'>" + el[info] + "</div>";
+                            }
+                            str += "</div>";
+                            return str;
+                        }).replace(/\+/g, "<div class='separator'>&nbsp;</div>");
+                        txt.innerHTML = escaped.replace(reg, function(match){
+                            return "[" + access[match.toLowerCase()].symbol + "]";
+                        }).replace(/\+/g, " ");
+                    };
+
+                    if(location.hash.length > 1){
+                        input.value = location.hash.substr(1).replace(/\W+/gi, " ");
+                        input.onkeyup();
+                    }
+                }
+                catch(e){
+                    alert("Impossible to get data");
+                }
+            };
+            request.open("GET", "https://raw.githubusercontent.com/andrejewski/periodic-table/master/data.json", true);
+            request.send();
+
+            document.getElementById("copyTxt").onclick = function(){
+                txt.select();
+                try{
+                    document.execCommand('copy');
+                }
+                catch(e){
+                    alert("Unable to copy");
+                }
+            };
+        </script>
+    </body>
+</html>
