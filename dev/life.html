@@ -27,6 +27,9 @@
                 canM = document.getElementById("m"),
                 ctxM = canM.getContext("2d"),
                 pow = Math.pow,
+                floor = function (x) {
+                    return x<<0;
+                },
                 ceil = function(x){
                     return x+1<<0;
                 },
@@ -34,9 +37,10 @@
                 fps;
             
             window.onload = function(){
-                resize();
-                canM.height = document.body.offsetHeight;
-                canM.width = document.body.offsetWidth;
+                canC.height = Tile.round(document.body.offsetHeight);
+                canC.width = Tile.round(document.body.offsetWidth);
+                canM.height = Tile.round(document.body.offsetHeight);
+                canM.width = Tile.round(document.body.offsetWidth);
                 
                 ctxC.font = "15px sans-serif";
                 ctxC.textBaseline = "top";
@@ -47,12 +51,23 @@
                 });
                 
                 (new Life()).render();
+                console.groupCollapsed("A square represents a person");
+                    console.log("- Each tribe has a different color");
+                    console.groupCollapsed("- Aging reduce opacity");
+                        console.log("- Aging is reduce by water access");
+                        console.log("- Loneliness and desert quicken aging");
+                    console.groupEnd();
+                    console.groupCollapsed("- Two adjacent person can reproduce");
+                        console.log("- If they're from the same tribe");
+                    console.groupEnd();
+                    console.log("- Sometimes, death can happen at any age");
+                console.groupEnd();
             };
-            window.onresize = resize;
             
             function Life(){
-                this.cells = new Grid(canC.width, canC.height, Cell.size);
-                this.eggs = new Grid(canC.width, canC.height, Cell.size);
+                this.cells = new Grid(canC.width, canC.height, Cell.SIZE);
+                this.nextTribe = Life.TRIBES[0];
+                this.eggs = new Grid(canC.width, canC.height, Cell.SIZE);
                 this.map = new Map(canC.width, canC.height);
                 
                 var self = this;
@@ -68,6 +83,7 @@
                     self.hatchEggs.call(self);
                 };
             }
+            Life.TRIBES = ["#FFF", "#FAA", "#AFF", "#DAF"];
             Life.prototype = {
                 render: function(){
                     var self = this;
@@ -76,22 +92,28 @@
                     });
                     fps.update();
                     
-                    ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.size, Cell.size);
+                    ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.SIZE, Cell.SIZE);
                     
                     var map = this.map;
-                    ctxC.fillStyle = "#FFF";
                     this.cells.forEach(function(cell, pos){
                         var x = pos[0], y = pos[1];
-                        
-                        if(cell.lives(x, y, map.get(Tile.round(x), Tile.round(y)).type)){
-                            var around = this.neighbors(x, y);
+
+                        if(cell.lives(x, y, {
+                                    tileType: map.get(Tile.round(x), Tile.round(y)).type,
+                                    waterAccess: this.freeSpaces(x, y).filter(function(pos) {
+                                        return map.get(Tile.round(pos[0]), Tile.round(pos[1])).type == Tile.OCEAN;
+                                    }).length
+                                })){
+                            var around = this.neighbors(x, y).filter(function(other) {
+                                return other.tribe == cell.tribe;
+                            });
                             if(around.length < 1)
-                                cell.hp -= Cell.decayRate*4;
-                            else if(around.length < 3 && rand()<Cell.reproduceRate){
+                                cell.hp -= Cell.DECAY_RATE * 4;
+                            else if(around.length < 3 && rand() < Cell.REPRODUCE_RATE){
                                 var spaces = this.freeSpaces(x, y);
                                 if(spaces.length){
                                     var choosed = spaces[rand()*spaces.length<<0];
-                                    this.put(choosed[0], choosed[1], new Cell());
+                                    this.put(choosed[0], choosed[1], new Cell(cell.tribe));
                                 }
                             }
                         }
@@ -102,19 +124,18 @@
                     });
                     ctxC.globalAlpha = 1;
                     
-                    ctxC.fillStyle = "#FBB";
+                    ctxC.fillStyle = this.nextTribe;
                     this.eggs.forEach(function(egg, pos){
-                        ctxC.fillRect(pos[0], pos[1], Cell.size, Cell.size);
+                        ctxC.fillRect(pos[0], pos[1], Cell.SIZE, Cell.SIZE);
                     });
-                    
-                    ctxC.fillStyle = "#49B";
-                    ctxC.fillRect(Cell.round(this.mouse.getX()), Cell.round(this.mouse.getY()), Cell.size, Cell.size);
+
+                    ctxC.fillRect(Cell.round(this.mouse.getX()), Cell.round(this.mouse.getY()), Cell.SIZE, Cell.SIZE);
                 },
                 addEggs: function(){
                     var x = Cell.round(this.mouse.buffer.x),
                         y = Cell.round(this.mouse.buffer.y);
                     if(!this.cells.get(x, y))
-                        this.eggs.put(x, y, new Cell());
+                        this.eggs.put(x, y, new Cell(this.nextTribe));
                 },
                 hatchEggs: function(){
                     var self = this;
@@ -122,38 +143,46 @@
                         self.cells.put(pos[0], pos[1], egg);
                     });
                     this.eggs.empty();
+                    this.nextTribe = Life.TRIBES[rand() * Life.TRIBES.length <<0];
                 }
             };
             
-            function Cell(){
+            function Cell(tribe){
                 this.hp = 1;
+                this.tribe = tribe;
             }
-            Cell.size = 10;
-            Cell.accidentRate = 17e-4;
-            Cell.decayRate = 1e-3;
-            Cell.reproduceRate = 7e-3;
+            Cell.SIZE = 10;
+            Cell.ACCIDENT_RATE = 16e-4;
+            Cell.DECAY_RATE = 3e-3;
+            Cell.REPRODUCE_RATE = 8e-3;
             Cell.round = function(x){
-                return (x/Cell.size<<0)*Cell.size;
+                return (x/Cell.SIZE<<0)*Cell.SIZE;
             };
             Cell.prototype = {
                 lives: function(x, y, conditions){
-                    var survive = !conditions||rand()<(Cell.accidentRate+(pow(1-this.hp, 2))*Cell.accidentRate)?false:true;
+                    var survive = conditions.tileType != Tile.OCEAN || rand() < (Cell.ACCIDENT_RATE + (pow(1-this.hp, 2)) * Cell.ACCIDENT_RATE);
                     
                     if(survive){
                         ctxC.globalAlpha = this.hp;
 
-                        ctxC.clearRect(x, y, Cell.size, Cell.size);
-                        ctxC.fillRect(x, y, Cell.size, Cell.size);
+                        this.draw(x, y);
                         
-                        this.hp -= Cell.decayRate*pow(conditions, 1.7);
+                        this.hp -= (Cell.DECAY_RATE * (conditions.tileType == Tile.GROUND ? 1 : 3)) / (conditions.waterAccess*3 + 1);
                         if(this.hp < 0.2)
                             survive = false;
                     }
                     
                     return survive;
                 },
+                draw: function(x, y) {
+                    ctxC.clearRect(x, y, Cell.SIZE, Cell.SIZE);
+                    ctxC.beginPath();
+                    ctxC.fillStyle = this.tribe;
+                    ctxC.fillRect(x, y, Cell.SIZE, Cell.SIZE);
+
+                },
                 dies: function(x, y){
-                    ctxC.clearRect(x, y, Cell.size, Cell.size);
+                    ctxC.clearRect(x, y, Cell.SIZE, Cell.SIZE);
                 }
             };
             
@@ -163,24 +192,25 @@
             }
             
             function Map(maxX, maxY){
-                this.grid = new Grid(maxX, maxY, Tile.size);
+                this.grid = new Grid(maxX, maxY, Tile.SIZE);
                 
                 var loss = 0.1,
                     centerY = Tile.round(maxY/2<<0);
                 
                 for(var i=0;i<3;++i){
                     var x = Tile.round(rand()*maxX<<0),
-                        expand = this.grid.freeSpaces(x, centerY),
-                        radius = (rand()*6+3)*Tile.size;
+                        y = Tile.round(maxY/4 + rand() * maxY / 2<<0),
+                        expand = this.grid.freeSpaces(x, y),
+                        radius = (rand()*6+3)*Tile.SIZE;
                     
-                    this.grid.put(x, centerY, new Tile(Tile.GROUND));
+                    this.grid.put(x, y, new Tile(Tile.GROUND));
                     while(expand.length>0){
                         var nexts = [],
                             pos;
                         while(pos = expand.pop()){
                             if(rand()>loss){
                                 this.grid.put(pos[0], pos[1], new Tile(rand()<0.2?Tile.DESERT:Tile.GROUND));
-                                if(distance(pos[0], pos[1], x, centerY) < radius)
+                                if(distance(pos[0], pos[1], x, y) < radius)
                                     nexts = nexts.concat(this.grid.freeSpaces(pos[0], pos[1]));
                             }
                             else{
@@ -191,9 +221,9 @@
                     }
                 }
                 
-                for(var i=0, l=ceil(maxX/Tile.size)*ceil(maxY/Tile.size);i<l;++i){
-                    var x = (i*Tile.size)%maxX,
-                        y = (i*Tile.size/maxX<<0)*Tile.size;
+                for(var i=0, l=floor(maxX/Tile.SIZE)*floor(maxY/Tile.SIZE);i<l;++i){
+                    var x = (i*Tile.SIZE)%maxX,
+                        y = (i*Tile.SIZE/maxX<<0)*Tile.SIZE;
                     if(!this.grid.get(x, y))
                         this.grid.put(x, y, new Tile(Tile.OCEAN));
                 }
@@ -214,18 +244,18 @@
             function Tile(type){
                 this.type = type;
             }
-            Tile.size = Cell.size*3;
-            Tile.colors = ["#348", "#5C1", "#DD2"];
+            Tile.SIZE = Cell.SIZE*3;
+            Tile.COLORS = ["#348", "#5C1", "#DD2"];
             Tile.OCEAN = 0;
             Tile.GROUND = 1;
             Tile.DESERT = 2;
             Tile.round = function(x){
-                return (x/Tile.size<<0)*Tile.size;
+                return (x/Tile.SIZE<<0)*Tile.SIZE;
             };
             Tile.prototype = {
                 draw: function(x, y){
-                    ctxM.fillStyle = Tile.colors[this.type];
-                    ctxM.fillRect(x, y, Tile.size, Tile.size);
+                    ctxM.fillStyle = Tile.COLORS[this.type];
+                    ctxM.fillRect(x, y, Tile.SIZE, Tile.SIZE);
                 }
             };
             
@@ -330,11 +360,6 @@
                     return this.y;
                 }
             };
-            
-            function resize(){
-                canC.height = document.body.offsetHeight;
-                canC.width = document.body.offsetWidth;
-            }
         </script>
     </body>
 </html>
