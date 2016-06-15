@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The randomness of Life</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            html, body{
+                margin: 0;
+                height: 100%;
+                overflow: hidden;
+            }
+            canvas{
+                display: block;
+                cursor: none;
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="m"></canvas>
+        <canvas id="c"></canvas>
+        <script src="../res/js/fps.js"></script>
+        <script>
+            var canC = document.getElementById("c"),
+                ctxC = canC.getContext("2d"),
+                canM = document.getElementById("m"),
+                ctxM = canM.getContext("2d"),
+                pow = Math.pow,
+                floor = function (x) {
+                    return x<<0;
+                },
+                ceil = function(x){
+                    return x+1<<0;
+                },
+                rand = Math.random,
+                fps;
+            
+            window.onload = function(){
+                canC.height = Tile.round(document.body.offsetHeight);
+                canC.width = Tile.round(document.body.offsetWidth);
+                canM.height = Tile.round(document.body.offsetHeight);
+                canM.width = Tile.round(document.body.offsetWidth);
+                
+                ctxC.font = "15px sans-serif";
+                ctxC.textBaseline = "top";
+                fps = new FPS(function(n){
+                    ctxC.clearRect(5, 5, 50, 50);
+                    ctxC.fillStyle = "#000";
+                    ctxC.fillText(n, 5, 5); 
+                });
+                
+                (new Life()).render();
+                console.groupCollapsed("A square represents a person");
+                    console.log("- Each tribe has a different color");
+                    console.groupCollapsed("- Aging reduce opacity");
+                        console.log("- Aging is reduce by water access");
+                        console.log("- Loneliness and desert quicken aging");
+                    console.groupEnd();
+                    console.groupCollapsed("- Two adjacent person can reproduce");
+                        console.log("- If they're from the same tribe");
+                    console.groupEnd();
+                    console.log("- Sometimes, death can happen at any age");
+                console.groupEnd();
+            };
+            
+            function Life(){
+                this.cells = new Grid(canC.width, canC.height, Cell.SIZE);
+                this.nextTribe = Life.TRIBES[0];
+                this.eggs = new Grid(canC.width, canC.height, Cell.SIZE);
+                this.map = new Map(canC.width, canC.height);
+                
+                var self = this;
+                this.mouse = new MouseTracker();
+                this.mouse.down = function(){
+                    self.addEggs.call(self);
+                };
+                this.mouse.move = function(){
+                    if(this.isDown)
+                        self.addEggs.call(self);
+                };
+                this.mouse.up = function(){
+                    self.hatchEggs.call(self);
+                };
+            }
+            Life.TRIBES = ["#FFF", "#FAA", "#AFF", "#DAF"];
+            Life.prototype = {
+                render: function(){
+                    var self = this;
+                    requestAnimationFrame(function(){
+                        self.render.call(self);
+                    });
+                    fps.update();
+                    
+                    ctxC.clearRect(Cell.round(this.mouse.buffer.x), Cell.round(this.mouse.buffer.y), Cell.SIZE, Cell.SIZE);
+                    
+                    var map = this.map;
+                    this.cells.forEach(function(cell, pos){
+                        var x = pos[0], y = pos[1];
+
+                        if(cell.lives(x, y, {
+                                    tileType: map.get(Tile.round(x), Tile.round(y)).type,
+                                    waterAccess: this.freeSpaces(x, y).filter(function(pos) {
+                                        return map.get(Tile.round(pos[0]), Tile.round(pos[1])).type == Tile.OCEAN;
+                                    }).length
+                                })){
+                            var around = this.neighbors(x, y).filter(function(other) {
+                                return other.tribe == cell.tribe;
+                            });
+                            if(around.length < 1)
+                                cell.hp -= Cell.DECAY_RATE * 4;
+                            else if(around.length < 3 && rand() < Cell.REPRODUCE_RATE){
+                                var spaces = this.freeSpaces(x, y);
+                                if(spaces.length){
+                                    var choosed = spaces[rand()*spaces.length<<0];
+                                    this.put(choosed[0], choosed[1], new Cell(cell.tribe));
+                                }
+                            }
+                        }
+                        else{
+                            this.remove(x, y);
+                            cell.dies(x, y);
+                        }
+                    });
+                    ctxC.globalAlpha = 1;
+                    
+                    ctxC.fillStyle = this.nextTribe;
+                    this.eggs.forEach(function(egg, pos){
+                        ctxC.fillRect(pos[0], pos[1], Cell.SIZE, Cell.SIZE);
+                    });
+
+                    ctxC.fillRect(Cell.round(this.mouse.getX()), Cell.round(this.mouse.getY()), Cell.SIZE, Cell.SIZE);
+                },
+                addEggs: function(){
+                    var x = Cell.round(this.mouse.buffer.x),
+                        y = Cell.round(this.mouse.buffer.y);
+                    if(!this.cells.get(x, y))
+                        this.eggs.put(x, y, new Cell(this.nextTribe));
+                },
+                hatchEggs: function(){
+                    var self = this;
+                    this.eggs.forEach(function(egg, pos){
+                        self.cells.put(pos[0], pos[1], egg);
+                    });
+                    this.eggs.empty();
+                    this.nextTribe = Life.TRIBES[rand() * Life.TRIBES.length <<0];
+                }
+            };
+            
+            function Cell(tribe){
+                this.hp = 1;
+                this.tribe = tribe;
+            }
+            Cell.SIZE = 10;
+            Cell.ACCIDENT_RATE = 16e-4;
+            Cell.DECAY_RATE = 3e-3;
+            Cell.REPRODUCE_RATE = 8e-3;
+            Cell.round = function(x){
+                return (x/Cell.SIZE<<0)*Cell.SIZE;
+            };
+            Cell.prototype = {
+                lives: function(x, y, conditions){
+                    var survive = conditions.tileType != Tile.OCEAN || rand() < (Cell.ACCIDENT_RATE + (pow(1-this.hp, 2)) * Cell.ACCIDENT_RATE);
+                    
+                    if(survive){
+                        ctxC.globalAlpha = this.hp;
+
+                        this.draw(x, y);
+                        
+                        this.hp -= (Cell.DECAY_RATE * (conditions.tileType == Tile.GROUND ? 1 : 3)) / (conditions.waterAccess*3 + 1);
+                        if(this.hp < 0.2)
+                            survive = false;
+                    }
+                    
+                    return survive;
+                },
+                draw: function(x, y) {
+                    ctxC.clearRect(x, y, Cell.SIZE, Cell.SIZE);
+                    ctxC.beginPath();
+                    ctxC.fillStyle = this.tribe;
+                    ctxC.fillRect(x, y, Cell.SIZE, Cell.SIZE);
+
+                },
+                dies: function(x, y){
+                    ctxC.clearRect(x, y, Cell.SIZE, Cell.SIZE);
+                }
+            };
+            
+            function distance(x1, y1, x2, y2){
+                var res = Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+                return res;
+            }
+            
+            function Map(maxX, maxY){
+                this.grid = new Grid(maxX, maxY, Tile.SIZE);
+                
+                var loss = 0.1,
+                    centerY = Tile.round(maxY/2<<0);
+                
+                for(var i=0;i<3;++i){
+                    var x = Tile.round(rand()*maxX<<0),
+                        y = Tile.round(maxY/4 + rand() * maxY / 2<<0),
+                        expand = this.grid.freeSpaces(x, y),
+                        radius = (rand()*6+3)*Tile.SIZE;
+                    
+                    this.grid.put(x, y, new Tile(Tile.GROUND));
+                    while(expand.length>0){
+                        var nexts = [],
+                            pos;
+                        while(pos = expand.pop()){
+                            if(rand()>loss){
+                                this.grid.put(pos[0], pos[1], new Tile(rand()<0.2?Tile.DESERT:Tile.GROUND));
+                                if(distance(pos[0], pos[1], x, y) < radius)
+                                    nexts = nexts.concat(this.grid.freeSpaces(pos[0], pos[1]));
+                            }
+                            else{
+                                this.grid.put(pos[0], pos[1], new Tile(Tile.OCEAN));
+                            }
+                        }
+                        expand = nexts;
+                    }
+                }
+                
+                for(var i=0, l=floor(maxX/Tile.SIZE)*floor(maxY/Tile.SIZE);i<l;++i){
+                    var x = (i*Tile.SIZE)%maxX,
+                        y = (i*Tile.SIZE/maxX<<0)*Tile.SIZE;
+                    if(!this.grid.get(x, y))
+                        this.grid.put(x, y, new Tile(Tile.OCEAN));
+                }
+                
+                this.draw();
+            }
+            Map.prototype = {
+                draw: function(){
+                    this.grid.forEach(function(tile, pos){
+                        tile.draw(pos[0], pos[1]);
+                    });
+                },
+                get: function(x, y){
+                    return this.grid.get(x, y);
+                }
+            };
+            
+            function Tile(type){
+                this.type = type;
+            }
+            Tile.SIZE = Cell.SIZE*3;
+            Tile.COLORS = ["#348", "#5C1", "#DD2"];
+            Tile.OCEAN = 0;
+            Tile.GROUND = 1;
+            Tile.DESERT = 2;
+            Tile.round = function(x){
+                return (x/Tile.SIZE<<0)*Tile.SIZE;
+            };
+            Tile.prototype = {
+                draw: function(x, y){
+                    ctxM.fillStyle = Tile.COLORS[this.type];
+                    ctxM.fillRect(x, y, Tile.SIZE, Tile.SIZE);
+                }
+            };
+            
+            function Grid(maxX, maxY, unit){
+                this.all = {};
+                this.bounds = {
+                    x: maxX,
+                    y: maxY
+                };
+                this.unit = unit;
+            }
+            Grid.prototype = {
+               put: function(x, y, o){
+                   this.all[x+'|'+y] = o;
+               },
+               get: function(x, y){
+                   return this.all[x+'|'+y];
+               },
+               neighbors: function(x, y){
+                   var n = [];
+                   
+                   var o = this.get(x, y-this.unit);
+                   if(o) n.push(o);
+                   o = this.get(+x+this.unit, y);
+                   if(o) n.push(o);
+                   o = this.get(x, +y+this.unit);
+                   if(o) n.push(o);
+                   o = this.get(x-this.unit, y);
+                   if(o) n.push(o);
+                   
+                   return n;
+               },
+               freeSpaces: function(x, y){
+                   var n = [],
+                       ax, ay;
+                   
+                   ax = x, ay = y-this.unit;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = +x+this.unit, ay = y;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = x, ay = +y+this.unit;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   ax = x-this.unit, ay = y;
+                   if(!this.get(ax, ay) && 0<=ax && ax<this.bounds.x && 0<=ay && ay<this.bounds.y) n.push([ax, ay]);
+                   
+                   return n;
+               },
+               remove: function(x, y){
+                   delete(this.all[x+'|'+y]);
+               },
+               empty: function(){
+                   this.all = {};
+               },
+               forEach: function(f){
+                   for(var pos in this.all){
+                       if(this.all.hasOwnProperty(pos)){
+                           f.call(this, this.all[pos], pos.split("|"));
+                       }
+                   }
+               }
+            };
+            
+            function MouseTracker(){
+                this.x = -100;
+                this.y = -100;
+                this.isDown = false;
+                this.buffer = {
+                    x: this.x, y: this.y
+                };
+                var self = this;
+                window.onmousemove = function(e){
+                    self.update.call(self, e.clientX, e.clientY);
+                    self.move.call(self);
+                };
+                window.onmousedown = function(){
+                    self.isDown = true;
+                    self.down.call(self);
+                };
+                window.onmouseup = function(){
+                    self.isDown = false;
+                    self.up.call(self);
+                };
+                window.onmouseout = function(){
+                    self.x = -100;
+                    self.y = -100;
+                };
+            }
+            MouseTracker.prototype = {
+                move: function(){},
+                down: function(){},
+                up: function(){},
+                update: function(x, y){
+                    this.x = x;
+                    this.y = y;
+                },
+                getX: function(){
+                    this.buffer.x = this.x;
+                    return this.x;
+                },
+                getY: function(){
+                    this.buffer.y = this.y;
+                    return this.y;
+                }
+            };
+        </script>
+    </body>
+</html>
