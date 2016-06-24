@@ -336,10 +336,16 @@ var sqrt = Math.sqrt,
     SQRT2 = sqrt(2) / 2;
 
 function random(from, to){
-    from = from || 0;
+    from = +from || 0;
     if(to === undefined){
-        to = from;
+        if(from === 0)
+            to = 1;
+        else
+            to = from;
         from = 0;
+    }
+    else{
+        to = +to;
     }
     return r()*(to - from)+from;
 }
