@@ -310,7 +310,7 @@ var sqrt = Math.sqrt,
         return pow(x, 2);
     },
     floor = function(x){
-        if(x > 0)
+        if(x >= 0)
             return x << 0;
         else
             return x - 1 << 0;
@@ -350,24 +350,18 @@ function random(from, to){
     return r()*(to - from)+from;
 }
 
-function size(array){
-    if(array instanceof Array)
-        return array.length;
-    else{
-        var sum = 0;
-        for(var k in array)
-            if(array.hasOwnProperty(k))
-                ++sum;
-        return sum;
-    }
-}
-
 Array.prototype.out = function(o){
     var index = this.indexOf(o);
     if(index >= 0)
         this.splice(index, 1);
     else
         throw o + " not find in this array";
+};
+Array.prototype.random = function() {
+    if(!this.length){
+        throw "Empty array";
+    }
+    return this[floor(random(this.length-1))];
 };
 
 String.prototype.hashCode = function(){
@@ -382,10 +376,11 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
-function get(url, callback){
+function get(url, callback, failback){
     var xhr = new XMLHttpRequest();
     xhr.open("get", url);
     xhr.onload = callback;
+    xhr.onerror = failback;
     xhr.send();
     return xhr;
 }
