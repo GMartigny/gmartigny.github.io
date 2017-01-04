@@ -5,6 +5,16 @@
             body{
                 margin: 0;
             }
+            body.hover {
+                cursor: -webkit-grab;
+                cursor: -moz-grab;
+                cursor: grab;
+            }
+            body.move {
+                cursor: -webkit-grabbing;
+                cursor: -moz-grabbing;
+                cursor: grabbing;
+            }
             #c{
                 width: 100%;
                 height: 100%;
@@ -108,14 +118,16 @@
                 c.stroke();
             };
             Point.prototype.isIn = function(m){
-                return distance(this, m) < Point.r;
+                return distance(this, m) < Point.r + 3;
             };
             Point.r = 5;
 
             can.onmousedown = function(e){
                 if(e.which == 1){
-                    if(hover)
+                    if(hover) {
+                        document.body.className = "move";
                         hover.drag = 1;
+                    }
                     else
                         tmp = new Point(e.clientX, e.clientY);
                 }
@@ -141,15 +153,14 @@
                         var p = pts[i];
                         if(p.isIn({x: e.clientX, y: e.clientY})){
                             hover = p;
-                            document.body.style.cursor = "move";
+                            document.body.className = "hover";
                             break;
                         }
                         else{
                             hover = 0;
-                            document.body.style.cursor = "";
+                            document.body.className = "";
                         }
                     }
-                    ;
                 }
             };
             can.onmouseup = function(){
@@ -157,8 +168,10 @@
                     pts.push(tmp);
                     tmp = 0;
                 }
-                else
+                else {
+                    document.body.className = "hover";
                     hover.drag = 0;
+                }
             };
 
             (function draw(){
@@ -177,7 +190,7 @@
 
                     ctx.strokeStyle = "#666";
                     ctx.beginPath();
-                    ctx.splineThrought(allPos, edge, pathClosed);
+                    ctx.splineThrough(allPos, edge, pathClosed);
                     ctx.stroke();
                     ctx.closePath();
                 }
