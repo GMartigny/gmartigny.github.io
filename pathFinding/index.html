@@ -44,7 +44,7 @@
     <body>
         <aside id="menu">
             <ul>
-                <li>Clic and drag to draw obstacle</li>
+                <li>Click and drag to draw obstacle</li>
                 <li><kbd>space</kbd> randomize tiles</li>
                 <li><kbd>ctrl</kbd>+<kbd>space</kbd> randomize (maze style)</li>
                 <li><kbd>enter</kbd> start the path finder</li>
@@ -200,7 +200,7 @@
                     }, PathFinder.TIMEOUT/2);
                 }
                 else{
-                    document.getElementById("res").innerHTML = "efficiency : " + (this.path/this.evaluated).toFixed(2)
+                    document.getElementById("res").textContent = "efficiency : " + (this.path/this.evaluated).toFixed(2)
                 }
                 this.pointer.render();
                 this.pointer = this.pointer.comeFrom;
@@ -212,6 +212,8 @@
                     this.opened = [];
                     this.pointer = false;
                 }
+                this.path = 0;
+                this.evaluated = 0;
                 this.grid.reset();
             };
 
@@ -280,18 +282,15 @@
                 this.forEach(function(t){
                     if(t.pos.x%2 || t.pos.y%2){
                         t.state = 2;
-                        if(t.pos.x%2 != t.pos.y%2)
-                            walls.push(t);
+                        if(t.pos.x%2 != t.pos.y%2) {
+                            if (Math.random() < 0.55) {
+                                t.state = 1;
+                            }
+                        }
                     }
                     else
                         t.state = 1;
                     t.render();
-                });
-                walls.forEach(function(w){
-                    if(Math.random()<0.55){
-                        w.state = 1;
-                        w.render();
-                    }
                 });
                 this.setBounds();
             };
