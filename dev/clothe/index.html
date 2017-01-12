@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clothe</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+        #main {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="main"></canvas>
+    <script src="clothe.js"></script>
+    <script>
+        (function(canvas) {
+            canvas.width = document.body.offsetWidth;
+            canvas.height = document.body.offsetHeight;
+
+            new Clothe(canvas.getContext("2d"), 35, 20);
+
+        })(document.getElementById("main"));
+    </script>
+</body>
+</html>
