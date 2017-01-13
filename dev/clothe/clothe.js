@@ -1,6 +1,6 @@
 "use strict";
 
-var SHOW_WIREFRAME = true;
+var SHOW_WIREFRAME = false;
 var DEBUG = false;
 
 /**
@@ -36,6 +36,7 @@ class Clothe {
             x: 50,
             y: 20
         };
+        var isDiagonal = true;
 
         for (var i = 0; i < h; ++i) { // Columns
             for (var j = 0; j < w; ++j) { // Lines
@@ -45,13 +46,17 @@ class Clothe {
                     n.stick();
                 }
                 else {
-                    // n.pos.x += Math.random() * 4 - 2;
-                    // n.pos.y += Math.random() * 4 - 2;
-                    n.linkTo(this.nodes[((i - 1) * w) + j]);
+                    n.linkTo(this.nodes[((i - 1) * w) + j]); // link to top
+
+                    if (j !== 0) { // Not first Column
+                        n.linkTo(this.nodes[((i - 1) * w) + (j - 1)], isDiagonal); // link to top-left
+
+                        this.nodes[(i * w) + (j - 1)].linkTo(this.nodes[((i - 1) * w) + j], isDiagonal); // link left one to top one
+                    }
                 }
 
                 if (j !== 0) { // Not first Column
-                    n.linkTo(this.nodes[(i * w) + j - 1]);
+                    n.linkTo(this.nodes[(i * w) + (j - 1)]); // link to left
                 }
 
                 this.nodes.push(n);
@@ -74,6 +79,8 @@ class Clothe {
         this.nodes = this.nodes.filter(n => n.links.length);
     }
 }
+Clothe.COLOR_HUE = "22";
+Clothe.COLOR_SAT = "85%";
 
 /**
  * A node of a clothe
@@ -106,8 +113,8 @@ class Node {
      * Tied two nodes together
      * @param {Node} other - Any other node
      */
-    linkTo (other) {
-        var lnk = new Link(this, other);
+    linkTo (other, isDiagonal) {
+        var lnk = new Link(this, other, isDiagonal);
         this.links.push(lnk);
         other.links.push(lnk);
     };
@@ -155,9 +162,33 @@ class Node {
                 ctx.stroke();
             }
         }
+        else if (this.links.length) {
+
+            if (this.links.length === 1) {
+
+            }
+            else {
+                var luminosity = "50%";
+
+                ctx.beginPath();
+                var other = this.links[0].getOther(this);
+                ctx.moveTo(other.pos.x, other.pos.y);
+
+                for (var i = 1; i < this.links.length; ++i) {
+                    let lnk = this.links[i];
+                    if (!lnk.isDiagonal || true) {
+                        other = lnk.getOther(this);
+                        ctx.lineTo(other.pos.x, other.pos.y);
+                    }
+                }
+
+                ctx.fillStyle = "hsl(" + Clothe.COLOR_HUE + ", " + Clothe.COLOR_SAT + ", " + luminosity + ")";
+                ctx.fill();
+            }
+        }
 
         this.move();
-    }
+    };
 
     /**
      * Apply speed to position
@@ -180,21 +211,31 @@ class Node {
                 this.speed.y += Node.GRAVITY / 10;
 
                 // add wind
-                this.speed.x += Wind.x * (Math.random() / 2.5);
-                this.speed.y += Wind.y * (Math.random() / 2.5);
+                this.speed.x += (Wind.x * Math.random()) / 2.5;
+                this.speed.y += (Wind.y * Math.random()) / 2.5;
 
                 // air friction
                 this.speed.x *= 1 - Node.FRICTION;
                 this.speed.y *= 1 - Node.FRICTION;
             }
 
-            this.grabbed = Mouse.pressed && Node.distance(this, Mouse) < Node.SIZE;
+            if (!Mouse.busy) {
+                if (Mouse.pressed && Node.distance(this, Mouse) < Node.SIZE) {
+                    this.grabbed = true;
+                    Mouse.busy = true;
+                }
+                else {
+                    this.grabbed = false;
+                }
+            }
         }
         else {
             this.speed.x = 0;
             this.speed.y = 0;
         }
-    }
+    };
+
+
 
     /**
      * Compute distance between two nodes
@@ -204,7 +245,7 @@ class Node {
      */
     static distance (from, to) {
         return Math.sqrt(Math.pow((from.pos.x - to.pos.x), 2) + Math.pow((from.pos.y - to.pos.y), 2));
-    }
+    };
 }
 Node.SIZE = 4;
 Node.FRICTION = 0.04; // 0 no friction
@@ -215,9 +256,10 @@ Node.GRAVITY = 1.5;
  * @class
  */
 class Link {
-    constructor (from, to) {
+    constructor (from, to, diagonal) {
         this.from = from;
         this.to = to;
+        this.isDiagonal = diagonal;
         this.length = Node.distance(from, to);
     };
 
@@ -235,9 +277,6 @@ class Link {
             ctx.strokeStyle = "#333";
             ctx.stroke();
             ctx.closePath();
-        }
-        else {
-            ctx.lineTo(this.from.pos.x, this.from.pos.y);
         }
 
         var tension = this.getTension();
@@ -277,15 +316,29 @@ class Link {
                 this.breakIt();
             }
             else {
-                var ratio = (distance - this.length) * Link.STIFFNESS;
+                var ratio = (distance - this.length) * Link.STIFFNESS * 0.005;
 
-                tension.x = Math.abs(this.from.pos.x - this.to.pos.x) * ratio * 0.005;
-                tension.y = Math.abs(this.from.pos.y - this.to.pos.y) * ratio * 0.005;
+                tension.x = Math.abs(this.from.pos.x - this.to.pos.x) * ratio;
+                tension.y = Math.abs(this.from.pos.y - this.to.pos.y) * ratio;
             }
         }
 
         return tension;
     };
+
+    /**
+     * Return the opposite of a node
+     * @param {Node} node - One of the link's node
+     * @return {Node}
+     */
+    getOther (node) {
+        if (node.id === this.from.id) {
+            return this.to;
+        }
+        else if (node.id === this.to.id) {
+            return this.from;
+        }
+    }
 
     /**
      * Break the link
@@ -295,8 +348,8 @@ class Link {
     };
 }
 Link.SIZE = 1; // Drawing size
-Link.STIFFNESS = 4; // Resistance to elongation (value > 10 bug)
-Link.RESISTANCE = 4; // Can elongate by
+Link.STIFFNESS = 4; // Resistance to elongation (high values lead to bug)
+Link.RESISTANCE = 3; // Can elongate by
 
 var Wind = (function() {
 
@@ -357,7 +410,8 @@ var Mouse = (function() {
             x: 0,
             y: 0
         },
-        pressed: false
+        pressed: false,
+        busy: false
     };
 
     window.addEventListener("mousemove", function(e) {
@@ -369,8 +423,21 @@ var Mouse = (function() {
     });
     window.addEventListener("mouseup", function() {
         data.pressed = false;
+        data.busy = false;
     });
 
     return data;
 })();
 
+var Triangle = (function() {
+    return {
+        area: function(p1, p2, p3) {
+            var side1 = Node.distance(p1, p2);
+            var side2 = Node.distance(p2, p3);
+            var side3 = Node.distance(p3, p1);
+            var halfPerimeter = (side1 + side2 + side3) / 2;
+
+            return Math.sqrt(halfPerimeter * (halfPerimeter - side1) * (halfPerimeter - side2) * (halfPerimeter - side3));
+        }
+    };
+})();
