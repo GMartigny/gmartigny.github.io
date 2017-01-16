@@ -33,30 +33,30 @@ class Clothe {
         this.nodes = [];
         var distance = 20;
         var margin = {
-            x: 50,
-            y: 20
+            x: (this.ctx.canvas.width - w * distance) / 2,
+            y: (this.ctx.canvas.height - h * distance * Node.GRAVITY) / 2
         };
-        var isDiagonal = true;
 
         for (var i = 0; i < h; ++i) { // Columns
             for (var j = 0; j < w; ++j) { // Lines
                 let n = new Node(j * distance + margin.x, i * distance + margin.y);
 
+                if (j !== 0) { // Not first Column
+                    var left = this.nodes[(i * w) + (j - 1)];
+                    n.linkTo(left);
+                }
+
                 if (i === 0) { // First line
                     n.stick();
                 }
                 else {
-                    n.linkTo(this.nodes[((i - 1) * w) + j]); // link to top
+                    let top = this.nodes[((i - 1) * w) + j];
+                    n.linkTo(top);
 
-                    if (j !== 0) { // Not first Column
-                        n.linkTo(this.nodes[((i - 1) * w) + (j - 1)], isDiagonal); // link to top-left
-
-                        this.nodes[(i * w) + (j - 1)].linkTo(this.nodes[((i - 1) * w) + j], isDiagonal); // link left one to top one
+                    if (j !== 0) {
+                        let topLeft = this.nodes[((i - 1) * w) + (j - 1)];
+                        n.polygon = [top, topLeft, left];
                     }
-                }
-
-                if (j !== 0) { // Not first Column
-                    n.linkTo(this.nodes[(i * w) + (j - 1)]); // link to left
                 }
 
                 this.nodes.push(n);
@@ -74,9 +74,10 @@ class Clothe {
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+        this.nodes.forEach(n => n.move());
         this.nodes.forEach(n => n.render(this.ctx));
 
-        this.nodes = this.nodes.filter(n => n.links.length);
+        this.nodes = this.nodes.filter(n => !n.removed);
     }
 }
 Clothe.COLOR_HUE = "22";
@@ -91,6 +92,7 @@ class Node {
         this.id = Math.random().toString(36).slice(2);
         this.sticky = false;
         this.grabbed = false;
+        this.removed = false;
         this.pos = {
             x: x,
             y: y
@@ -100,6 +102,7 @@ class Node {
             y: 0
         };
         this.links = [];
+        this.polygon = null;
     };
 
     /**
@@ -113,8 +116,8 @@ class Node {
      * Tied two nodes together
      * @param {Node} other - Any other node
      */
-    linkTo (other, isDiagonal) {
-        var lnk = new Link(this, other, isDiagonal);
+    linkTo (other) {
+        var lnk = new Link(this, other);
         this.links.push(lnk);
         other.links.push(lnk);
     };
@@ -126,6 +129,7 @@ class Node {
         this.links.splice(index, 1);
         if (this.links.length === 1) {
             this.links[0].breakIt();
+            this.remove();
         }
 
         var thisId = this.id;
@@ -135,17 +139,20 @@ class Node {
         other.links.splice(index, 1);
         if (other.links.length === 1) {
             other.links[0].breakIt();
+            other.remove();
         }
     };
+
+    remove () {
+        this.removed = true;
+
+    }
 
     /**
      * Draw the node into the context
      * @param {CanvasRenderingContext2D} ctx -
      */
     render (ctx) {
-        // draw links => will apply tension to node
-        this.links.forEach(lnk => lnk.render(ctx));
-
         // draw node
         if (SHOW_WIREFRAME) {
             ctx.beginPath();
@@ -164,30 +171,43 @@ class Node {
         }
         else if (this.links.length) {
 
-            if (this.links.length === 1) {
-
+            if (this.polygon) {
+                var filtered = this.polygon.filter(point => !point.removed);
+                if (filtered.length < 3) {
+                    this.polygon = null;
+                }
             }
-            else {
-                var luminosity = "50%";
 
-                ctx.beginPath();
-                var other = this.links[0].getOther(this);
-                ctx.moveTo(other.pos.x, other.pos.y);
-
-                for (var i = 1; i < this.links.length; ++i) {
-                    let lnk = this.links[i];
-                    if (!lnk.isDiagonal || true) {
-                        other = lnk.getOther(this);
-                        ctx.lineTo(other.pos.x, other.pos.y);
-                    }
+            if (this.polygon) {
+                var luminosity = 100 - (Quadri.area(this, this.polygon[0], this.polygon[1], this.polygon[2]) / 30 + 25);
+                if (luminosity > 80) {
+                    luminosity = 80;
+                }
+                else if (luminosity < 20) {
+                    luminosity = 20;
                 }
 
-                ctx.fillStyle = "hsl(" + Clothe.COLOR_HUE + ", " + Clothe.COLOR_SAT + ", " + luminosity + ")";
+                ctx.beginPath();
+                ctx.moveTo(this.pos.x, this.pos.y);
+
+                this.polygon.forEach(function(point) {
+                    if (!point.removed) {
+                        ctx.lineTo(point.pos.x, point.pos.y);
+                    }
+                    else {
+                    }
+                });
+
+                var color = "hsl(" + Clothe.COLOR_HUE + ", " + Clothe.COLOR_SAT + ", " + luminosity + "%)";
+                ctx.fillStyle = color;
+                ctx.strokeStyle = color;
+                ctx.stroke();
                 ctx.fill();
             }
         }
 
-        this.move();
+        // draw links => will apply tension to node
+        this.links.forEach(lnk => lnk.render(ctx));
     };
 
     /**
@@ -235,8 +255,6 @@ class Node {
         }
     };
 
-
-
     /**
      * Compute distance between two nodes
      * @param {Node} from - Any node
@@ -249,17 +267,16 @@ class Node {
 }
 Node.SIZE = 4;
 Node.FRICTION = 0.04; // 0 no friction
-Node.GRAVITY = 1.5;
+Node.GRAVITY = 1.4;
 
 /**
  * A link between two nodes
  * @class
  */
 class Link {
-    constructor (from, to, diagonal) {
+    constructor (from, to) {
         this.from = from;
         this.to = to;
-        this.isDiagonal = diagonal;
         this.length = Node.distance(from, to);
     };
 
@@ -269,15 +286,15 @@ class Link {
      */
     render (ctx) {
         // draw this link
+        ctx.beginPath();
+        ctx.moveTo(this.from.pos.x, this.from.pos.y);
+        ctx.lineTo(this.to.pos.x, this.to.pos.y);
+        ctx.lineWidth = Link.SIZE;
         if (SHOW_WIREFRAME) {
-            ctx.beginPath();
-            ctx.moveTo(this.from.pos.x, this.from.pos.y);
-            ctx.lineTo(this.to.pos.x, this.to.pos.y);
-            ctx.lineWidth = Link.SIZE;
             ctx.strokeStyle = "#333";
-            ctx.stroke();
-            ctx.closePath();
         }
+        ctx.stroke();
+        ctx.closePath();
 
         var tension = this.getTension();
         // X
@@ -348,7 +365,7 @@ class Link {
     };
 }
 Link.SIZE = 1; // Drawing size
-Link.STIFFNESS = 4; // Resistance to elongation (high values lead to bug)
+Link.STIFFNESS = 5; // Resistance to elongation (high values lead to bug)
 Link.RESISTANCE = 3; // Can elongate by
 
 var Wind = (function() {
@@ -438,6 +455,14 @@ var Triangle = (function() {
             var halfPerimeter = (side1 + side2 + side3) / 2;
 
             return Math.sqrt(halfPerimeter * (halfPerimeter - side1) * (halfPerimeter - side2) * (halfPerimeter - side3));
+        }
+    };
+})();
+
+var Quadri = (function() {
+    return {
+        area: function(p1, p2, p3, p4) {
+            return Math.abs((p1.pos.x - p3.pos.x) * (p2.pos.y - p4.pos.y)) + Math.abs((p2.pos.x - p4.pos.x) * (p1.pos.y - p3.pos.y));
         }
     };
 })();

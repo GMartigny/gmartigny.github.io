@@ -10,6 +10,7 @@
         }
         #main {
             display: block;
+            width: 1000px;
         }
     </style>
 </head>
@@ -21,10 +22,10 @@
     <script src="clothe.js"></script>
     <script>
         (function(canvas) {
-            canvas.width = document.body.offsetWidth;
+            canvas.width = 1000;
             canvas.height = document.body.offsetHeight;
 
-            new Clothe(canvas.getContext("2d"), 35, 20);
+            new Clothe(canvas.getContext("2d"), 30, 20);
 
         })(document.getElementById("main"));
     </script>
