@@ -37,7 +37,7 @@ class Clothe {
 
         this.init();
         this.render();
-    };
+    }
 
     /**
      * Create node of the clothe
@@ -72,7 +72,7 @@ class Clothe {
                 this.nodes.push(n);
             }
         }
-    };
+    }
 
     /**
      * Draw clothe (and loop)
@@ -124,14 +124,14 @@ class Node {
         };
         this.links = [];
         this.polygon = null;
-    };
+    }
 
     /**
      * Make node unmovable
      */
     stick () {
         this.sticky = true;
-    };
+    }
 
     /**
      * Tie two nodes together
@@ -141,7 +141,7 @@ class Node {
         var lnk = new Link(this, other);
         this.links.push(lnk);
         other.links.push(lnk);
-    };
+    }
 
     /**
      * Determine if this node is linked to another
@@ -179,7 +179,7 @@ class Node {
                 other.unlinkTo(this, true);
             }
         }
-    };
+    }
 
     /**
      * Set this node for removal
@@ -203,23 +203,7 @@ class Node {
         }
         else if (this.links.length) {
 
-            if (this.polygon) {
-                var broke = false;
-                var previous = this;
-                for (var i = 0, l = this.polygon.length; i < l; ++i) {
-                    var point = this.polygon[i];
-                    if (point.removed || !point.isLinkedTo(previous)) {
-                        broke = true;
-                    }
-                    previous = point;
-                }
-                broke = broke || !previous.isLinkedTo(this);
-                if (broke) {
-                    this.polygon = null;
-                }
-            }
-
-            if (this.polygon) {
+            if (this.isPolygonIntact()) {
                 var luminosity = 100 - (Quadri.area(this, this.polygon[0], this.polygon[1], this.polygon[2]) / (Clothe.DENSITY * 1.5) + 30);
                 if (luminosity > 90) {
                     luminosity = 90;
@@ -246,7 +230,29 @@ class Node {
 
         // draw links => will apply tension to node
         this.links.forEach(lnk => lnk.render(ctx));
-    };
+    }
+
+    isPolygonIntact () {
+        if (this.polygon) {
+            var broke = false;
+            var previous = this;
+            for (var i = 0, l = this.polygon.length; i < l; ++i) {
+                var point = this.polygon[i];
+                if (point.removed || !point.isLinkedTo(previous)) {
+                    broke = true;
+                }
+                previous = point;
+            }
+            broke = broke || !previous.isLinkedTo(this);
+            if (broke) {
+                this.polygon = null;
+            }
+            return !broke;
+        }
+        else {
+            return false;
+        }
+    }
 
     /**
      * Apply speed to position
@@ -281,7 +287,7 @@ class Node {
             this.speed.x = 0;
             this.speed.y = 0;
         }
-    };
+    }
 
     /**
      * Compute distance between two nodes
@@ -291,7 +297,7 @@ class Node {
      */
     static distance (from, to) {
         return Math.sqrt(Math.pow((from.pos.x - to.pos.x), 2) + Math.pow((from.pos.y - to.pos.y), 2));
-    };
+    }
 }
 Node.SIZE = 4;
 Node.FRICTION = 0.03; // 0 no friction
@@ -305,7 +311,7 @@ class Link {
         this.from = from;
         this.to = to;
         this.originalLength = Node.distance(from, to);
-    };
+    }
 
     /**
      * Draw the link into the context
@@ -328,28 +334,19 @@ class Link {
 
         var tension = this.getTension();
         // X
-        if (this.from.pos.x < this.to.pos.x) {
-            this.from.speed.x += tension.x / 4;
-            this.to.speed.x -= tension.x / 4;
-        }
-        else {
-            this.from.speed.x -= tension.x / 4;
-            this.to.speed.x += tension.x / 4;
-        }
+        var ratioX = this.from.pos.x < this.to.pos.x ? 4 : -4;
+        this.from.speed.x += tension.x / ratioX;
+        this.to.speed.x -= tension.x / ratioX;
+
         // Y
-        if (this.from.pos.y < this.to.pos.y) {
-            this.from.speed.y += tension.y / 4;
-            this.to.speed.y -= tension.y / 4;
-        }
-        else {
-            this.from.speed.y -= tension.y / 4;
-            this.to.speed.y += tension.y / 4;
-        }
-    };
+        var ratioY = this.from.pos.y < this.to.pos.y ? 4 : -4;
+        this.from.speed.y += tension.y / ratioY;
+        this.to.speed.y -= tension.y / ratioY;
+    }
 
     length () {
         return Node.distance(this.from, this.to);
-    };
+    }
 
     /**
      * Get the tension force of this link
@@ -375,7 +372,7 @@ class Link {
         }
 
         return tension;
-    };
+    }
 
     /**
      * Return the opposite of a node
@@ -397,7 +394,7 @@ class Link {
     breakIt () {
         this.from.unlinkTo(this.to);
         this.to.unlinkTo(this.from);
-    };
+    }
 }
 Link.SIZE = 1; // Drawing size
 
@@ -409,23 +406,27 @@ var Wind = (function() {
     var arrowKeys = [37, 38, 39, 40];
     var pressed = [];
 
+    function keyChange (keyCode, isDown) {
+        switch (keyCode) {
+            case 39: // right
+                vector.x += isDown ? 1 : -1;
+                break;
+            case 37: // left
+                vector.x += isDown ? -1 : 1;
+                break;
+            case 38: // up
+                vector.y += isDown ? -1 : 1;
+                break;
+            case 40: // down
+                vector.y += isDown ? 1 : -1;
+        }
+    }
+
     window.addEventListener("keydown", function(e) {
         var keyCode = e.keyCode;
         if (arrowKeys.includes(keyCode) && !pressed.includes(keyCode)) {
             pressed.push(keyCode);
-            switch (keyCode) {
-                case 39: // right
-                    vector.x += 1;
-                    break;
-                case 37: // left
-                    vector.x -= 1;
-                    break;
-                case 38: // up
-                    vector.y -= 1;
-                    break;
-                case 40: // down
-                    vector.y += 1;
-            }
+            keyChange(keyCode, true);
         }
     });
     window.addEventListener("keyup", function(e) {
@@ -433,19 +434,7 @@ var Wind = (function() {
         var keyIndex = pressed.indexOf(keyCode);
         if (arrowKeys.includes(keyCode) && keyCode >= 0) {
             pressed.splice(keyIndex, 1);
-            switch (keyCode) {
-                case 39: // right
-                    vector.x -= 1;
-                    break;
-                case 37: // left
-                    vector.x += 1;
-                    break;
-                case 38: // up
-                    vector.y += 1;
-                    break;
-                case 40: // down
-                    vector.y -= 1;
-            }
+            keyChange(keyCode, false);
         }
     });
 
