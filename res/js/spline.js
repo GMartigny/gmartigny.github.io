@@ -42,21 +42,21 @@ CanvasRenderingContext2D.prototype.splineThrough = function(coords, tension, clo
             coords.push(coords[0], coords[1], coords[2], coords[3]);
             coords.unshift(coords[n - 1]);
             coords.unshift(coords[n - 1]);
-            for (var i = 0; i < n; i += 2) {
+            for (let i = 0; i < n; i += 2) {
                 cp = cp.concat(getControlPoints(coords[i], coords[i + 1], coords[i + 2], coords[i + 3], coords[i + 4], coords[i + 5]));
             }
             cp = cp.concat(cp[0], cp[1]);
-            for (var i = 2; i < n + 2; i += 2) {
+            for (let i = 2; i < n + 2; i += 2) {
                 this.moveTo(coords[i], coords[i + 1]);
                 this.bezierCurveTo(cp[2 * i - 2], cp[2 * i - 1], cp[2 * i], cp[2 * i + 1], coords[i + 2], coords[i + 3]);
             }
         }
         else {
             // Draw an open curve, not connected at the ends
-            for (var i = 0; i < n - 4; i += 2) {
+            for (let i = 0; i < n - 4; i += 2) {
                 cp = cp.concat(getControlPoints(coords[i], coords[i + 1], coords[i + 2], coords[i + 3], coords[i + 4], coords[i + 5]));
             }
-            for (var i = 2; i < coords.length - 5; i += 2) {
+            for (let i = 2; i < coords.length - 5; i += 2) {
                 this.moveTo(coords[i], coords[i + 1]);
                 this.bezierCurveTo(cp[2 * i - 2], cp[2 * i - 1], cp[2 * i], cp[2 * i + 1], coords[i + 2], coords[i + 3]);
             }
