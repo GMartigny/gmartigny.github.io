@@ -7,27 +7,87 @@
         html, body {
             margin: 0;
             height: 100%;
+            background-color: #666;
+        }
+        #menu {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: rgba(50,50,50,.5);
+            padding: 10px;
+            color: #FFF;
+        }
+        #menu div {
+            margin: 5px 0;
         }
         #main {
             display: block;
-            width: 1000px;
+            max-width: 1200px;
+            cursor: pointer;
+        }
+        #fps {
+            position: absolute;
+            bottom: 0;
+            right: .5em;
         }
     </style>
 </head>
 <body>
     <canvas id="main"></canvas>
     <div id="menu">
-
+        <div>
+            <label for="hue">Hue</label>
+            <input name="Hue" id="hue" type="range" min="0" max="360" data-rel="Global.color_hue"/>
+        </div>
+        <div>
+            <label for="wireframe">Wireframe</label>
+            <input type="checkbox" id="wireframe" data-rel="Global.wireframe"/>
+        </div>
+        <div>
+            <label for="gravity">Gravity</label>
+            <input type="range" id="gravity" min="0" max="3" step="0.1" data-rel="Global.gravity"/>
+        </div>
+        <div>
+            <button id="reset">Reset</button>
+        </div>
     </div>
+    <div id="fps"></div>
     <script src="clothe.js"></script>
+    <script src="../../res/js/fps.js"></script>
     <script>
-        (function(canvas) {
-            canvas.width = 1000;
+        (function() {
+            var canvas = document.getElementById("main");
+            canvas.width = Math.min(document.body.offsetWidth, 1200);
             canvas.height = document.body.offsetHeight;
 
-            new Clothe(canvas.getContext("2d"), 30, 20);
+            var clothe = new Clothe(canvas.getContext("2d"), 30, 20);
 
-        })(document.getElementById("main"));
+            var inputs = document.getElementById("menu").getElementsByTagName("input");
+            var change = function(rel) {
+                if (this.type === "checkbox") {
+                    window[rel[0]][rel[1]] = this.checked;
+                }
+                else {
+                    window[rel[0]][rel[1]] = this.value;
+                }
+                this.blur();
+            };
+
+            for (var i=0, l=inputs.length; i < l; ++i) {
+                let input = inputs[i];
+                var rel = input.dataset["rel"].split(".");
+                if (input.type === "checkbox") {
+                    input.checked = window[rel[0]][rel[1]];
+                    input.addEventListener("change", change.bind(input, rel));
+                }
+                else {
+                    input.value = window[rel[0]][rel[1]];
+                    input.addEventListener("input", change.bind(input, rel));
+                }
+            }
+
+            document.getElementById("reset").addEventListener("click", clothe.init.bind(clothe));
+        })();
     </script>
 </body>
 </html>
