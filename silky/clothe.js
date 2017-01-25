@@ -364,7 +364,7 @@ class Link {
                 this.breakIt();
             }
             else {
-                var ratio = (distance - this.originalLength) * Global.link_stiffness * 0.005;
+                var ratio = Math.pow(distance - this.originalLength, 1.1) * Global.link_stiffness * 0.003;
 
                 tension.x = Math.abs(this.from.pos.x - this.to.pos.x) * ratio;
                 tension.y = Math.abs(this.from.pos.y - this.to.pos.y) * ratio;
