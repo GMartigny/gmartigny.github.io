@@ -1,16 +1,33 @@
-
-Utils = {
+var Utils = {
     PI: Math.PI,
+    sin: Math.sin,
+    cos: Math.cos,
+    floor: function(x) {
+        return x | 0;
+    },
+    round: function(x) {
+        return Utils.floor(x + 0.5);
+    },
     /**
-     * Wrap a function call to put it in a context
-     * @param {Function} func A function to call
-     * @param {*} self A context for that function
-     * @returns {*} Return an anonymous function to use
+     * Create a class prototype from a parent
+     * @param {Object} self - An object needing a prototype
+     * @param {Object} parent - A parent to draw prototype from
+     * @param {Object} override - A map like object with overrides
      */
-    proxy: function(func, self){
-        return function(){
-            func.apply(self, arguments);
-        };
+    extends: function(self, parent, override) {
+        if (parent) {
+            self.prototype = Object.create(parent.prototype);
+        }
+        if (override) {
+            for (var func in override) {
+                if (override.hasOwnProperty(func)) {
+                    if (self.prototype[func]) {
+                        self.prototype["_" + func] = self.prototype[func];
+                    }
+                    self.prototype[func] = override[func];
+                }
+            }
+        }
     },
     /**
      * Throw an exception if an array is too short (used for arguments length)
@@ -18,211 +35,342 @@ Utils = {
      * @param {Number} asserted The minimal asserted length
      * @throws {TypeError} An error if array is too short
      */
-    assertLength: function(array, asserted){
-        if(array.length < asserted){
+    assertLength: function(array, asserted) {
+        if (array.length < asserted) {
             throw new TypeError("Awaiting at least " + asserted + " arguments, only found " + array.length);
-        }
-    }
-};
-/**
- * Merge item from another object without overriding
- * @param {Object} other A set of items to merge to this
- */
-Object.prototype.extends = function(other){
-    for(var key in other){
-        if(other.hasOwnProperty(key)){
-            this[key] = other[key];
         }
     }
 };
 
 /**
  * Represent a display, can be fill with different shape and image
- * @param {HTMLElement} canvas The canvas element for drawing
- * @param {Set} options Global options for the scene
- * @returns {Scene}
+ * @param {HTMLElement} canvas - The canvas element for drawing
+ * @param {Object} [options] - Global options for the scene
+ * @constructor
  */
-function Scene(canvas, options){
+function Scene (canvas, options) {
     Utils.assertLength(arguments, 1);
 
     this.context = canvas.getContext("2d");
-    this.options = options || {
-        fillColor: "#000",
-        strokeColor: "#000",
-        strokeWidth: 1
-    };
+    this.options = options || {};
     this.shapes = [];
     this.loop = false;
 }
 Scene.prototype = {
-    startAnimation: function(){
-        if(!this.loop){
+    /**
+     * Start all animations
+     */
+    startAnimation: function() {
+        if (!this.loop) {
             this.loop = true;
             this.render();
         }
     },
-    stopAnimation: function(){
+    /**
+     * Stop all animations
+     */
+    stopAnimation: function() {
         this.loop = false;
     },
-    render: function(){
-        if(this.loop)
-            requestAnimationFrame(Utils.proxy(this.render, this));
+    /**
+     * Draw the scene once
+     */
+    render: function() {
+        if (this.loop) {
+            requestAnimationFrame(this.render.bind(this));
+        }
 
         var ctx = this.context;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        this.shapes.forEach(function(layer){
-            layer.forEach((shape) => shape.draw(ctx));
+        this.shapes.forEach(function(layer) {
+            layer.forEach((shape) => shape.render(ctx));
         });
     },
-    add: function(shape, zIndex){
+    /**
+     * Add a shape to the scene
+     * @param {Shape} shape - Any shape
+     * @param {Number} [zIndex=0] - Used to define a drawing order, should be a positive integer
+     */
+    add: function(shape, zIndex) {
         Utils.assertLength(arguments, 1);
 
-        zIndex = zIndex || this.shapes.length;
-        if(!this.shapes[zIndex])
+        zIndex = zIndex || 0;
+        if (!this.shapes[zIndex]) {
             this.shapes[zIndex] = [];
+        }
 
         this.shapes[zIndex].push(shape);
         shape.completeOptions(this.options);
     },
-    clear: function(){
+    /**
+     * Add a background color to the scene
+     * @param {String} color - Any color string
+     */
+    background: function(color) {
+        this.context.canvas.style.backgroundColor = color;
+    },
+    /**
+     * Remove all shape from scene
+     */
+    clear: function() {
         this.shapes = [];
     },
-    center: function(){
-        return new Position(this.width() / 2 <<0, this.height() / 2 <<0);
+    /**
+     * Return the center of the scene
+     * @return {Position}
+     */
+    center: function() {
+        return new Position(this.width() / 2 << 0, this.height() / 2 << 0);
     },
-    width: function(){
+    /**
+     * Get the width of the scene
+     * @return {Number}
+     */
+    width: function() {
         return this.context.canvas.width;
     },
-    height: function(){
+    /**
+     * Get the height of the scene
+     * @return {Number}
+     */
+    height: function() {
         return this.context.canvas.height;
     }
 };
 
 /**
- * A couple of number for positionning
- * @param {Number} x The x value
- * @param {Number} y The y value
- * @param {Animation} animation [optional] The position animation
- * @returns {Position}
+ * A couple of number for positioning
+ * @param {Number} x - The x value
+ * @param {Number} y - The y value
+ * @param {Animation} [animation] - The position animation
+ * @constructor
  */
-function Position(x, y, animation){
+function Position (x, y, animation) {
     this.x = x || 0;
     this.y = y || 0;
     this.origin = {
-        x: x,
-        y: y
+        x: this.x,
+        y: this.y
     };
     this.animation = animation || false;
     this.linked = [];
+    this.isLinked = false;
 }
-Position.createFrom = function(other){
+/**
+ * Return a new position from a shape or a position
+ * @param {Position|Shape} other - A reference for a new position, automatically linked
+ * @return {Position}
+ */
+Position.createFrom = function(other) {
     var pos;
-    if(other instanceof Shape){
+    if (other instanceof Shape) {
         pos = Position.createFrom(other.position);
-        pos.relatedTo(other.position);
     }
-    else if(other instanceof Position){
+    else if (other instanceof Position) {
         pos = new Position(other.getX(), other.getY());
+        other.addLink(pos);
     }
-    else{
+    else {
         throw new TypeError("First argument should be type Shape or Position, but " + other.constructor.name + " given");
     }
     return pos;
 };
 Position.prototype = {
-    getX: function(){
+    /**
+     * Get the x value
+     * @return {Number}
+     */
+    getX: function() {
         return this.x;
     },
-    getY: function(){
+    /**
+     * Get the y value
+     * @return {Number}
+     */
+    getY: function() {
         return this.y;
     },
-    setX: function(x){
+    /**
+     * Set a new value for x and move linked positions
+     * @param {Number} x - The new x value
+     * @call addX
+     * @return {Position} Itself
+     */
+    setX: function(x) {
         Utils.assertLength(arguments, 1);
         var diff = x - this.x;
         return this.addX(diff);
     },
-    setY: function(y){
+    /**
+     * Set a new value for y and move linked positions
+     * @param {Number} y - The new y value
+     * @call addY
+     * @return {Position} Itself
+     */
+    setY: function(y) {
         Utils.assertLength(arguments, 1);
         var diff = y - this.y;
         return this.addY(diff);
     },
-    addX: function(diff, override){
+    /**
+     * Add to the x value
+     * @param {Number} diff - How much to add
+     * @param {Boolean} override - If true, will change the origin value
+     * @return {Position} Itself
+     */
+    addX: function(diff, override) {
         diff = diff || 0;
-        if(diff !== 0){
+        if (diff !== 0) {
             this.x += diff;
-            if(override)
+            if (override) {
                 this.origin.x += diff;
+            }
             this.linked.forEach((link) => link.addX(diff, true));
         }
         return this;
     },
-    addY: function(diff, override){
+    /**
+     * Add to the y value
+     * @param {Number} diff - How much to add
+     * @param {Boolean} override - If true, will change the origin value
+     * @return {Position} Itself
+     */
+    addY: function(diff, override) {
         diff = diff || 0;
-        if(diff !== 0){
+        if (diff !== 0) {
             this.y += diff;
-            if(override)
+            if (override) {
                 this.origin.y += diff;
+            }
             this.linked.forEach((link) => link.addY(diff, true));
         }
         return this;
     },
-    setOrigin: function(x, y){
+    /**
+     * Define the origin of the position
+     * @param {Number} x - A x value
+     * @param {Number} y - A y value
+     * @return {Position} Itself
+     */
+    setOrigin: function(x, y) {
+        this.x = x + (this.x - this.origin.x);
+        this.y = y + (this.y - this.origin.y);
         this.origin.x = x;
         this.origin.y = y;
+        return this;
     },
-    reset: function(){
-        this.setX(this.origin.x);
-        this.setY(this.origin.y);
+    /**
+     * Return a position to its origin
+     * @return {Position} Itself
+     */
+    reset: function() {
+        return this.setX(this.origin.x).setY(this.origin.y);
     },
-    animate: function(){
-        if(this.animation)
-            this.animation.run(this);
+    /**
+     * Define an animation to apply to this position
+     * @param {Animation} animation -
+     * @return {Position} Itself
+     */
+    animateWith: function(animation) {
+        this.animation = animation;
+        return this;
     },
-    relatedTo: function(position){
+    /**
+     * Run the animation of this position
+     * @param {CanvasRenderingContext2D} ctx - The rendering context
+     * @return {Position} Itself
+     */
+    animate: function(ctx) {
+        if (this.animation) {
+            this.animation.run(this, ctx);
+        }
+        return this;
+    },
+    /**
+     * Link a position to this one
+     * @param {Position} position - Another position to link, will be moved alongside this position
+     */
+    addLink: function(position) {
         Utils.assertLength(arguments, 1);
 
-        position.addLink(this);
-    },
-    addLink: function(position){
-        Utils.assertLength(arguments, 1);
-
+        position.isLinked = true;
         this.linked.push(position);
     }
 };
 
 /**
- *
- * @param {Function} func A function to call for each iteration
- * @returns {Animation}
+ * Modify a position with a constant function
+ * @param {Function} func - A function to call for each iteration
+ * @constructor
  */
-function Animation(func){
+function Animation (func) {
     this.iteration = 0;
     this.func = func;
 }
-Animation.CIRCLE = function(speed, radius){
-    Utils.assertLength(arguments, 2);
-    return new Animation(function(i){
-        this.setX(this.origin.x + Math.sin(-i * speed) * radius / 2);
-        this.setY(this.origin.y + Math.cos(-i * speed) * radius / 2);
+/**
+ * Give an animation for circling
+ * @param {Number} radius - Radius of the circling
+ * @param {Number} [speed=0.1] - Speed ratio of the animation
+ * @param {Boolean} [counterClockWise=false] - Circle counter clockwise
+ * @return {Animation}
+ */
+Animation.Cirlce = function(radius, speed, counterClockWise) {
+    Utils.assertLength(arguments, 1);
+    speed = speed || .1;
+    return new Animation(function(i) {
+        var rotation = counterClockWise ? i * speed : -i * speed;
+        this.setX(this.origin.x + Utils.sin(rotation) * radius);
+        this.setY(this.origin.y + Utils.cos(rotation) * radius);
     });
 };
-Animation.GRAVITY = function(ground, bounce){
-    Utils.assertLength(arguments, 1);
-    bounce = bounce || 0.3;
-    return new Animation(function(i){
-        if(this.getY() >= ground && i > 0){
+/**
+ * Give an animation for rotation
+ * @param {Number} [speed=0.1] - Speed ratio of the animation
+ * @param {Boolean} [counterClockWise=false] - Rotate counter clockwise
+ * @return {Animation}
+ */
+Animation.Rotate = function(speed, counterClockWise) {
+    speed = speed || .1;
+    return new Animation(function(i, ctx) {
+        ctx.translate(this.getX(), this.getY());
+        var rotation = counterClockWise ? -i * speed : i * speed;
+        ctx.rotate(rotation);
+        ctx.translate(-this.getX(), -this.getY());
+    });
+};
+/**
+ * Give an animation of gravity simulation
+ * @param {Number} [ground] - Value where position bounce
+ * @param {Number} [bounce=0.3] - Vertical restitution of bounce (0 = no bounce, 1 = infinite bounce)
+ * @return {Animation}
+ */
+Animation.Gravity = function(ground, bounce) {
+    bounce = bounce === undefined ? 0.3 : bounce;
+    return new Animation(function(i, ctx) {
+        ground = ground || ctx.canvas.height;
+        if (this.getY() >= ground && i > 0) {
             this.setY(ground);
-            this.animation.iteration = (-i * bounce)<<0;
+            this.animation.iteration = (-i * bounce) << 0;
         }
-        else
+        else {
             this.addY(0.09 * i);
+        }
     });
 };
 Animation.prototype = {
-    run: function(position){
-        this.func.call(position, this.iteration++);
+    /**
+     * Apply this animation function to a position
+     * @param {Position} position - A position to move
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    run: function(position, ctx) {
+        this.func.call(position, this.iteration++, ctx);
     },
-    restart: function(position){
+    /**
+     * Restart this animation
+     * @param {Position} position - A position to set
+     */
+    restart: function(position) {
         this.iteration = 0;
         position.reset();
     }
@@ -230,52 +378,85 @@ Animation.prototype = {
 
 /**
  * A generic shape
- * @param {Position} point Its position on the scene
- * @param {Set} options Specific options for this shape
- * @returns {Shape}
+ * @param {Position|Shape} position - Its position on the scene
+ * @param {Object} options - Specific options for this shape
+ * @constructor
  */
-function Shape(point, options){
+function Shape (position, options) {
     Utils.assertLength(arguments, 1);
 
-    if(point instanceof Shape){
-        this.position = Position.createFrom(point);
-    }
-    else if(point instanceof Position){
-        this.position = point;
-    }
-    else{
-        throw new TypeError("Weird position");
-    }
+    this.position = Position.createFrom(position);
 
     this.options = options || {};
 }
 Shape.prototype = {
-    draw: function(ctx){
-        this.position.animate();
+    /**
+     * Move and draw the shape
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    render: function(ctx) {
+        ctx.save();
+        this.position.animate(ctx);
+        this.draw(ctx);
+        ctx.restore();
+    },
+    /**
+     * Draw the shape into the context
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    draw: function(ctx) {
         ctx.beginPath();
         this.trace(ctx);
         this.fill(ctx);
         this.stroke(ctx);
         ctx.closePath();
+        if (this.options.debug) {
+            ctx.fillStyle = "#F33";
+            ctx.fillRect(this.position.getX() - 1, this.position.getY() - 1, 2, 2);
+        }
     },
-    fill: function(ctx){
-        if(this.options.fillColor)
+    /**
+     * Make the drawing pen movements
+     * This function should be implemented by each shape instance
+     */
+    trace: function() {
+        throw new EvalError("Unimplemented function trace called");
+    },
+    /**
+     * Fill the shape with its color
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    fill: function(ctx) {
+        if (this.options.fillColor) {
             ctx.fillStyle = this.options.fillColor;
-        ctx.fill();
+            ctx.fill();
+        }
     },
-    stroke: function(ctx){
-        if(this.options.strokeColor){
+    /**
+     * Stroke the contour of the shape
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    stroke: function(ctx) {
+        if (this.options.strokeColor) {
             ctx.strokeStyle = this.options.strokeColor;
             ctx.lineWidth = this.options.strokeWidth || 1;
             ctx.stroke();
         }
     },
-    animateWith: function(animation){
-        this.position.animation = animation;
+    /**
+     * Animate this shape position with an animation
+     * @param {Animation} animation - Any animation
+     */
+    animateWith: function(animation) {
+        this.position.animateWith(animation);
     },
-    completeOptions: function(moreOptions){
-        for(var key in moreOptions){
-            if(moreOptions.hasOwnProperty(key) && !this.options[key]){
+    /**
+     * Add options to the shape without override
+     * @param {Object} moreOptions - A map like object
+     */
+    completeOptions: function(moreOptions) {
+        for (var key in moreOptions) {
+            if (moreOptions.hasOwnProperty(key) && this.options[key] === undefined) {
                 this.options[key] = moreOptions[key];
             }
         }
@@ -283,151 +464,260 @@ Shape.prototype = {
 };
 
 /**
+ * A shape from multiple point
+ * @extends Shape
+ * @param {Array<Position|Shape>} points - A list of points
+ * @param {Object} options - Specific options for this shape
+ * @constructor
+ */
+function Polygon (points, options) {
+    Utils.assertLength(arguments, 1);
+    Utils.assertLength(points, 1);
+
+    this.position = new Position();
+    this.options = options || {};
+    this.points = points;
+
+    var sumX = 0;
+    var sumY = 0;
+    var l = this.points.length;
+    for (var i = 0; i < l; ++i) {
+        var p = this.points[i];
+        sumX += p.getX();
+        sumY += p.getY();
+        this.position.addLink(p);
+    }
+    this.position.setOrigin(sumX / l, sumY / l);
+}
+Utils.extends(Polygon, Shape, /** @lends Polygon.prototype */ {
+    /**
+     * Trace the polygon
+     * @override Shape.trace
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    trace: function(ctx) {
+        ctx.moveTo(this.points[0].getX(), this.points[0].getY());
+
+        for (var i = 1, l = this.points.length; i < l; ++i) {
+            var p = this.points[i];
+            ctx.lineTo(p.getX(), p.getY());
+        }
+    }
+});
+
+/**
  * A line between two point
  * @extends Shape
- * @param {Position|Shape} startPoint Its origin point or shape
- * @param {Position|Shape} endPoint Its arrivel point or shape
- * @param {Set} options Specific options for this line
- * @returns {Line}
+ * @param {Position|Shape} startPoint - Its origin point or shape
+ * @param {Position|Shape} endPoint - Its arrival point or shape
+ * @param {Object} options - Specific options for this line
+ * @constructor
  */
-function Line(startPoint, endPoint, options){
+function Line (startPoint, endPoint, options) {
     Utils.assertLength(arguments, 2);
 
-    Shape.call(this, startPoint, options);
-    this.startPoint = this.position;
-
-    if(endPoint instanceof Shape){
-        this.endPoint = Position.createFrom(endPoint);
-    }
-    else if(endPoint instanceof Position){
-        this.endPoint = endPoint;
-    }
+    Polygon.call(this, [startPoint, endPoint], options);
 }
-Line.prototype = Object.create(Shape.prototype);
-Line.prototype.extends({
-    trace: function(ctx){
-        ctx.moveTo(this.startPoint.getX(), this.startPoint.getY(ctx));
-        ctx.lineTo(this.endPoint.getX(), this.endPoint.getY(ctx));
-    },
-    stroke: function(ctx){
-        ctx.strokeStyle = this.options.strokeColor;
-        ctx.lineWidth = this.options.strokeWidth || 1;
-        ctx.stroke();
-    }
+Utils.extends(Line, Polygon, /** @lends Line.prototype */ {
+    /**
+     * One can't fill a line
+     * @override Polygon.fill
+     */
+    fill: function() {}
 });
 
 /**
  * An arc shape between two points
  * @extends Shape
- * @param {Position|Shape} position Its position on the scene
- * @param {Number} radius The radius of the arc (in pixel)
- * @param {Number} startAngle The angle from to start the arc (in radian, 0 is north)
- * @param {Number} endAngle The angle where to end the arc (in radian, 0 is north)
- * @param {Boolean} clockwise The direction of rotation is clockwise (false for anti-clockwise)
- * @param {Set} options Specific options for this shape
- * @returns {Arc}
+ * @param {Position|Shape} position - Its position on the scene
+ * @param {Number} radius - The radius of the arc (in pixel)
+ * @param {Number} [startAngle=0] - The angle from to start the arc (in radian, 0 is north)
+ * @param {Number} [endAngle=PI] - The angle where to end the arc (in radian, 0 is north)
+ * @param {Boolean} [clockwise=false] - The direction of rotation is clockwise (false for anti-clockwise)
+ * @param {Object} [options] - Specific options for this shape
+ * @constructor
  */
-function Arc(position, radius, startAngle, endAngle, clockwise, options){
-    Utils.assertLength(arguments, 5);
+function Arc (position, radius, startAngle, endAngle, clockwise, options) {
+    Utils.assertLength(arguments, 2);
 
     Shape.call(this, position, options);
     this.radius = radius;
     this.startAngle = startAngle || 0;
-    this.endAngle = endAngle || 2 * Utils.PI;
+    this.endAngle = endAngle || Utils.PI;
     this.clockwise = !!clockwise;
 }
-Arc.prototype = Object.create(Shape.prototype);
-Arc.prototype.extends({
-    trace: function(ctx){
-        ctx.arc(this.position.getX(ctx), this.position.getY(ctx), this.radius, this.startAngle, this.endAngle, !this.clockwise);
+Utils.extends(Arc, Shape, /** @lends Arc.prototype */ {
+    /**
+     * Trace the arc
+     * @override Shape.trace
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    trace: function(ctx) {
+        ctx.arc(this.position.getX(), this.position.getY(), this.radius, this.startAngle, this.endAngle, !this.clockwise);
     }
 });
 
 /**
  * A circle shape
  * @extends Arc
- * @param {Position|Shape} position Its position on the scene
- * @param {Number} radius The radius of the circle (in pixel)
- * @param {Set} options Specific options for this shape
- * @returns {Circle}
+ * @param {Position|Shape} position - Its position on the scene
+ * @param {Number} radius - The radius of the circle (in pixel)
+ * @param {Object} [options] - Specific options for this shape
+ * @constructor
  */
-function Circle(position, radius, options){
+function Circle (position, radius, options) {
     Utils.assertLength(arguments, 2);
 
     Arc.call(this, position, radius, 0, 2 * Utils.PI, true, options);
 }
-Circle.prototype = Object.create(Arc.prototype);
+Utils.extends(Circle, Arc);
 
 /**
- * A rectangle shape
+ * A rectangular shape
  * @extends Shape
- * @param {Position|Shape} startPoint
- * @param {Number} width Width of the rectangle
- * @param {Number} height Height of the rectangle
- * @param {Set} options Specific options for this shape
- * @returns {Rectangle}
+ * @param {Position|Shape} startPoint - Position of the upper-left corner
+ * @param {Number} width - Width of the rectangle
+ * @param {Number} height - Height of the rectangle
+ * @param {Object} options - Specific options for this shape
+ * @constructor
  */
-function Rectangle(startPoint, width, height, options){
+function Rectangle (startPoint, width, height, options) {
     Utils.assertLength(arguments, 2);
-
-    Shape.call(this, startPoint, options);
-    this.startPoint = this.position;
+    
+    this.startPoint = Position.createFrom(startPoint);
     this.endPoint = new Position(this.startPoint.getX() + width, this.startPoint.getY() + height);
 
-    this.position = new Position(this.startPoint.getX() + (width / 2), this.startPoint.getY() + (height / 2));
+    Polygon.call(this, [this.startPoint, this.endPoint], options);
 }
-Rectangle.FROM_TO = function(from, to, options){
+/**
+ * Create a rectangle between two point
+ * @param {Position|Shape} from - Top-left point
+ * @param {Position|Shape} to - Bottom-right point
+ * @param {Object} options - Specific options for this shape
+ * @return {Rectangle}
+ */
+Rectangle.fromPointToPoint = function(from, to, options) {
     var rect = new Rectangle(from, 0, 0, options);
     rect.endPoint = Position.createFrom(to);
     return rect;
 };
-Rectangle.prototype = Object.create(Shape.prototype);
-Rectangle.prototype.extends({
-    trace: function(ctx){
-        ctx.rect(
-            this.startPoint.getX(), this.startPoint.getY(),
-            this.endPoint.getX() - this.startPoint.getX(), this.endPoint.getY() - this.startPoint.getY()
+Utils.extends(Rectangle, Shape, /** @lends Rectangle.prototype */{
+    /**
+     * Trace the rectangle
+     * @override Shape.trace
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    trace: function(ctx) {
+        ctx.rect(this.startPoint.getX(), this.startPoint.getY(),
+            this.endPoint.getX() - this.startPoint.getX(),
+            this.endPoint.getY() - this.startPoint.getY()
         );
+    },
+    animateWith: function(animation) {
+        if (!this.endPoint.isLinked) {
+            this._animateWith(animation);
+        }
+        else {
+            throw new ReferenceError("Can't animate rectangle created from two point");
+        }
+    },
+    /**
+     *
+     * @param {Number} value -
+     * @return {Rectangle} Itself
+     */
+    setWidth: function(value) {
+        this.endPoint.setX(this.startPoint.getX() + value);
+        return this;
+    },
+    /**
+     *
+     * @param {Number} value -
+     * @return {Rectangle} Itself
+     */
+    setHeight: function(value) {
+        this.endPoint.setY(this.startPoint.getY() + value);
+        return this;
     }
 });
 
 /**
  * A regular (all side the same length) Rectangle
  * @extends Rectangle
- * @param {Position|Shape} startPoint
- * @param {Number} size
- * @param {Set} options
- * @returns {Square}
+ * @param {Position|Shape} startPoint - Position of the upper-left corner
+ * @param {Number} size - Length of the sides (in pixels)
+ * @param {Object} [options] - Specific options for this shape
+ * @constructor
  */
-function Square(startPoint, size, options){
-    Utils.assertLength(arguments, 1);
+function Square (startPoint, size, options) {
+    Utils.assertLength(arguments, 2);
 
-    size = size || 0;
     Rectangle.call(this, startPoint, size, size, options);
 }
-Square.prototype = Object.create(Rectangle.prototype);
+Utils.extends(Square, Rectangle);
 
 /**
  * A three point shape
- * @extends Shape
- * @param {Position|Shape} firstPoint
- * @param {Position|Shape} secondPoint
- * @param {Position|Shape} thirdPoint
- * @param {Set} options
- * @returns {Triangle}
+ * @extends Polygon
+ * @param {Position|Shape} firstPoint -
+ * @param {Position|Shape} secondPoint -
+ * @param {Position|Shape} thirdPoint -
+ * @param {Object} options - Specific options for this shape
+ * @constructor
  */
-function Triangle(firstPoint, secondPoint, thirdPoint, options){
+function Triangle (firstPoint, secondPoint, thirdPoint, options) {
     Utils.assertLength(arguments, 3);
 
-    Line.call(this, firstPoint, secondPoint, options);
-    delete this.endPoint;
-
-    if(thirdPoint instanceof Shape){
-        this.thirdPoint = new Position(thirdPoint.position.getX(), thirdPoint.position.getY());
-        this.thirdPoint.relatedTo(thirdPoint.position);
-    }
-    else if(thirdPoint instanceof Position){
-        this.thirdPoint = thirdPoint;
-    }
+    Polygon.call(this, [firstPoint, secondPoint, thirdPoint], options);
 }
-Triangle.prototype = Object.create(Shape.prototype);
+Utils.extends(Triangle, Polygon);
+
+/**
+ * Draw a text
+ * @extends Shape
+ * @param {String} text - Content of the text
+ * @param {Position|Shape} position - Position
+ * @param {Object} options - Specific options for this shape
+ * @constructor
+ */
+function Text (text, position, options) {
+    Utils.assertLength(arguments, 2);
+
+    this.text = text;
+    Shape.call(this, position, options);
+}
+Utils.extends(Text, Shape, /** @lends Text.prototype */ {
+    /**
+     * Trace the text
+     * @override Shape.trace
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    trace: function(ctx) {
+        ctx.font = this.options.font || "10px sans-serif";
+        ctx.textAlign = this.options.align || "left";
+        ctx.textBaseline = this.options.baseline || "alphabetic";
+    },
+    /**
+     * Fill the text
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    fill: function(ctx) {
+        if (this.options.fillColor) {
+            ctx.fillStyle = this.options.fillColor;
+            ctx.translate(this.position.getX(), this.position.getY());
+            ctx.fillText(this.text, 0, 0);
+        }
+    },
+    /**
+     * Stroke the text outline
+     * @param {CanvasRenderingContext2D} ctx - A drawing context
+     */
+    stroke: function(ctx) {
+        if (this.options.strokeColor) {
+            ctx.strokeStyle = this.options.strokeColor;
+            ctx.lineWidth = this.options.strokeWidth;
+            ctx.translate(this.position.getX(), this.position.getY());
+            ctx.strokeText(this.text, 0, 0);
+        }
+    }
+});

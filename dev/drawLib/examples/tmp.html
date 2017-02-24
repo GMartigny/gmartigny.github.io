@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tmp</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #drawing {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="drawing"></canvas>
+    <script src="../drawLib.js"></script>
+    <script>
+        var canvas = document.getElementById("drawing");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var scene = new Scene(canvas, {
+            fillColor: "#000",
+            debug: true
+        });
+
+        var rect = new Rectangle(scene.center(), 100, 100, {
+            fillColor: null,
+            strokeColor: "#000"
+        });
+        rect.animateWith(Animation.CIRCLE(1));
+        scene.add(rect);
+
+        scene.startAnimation();
+    </script>
+</body>
+</html>
