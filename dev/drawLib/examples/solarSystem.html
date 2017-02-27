@@ -198,7 +198,7 @@
                     }
                 }
                 if (data.ellipse !== undefined && parent) {
-                    planet.animateWith(Animation.Cirlce(parent.radius + (data.ellipse * ellipseRatio), speedRatio / data.speed));
+                    planet.animateWith(Animation.Circle(parent.radius + (data.ellipse * ellipseRatio), speedRatio / data.speed));
                 }
                 if (data.children) {
                     for (var childName in data.children) {
