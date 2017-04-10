@@ -6,36 +6,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="../res/js/gameLib.js"></script>
         <style>
-            body{
+            body {
                 background: #666;
             }
-            #main{
+            #main {
                 position: relative;
                 width: 1200px;
                 margin: 30px auto 0;
             }
-            #level{
-                background: #EEE;
+            #bricks {
+                background-color: #FFF;
                 animation: flash 1.5s infinite alternate;
-                -webkit-animation: flash 1.5s linear infinite alternate;
             }
-            canvas{
+            canvas {
                 display: block;
                 position: absolute;
             }
-            @keyframes flash{
-                0%{
+            @keyframes flash {
+                0% {
                     box-shadow: 0 0 150px #FFF;
                 }
-                to{
-                    box-shadow: 0 0 30px #FFF;
-                }
-            }
-            @-webkit-keyframes flash{
-                0%{
-                    box-shadow: 0 0 150px #FFF;
-                }
-                to{
+                to {
                     box-shadow: 0 0 30px #FFF;
                 }
             }
@@ -43,13 +34,14 @@
     </head>
     <body>
         <div id="main">
-            <canvas id="level" width="1200" height="800"></canvas>
             <canvas id="bricks" width="1200" height="800"></canvas>
+            <canvas id="level" width="1200" height="800"></canvas>
         </div>
         <script>
             var layers = prepareCanvas("main"),
                 bricks = [],
-                house;
+                house,
+                back = 0;
             bricks.over = [];
 
             function start(){
@@ -66,8 +58,9 @@
             function loop(){
                 raf(loop);
 
-                layers.bricks.ctx.clear();
-                layers.level.ctx.clear();
+                var background = "hsla(" + Math.round(back+=0.2) + ", 70%, 50%, 0.6)";
+                layers.bricks.ctx.fillStyle = background;
+                layers.bricks.ctx.fillRect(0, 0, 1200, 800);
 
                 house.render(layers.bricks.ctx);
 
@@ -84,9 +77,10 @@
             }
 
             function Brick(){
+                var margin = Brick.asset.width;
                 this.pos = {
-                    x: random(0, layers.bricks.can.width),
-                    y: -50,
+                    x: random(margin, layers.bricks.can.width - margin),
+                    y: -margin,
                     z: random(10, 15)/10
                 };
                 this.r = random(0, 2)-1;
@@ -111,29 +105,30 @@
                 this.move = 0;
             }
             House.level = {
-                val: 38838,
-                date: 1459325429199
+                val: 49124,
+                date: 1491811027726
             };
             House.speed = 500*12/365.25/24/36e5;
             House.max = 2e5;
             House.asset = new Image("house.png");
 
             House.prototype.render = function(ctx){
-                var r = {x: (ctx.canvas.width-House.asset.width)/2, y: ctx.canvas.height-House.asset.height};
+                var houseX = (ctx.canvas.width-House.asset.width)/2;
+                var houseY = ctx.canvas.height-House.asset.height;
                 ctx.globalAlpha = 0.3;
-                ctx.drawImage(House.asset, r.x, r.y);
+                ctx.drawImage(House.asset, houseX, houseY);
                 ctx.globalAlpha = 1;
 
                 var level = ctx.canvas.height-this.level*House.asset.height;
                 ctx = layers.level.ctx;
-                ctx.globalCompositeOperation = "source-over";
-                ctx.drawImage(House.asset, r.x, r.y);
-                ctx.globalCompositeOperation = "destination-in";
+                ctx.drawImage(House.asset, houseX, houseY);
                 ctx.beginPath();
                 ctx.moveTo(0, level);
                 ctx.bezierCurveTo(ctx.canvas.width/2, level-(60*sin(this.move)), ctx.canvas.width/2, level+(60*sin(this.move)), ctx.canvas.width, level);
                 ctx.rect(0, level, ctx.canvas.width, ctx.canvas.height);
+                ctx.globalCompositeOperation = "destination-in";
                 ctx.fill();
+                ctx.globalCompositeOperation = "source-over";
                 this.level = (House.level.val + House.speed*(Date.now() - House.level.date))/House.max;
                 this.move+=0.03;
             };
