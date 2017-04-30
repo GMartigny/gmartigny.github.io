@@ -50,7 +50,7 @@
                 top: 0;
                 left: 0;
                 perspective: 900px;
-                perspective-origin: 150% 0;
+                perspective-origin: 900px 0;
                 transform-origin: 0 0;
             }
             .d3 tbody{
@@ -68,8 +68,7 @@
             }
             
             .d3 table:nth-child(2){
-                transform: translateX(30px)
-                    rotateZ(30deg) rotateY(-45deg);
+                transform: rotateZ(30deg) rotateY(-45deg);
             }
             .d3 table:nth-child(2) tbody{
                 transform: rotateX(45deg);
@@ -79,8 +78,7 @@
             }
             
             .d3 table:nth-child(3){
-                transform: translateX(15px) translateY(26px)
-                    rotateZ(150deg) rotateY(-45deg);
+                transform: rotateZ(150deg) rotateY(-45deg);
             }
             .d3 table:nth-child(3) tbody{
                 transform: rotateX(45deg);
@@ -168,8 +166,5 @@
                 </tr>
             </table>
         </div>
-        <script>
-            
-        </script>
     </body>
 </html>

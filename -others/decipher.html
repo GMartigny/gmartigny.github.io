@@ -17,48 +17,60 @@
                 text-align: center;
                 width: 500px;
             }
-            #output{
+            .output{
                 font-family: monospace;
                 font-size: 15px;
+                color: #bbb;
             }
-            #output span{
+            .output span{
                 display: inline-block;
                 width: 30px;
             }
-            #output strong{
+            .output strong{
                 background: #FFC;
+                color: #111;
             }
         </style>
     </head>
     <body>
-        <div>
-            <textarea id="input"></textarea>
-        </div>
-        <div>
-            <ul id="list"></ul>
-        </div>
-        <div id="output"></div>
+        <article>
+            <div>
+                <textarea id="in-swap"></textarea>
+            </div>
+            <div>
+                <ul id="list-swap"></ul>
+            </div>
+            <div id="out-swap" class="output"></div>
+        </article>
+        <article>
+            <div>
+                <textarea id="in-letter"></textarea>
+            </div>
+            <div id="out-letter" class="output"></div>
+        </article>
         <script>
             var a = " abcdefghijklmnopqrstuvwxyz",
-                inp = document.getElementById("input"),
-                list = document.getElementById("list"),
-                output = document.getElementById("output"),
+                inSwap = document.getElementById("in-swap"),
+                inLetter = document.getElementById("in-letter"),
+                listSwap = document.getElementById("list-swap"),
+                outSwap = document.getElementById("out-swap"),
+                outLetter = document.getElementById("out-letter"),
                 trans = {};
-            
+
             var select = document.createElement("select");
             for(var i=0;i<a.length;++i){
                 var opt = document.createElement("option");
                 opt.innerHTML = opt.value = a[i];
                 select.appendChild(opt);
             }
-            
-            inp.onkeyup = function(){
+
+            inSwap.onkeyup = function(){
                 var charList = {},
                     v = this.value,
                     l = v.length;
                 trans = {};
 
-                localStorage.input = v;
+                localStorage.inSwap = v;
 
                 for(var i=0;i<l;++i){
                    var c = v[i];
@@ -69,10 +81,22 @@
                 buildList(charList);
                 decode();
             };
-            inp.value = localStorage.input || "";
-            
+            inSwap.value = localStorage.inSwap || "";
+
+            inLetter.onkeyup = function(){
+                var v = this.value,
+                    str = "";
+
+                localStorage.inLetter = v;
+
+                outLetter.innerHTML = v.replace(/(\d+)/g, function(num){
+                    return a[num] ? "<strong>" + a[num] + "</strong>" : num;
+                }).replace(/-/g, "").replace(/[ \n]/g, "<span>&nbsp</span>");
+            };
+            inLetter.value = localStorage.inLetter || "";
+
             function buildList(charList){
-                list.innerHTML = "";
+                listSwap.innerHTML = "";
                 for(var c in charList){
                     var l = document.createElement("li");
                     l.innerHTML = c + " (" + charList[c] + ") = ";
@@ -88,17 +112,17 @@
                         decode();
                     };
                     l.appendChild(sel);
-                    list.appendChild(l);
+                    listSwap.appendChild(l);
                 }
             }
-            
+
             function decode(){
-                var res = inp.value.split(""),
+                var res = inSwap.value.split(""),
                     out = "";
-                
+
                 for(var i=0;i<res.length;++i){
                     var r = res[i];
-                    
+
                     if(r == " ")
                         out += "<span>&nbsp</span>";
                     else{
@@ -107,8 +131,8 @@
                         else out += r.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     }
                 }
-                
-                output.innerHTML = out;
+
+                outSwap.innerHTML = out;
             }
         </script>
     </body>
