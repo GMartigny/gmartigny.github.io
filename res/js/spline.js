@@ -2,6 +2,10 @@
  * Code copied and adapted from http://scaledinnovation.com/analytics/splines/aboutSplines.html
  * By Rob Spencer (thanks dude)
  */
+(function () {
+    var sqrt = Math.sqrt,
+        pow = Math.pow,
+        sq = function(x){ return pow(x, 2); };
 
 /**
  * Draw a curve through points
