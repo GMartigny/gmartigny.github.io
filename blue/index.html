@@ -3,248 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Blue</title>
-    <style>
-        body {
-            background-color: #1a3780;
-            font-size: 40px;
-            overflow: hidden;
-        }
-
-        .blue {
-            position: absolute;
-            margin-left: -2em;
-            perspective: 10em;
-            perspective-origin: 50% 0;
-
-            width: 4em;
-            height: 10em;
-
-            bottom: 0;
-        }
-        .blue div {
-            position: absolute;
-        }
-        .blue .matter {
-            border-radius: 1em;
-            background-color: #05BDFA;
-            background-image: radial-gradient(ellipse at 10% 10%, rgba(250, 250, 250, .5) 0, rgba(250, 250, 250, 0) 50%);
-        }
-        .blue .single {
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-        }
-
-        .head {
-            width: 1.2em;
-            height: 2em;
-
-            bottom: 98%;
-
-            transform-origin: 50% 100%;
-            animation: bobble .5s ease-in-out infinite alternate;
-        }
-        @keyframes bobble {
-            0%, to {
-                transform: rotate3d(1, 0, 0, 0deg);
-            }
-            50% {
-                transform: rotate3d(1, 0, 0, -30deg);
-            }
-        }
-
-        .eyes {
-            width: .3em;
-            height: .2em;
-
-            border-radius: 50%;
-            box-shadow: -.3em 0 0 #FFF,
-                        .3em 0 0 #FFF;
-            top: 1em;
-
-            animation: blink 4s infinite;
-        }
-        @keyframes blink {
-            80%, 100% {
-                top: 1em;
-                height: .2em;
-            }
-            90% {
-                top: 1.1em;
-                height: 0;
-            }
-        }
-
-        .body {
-            width: 50%;
-            height: 30%;
-
-            top: 20%;
-
-            transform-origin: 50% 90%;
-            animation: swing .5s ease-in-out infinite alternate;
-        }
-        @keyframes swing {
-            0% {
-                transform: rotate3d(0, 0, 1, -5deg);
-            }
-            to {
-                transform: rotate3d(0, 0, 1, 5deg);
-            }
-        }
-
-
-        .torso {
-            width: 100%;
-            height: 1em;
-        }
-
-        .arm {
-            transform-origin: 50% .1em;
-
-            width: 20%;
-            height: 1.8em;
-
-            left: -10%;
-            top: calc(50% - .1em);
-        }
-        .arm:nth-child(2) {
-            left: 90%;
-        }
-
-        .forearm {
-            transform-origin: 50% 0;
-
-            width: 80%;
-            height: 80%;
-
-            top: 90%;
-        }
-
-        .fist {
-            border-radius: 50%;
-
-            width: .5em;
-            height: .5em;
-
-            top: 90%;
-            left: -.1em;
-        }
-
-        .belly {
-            width: 65%;
-            height: 100%;
-        }
-
-        .bottom {
-            top: 50%;
-            height: 50%;
-        }
-
-        .leg {
-            width: 15%;
-            height: 40%;
-
-            left: 30%;
-            top: -10%;
-
-            transform-origin: 100% 0;
-            animation: step .5s ease-in-out infinite alternate;
-        }
-        .leg:nth-child(2) {
-            left: 55%;
-            transform-origin: 0 0;
-            animation-name: step2;
-        }
-        @keyframes step {
-            0% {
-                transform: rotate3d(0, 0, 1, 40deg);
-            }
-            33% {
-                transform: rotate3d(0, 0, 1, 0deg);
-            }
-        }
-        @keyframes step2 {
-            66% {
-                transform: rotate3d(0, 0, 1, 0deg);
-            }
-            to {
-                transform: rotate3d(0, 0, 1, -40deg);
-            }
-        }
-
-        .foreleg {
-            width: 80%;
-            height: 80%;
-
-            top: 90%;
-
-            transform-origin: 50% 0;
-            animation: step2 .5s ease-in-out infinite alternate .5s;
-        }
-        .leg:nth-child(2) .foreleg {
-            animation-name: step;
-        }
-
-        .wave {
-            animation: wave .5s ease-in-out infinite alternate;
-        }
-        @keyframes wave {
-            0% {
-                transform: rotate3d(0, 0, 1, -70deg);
-            }
-            to {
-                transform: rotate3d(0, 0, 1, 70deg);
-            }
-        }
-        
-        .spot {
-            position: absolute;
-            top: 1em;
-            left: 1em;
-
-            width: 1em;
-            height: 1em;
-            border-radius: 50%;
-
-            background-color: rgba(250, 250, 250, .5);
-
-            animation: rotation 2s infinite linear;
-        }
-        .spot:nth-child(2) {
-            left: auto;
-            right: 1em;
-            animation-delay: .5s;
-        }
-        @keyframes rotation {
-            to {
-                transform: rotate3d(0, 0, 1, 360deg);
-            }
-        }
-
-        .light {
-            position: absolute;
-
-            left: calc(50% - 7.5em);
-            top: -50%;
-
-            width: 15em;
-            height: 2em;
-
-            background-image: radial-gradient(ellipse closest-side at center, rgba(250, 250, 250, .9) 0, rgba(250, 250, 250, 0) 100%);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
 </head>
 <body>
-    <div class="spot">
-        <div class="light"></div>
-    </div>
-    <div class="spot">
-        <div class="light"></div>
-    </div>
-    <div class="blue" style="left: 12.5%">
+    <div class="floor"></div>
+    <div class="spot"></div>
+    <div class="spot"></div>
+    <div class="blue">
         <div class="bottom single">
-            <div class="leg matter">
+            <div class="leg matter glow">
                 <div class="foreleg matter single"></div>
             </div>
             <div class="leg matter">
@@ -252,191 +19,57 @@
             </div>
         </div>
         <div class="body single">
-            <div class="head single matter">
+            <div class="head single matter glow">
                 <div class="eyes single"></div>
             </div>
             <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
+            <div class="torso matter glow">
+                <div class="arm matter glow">
+                    <div class="forearm single matter glow">
+                        <div class="fist matter glow"></div>
                     </div>
                 </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
+                <div class="arm matter glow">
+                    <div class="forearm single matter glow">
+                        <div class="fist matter glow"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="blue" style="left: 25%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blue" style="left: 37.5%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blue" style="left: 50%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blue" style="left: 62.5%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blue" style="left: 75%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blue" style="left: 87.5%">
-        <div class="bottom single">
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-            <div class="leg matter">
-                <div class="foreleg matter single"></div>
-            </div>
-        </div>
-        <div class="body single">
-            <div class="head single matter">
-                <div class="eyes single"></div>
-            </div>
-            <div class="belly matter single"></div>
-            <div class="torso matter">
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-                <div class="arm matter wave">
-                    <div class="forearm single matter wave">
-                        <div class="fist matter"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        (function() {
+            var squad = 5;
+            var template = document.querySelector(".blue");
+
+            for (let i = 0; i < squad; ++i) {
+                let left = (i + 1) * (100 / (squad + 1)) + "%";
+                if (i) {
+                    let newNode = template.cloneNode(true);
+                    newNode.style.left = left;
+                    document.body.appendChild(newNode);
+                }
+                else {
+                    template.style.left = left;
+                }
+            }
+
+            function rand (max) {
+                return Math.round(Math.random() * max);
+            }
+            // randomize eyes blink
+            document.querySelectorAll(".eyes").forEach(function(eye) {
+                eye.style.animationDelay = rand(4000) + "ms";
+                eye.style.animationDuration = 3000 + rand(1000) + "ms"
+            });
+
+            var danceMoves = ["carlton", "pull"];
+            function changeDance () {
+                document.body.className = danceMoves[rand(danceMoves.length - 1)];
+            }
+            setInterval(changeDance, 1000);
+            changeDance();
+        })();
+    </script>
 </body>
 </html>

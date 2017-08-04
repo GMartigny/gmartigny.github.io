@@ -1,0 +1,33 @@
+
+@animationSpeed: unit(60 / 128, s);
+
+.carlton {
+
+    .head {
+        animation: bobble @animationSpeed ease-in-out infinite alternate;
+    }
+
+    .body {
+        animation: swing @animationSpeed ease-in-out infinite alternate;
+    }
+
+    .arm, .forearm {
+        animation: wave @animationSpeed ease-in-out infinite alternate;
+    }
+
+    .leg {
+        animation: step @animationSpeed ease-in-out infinite alternate;
+
+        &:nth-child(2) {
+            animation-name: step2;
+
+            .foreleg {
+                animation-name: step;
+            }
+        }
+    }
+
+    .foreleg {
+        animation: step2 @animationSpeed ease-in-out infinite alternate @animationSpeed;
+    }
+}

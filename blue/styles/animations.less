@@ -1,0 +1,92 @@
+
+@keyframes wave {
+    0% {
+        transform: rotate3d(0, 0, 1, -60deg);
+    }
+    to {
+        transform: rotate3d(0, 0, 1, 60deg);
+    }
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate3d(0, 0, 1, -5deg);
+    }
+    to {
+        transform: rotate3d(0, 0, 1, 5deg);
+    }
+}
+
+/* eye blink */
+@keyframes blink {
+    90%, 100% {
+        top: 1em;
+        height: .2em;
+    }
+    95% {
+        top: 1.1em;
+        height: 0;
+    }
+}
+
+/* Head bang */
+@keyframes bobble {
+    0%, to {
+        transform: rotate3d(1, 0, 0, 0deg);
+    }
+    50% {
+        transform: rotate3d(1, 0, 0, -30deg);
+    }
+}
+
+@keyframes step {
+    0% {
+        transform: rotate3d(0, 0, 1, 40deg);
+    }
+    33% {
+        transform: rotate3d(0, 0, 1, 0deg);
+    }
+}
+@keyframes step2 {
+    66% {
+        transform: rotate3d(0, 0, 1, 0deg);
+    }
+    to {
+        transform: rotate3d(0, 0, 1, -40deg);
+    }
+}
+
+@keyframes rotation {
+    to {
+        transform: rotate3d(0, 0, 1, 360deg);
+    }
+}
+
+/* Body swing from right to left with pause */
+@keyframes tiktok {
+    0%, 40% {
+        transform: rotate3d(0, 0, 1, -10deg);
+    }
+    60%, to {
+        transform: rotate3d(0, 0, 1, 10deg);
+    }
+}
+/* arm swing from right to left with pause */
+@keyframes tiktok2 {
+    0%, 40% {
+        transform: rotate3d(0, 0, 1, 40deg);
+    }
+    60%, to {
+        transform: rotate3d(0, 0, 1, -40deg);
+    }
+}
+
+/* Move right and left */
+@keyframes shift {
+    0%, 30%, to {
+        transform: translate3d(-.5em, 0, 0);
+    }
+    50%, 80% {
+        transform: translate3d(.5em, 0, 0);
+    }
+}
