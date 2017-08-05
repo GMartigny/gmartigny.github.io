@@ -1,0 +1,20 @@
+.wave {
+
+    @animationSpeed: unit(60 / 128, s) * 2;
+
+    .blue {
+        animation: shift @animationSpeed ease-in-out infinite alternate;
+    }
+
+    .head {
+        animation: tiktok @animationSpeed linear infinite alternate;
+    }
+
+    .arm {
+        animation: wave2 @animationSpeed linear infinite alternate;
+    }
+
+    .leg {
+        animation: swing @animationSpeed ease-in-out infinite alternate;
+    }
+}

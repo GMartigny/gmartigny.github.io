@@ -1,0 +1,39 @@
+
+@animationSpeed: unit(60 / 128, s);
+
+.cowboy {
+
+    .blue {
+        animation: shift2 @animationSpeed ease-in-out -@animationSpeed infinite alternate;
+    }
+
+    .head {
+        animation: bobble @animationSpeed ease-in-out infinite alternate;
+    }
+
+    .body {
+        animation: tiktok @animationSpeed linear infinite alternate;
+    }
+
+    .arm {
+        transform: rotate3d(0, 0, 1, 40deg);
+
+        .forearm {
+            transform: rotate3d(0, 0, 1, -90deg);
+        }
+
+        &:nth-child(2) {
+            transform: rotate3d(0, 0, 1, -40deg);
+
+
+            .forearm {
+                transform: rotate3d(0, 0, 1, 90deg);
+            }
+        }
+    }
+
+    .leg {
+        animation: tiktok @animationSpeed ease-in-out -@animationSpeed infinite alternate;
+    }
+}
+

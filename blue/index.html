@@ -6,9 +6,19 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
 </head>
 <body>
+    <div class="spot" style="left: 10%"></div>
+    <div class="spot" style="left: 40%; animation-delay: -.1s;; animation-duration: 1.3s"></div>
+    <div class="spot" style="left: 60%; animation-delay: -.4s; animation-duration: 1.5s; animation-direction: reverse"></div>
+    <div class="spot" style="left: 90%; animation-delay: -.15s; animation-duration: 1.8s"></div>
     <div class="floor"></div>
-    <div class="spot"></div>
-    <div class="spot"></div>
+    <div class="boombox" style="left: 15%">
+        <div class="mouth single"></div>
+        <div class="mouth single"></div>
+    </div>
+    <div class="boombox" style="right: 15%">
+        <div class="mouth single"></div>
+        <div class="mouth single"></div>
+    </div>
     <div class="blue">
         <div class="bottom single">
             <div class="leg matter glow">
@@ -55,19 +65,28 @@
             }
 
             function rand (max) {
-                return Math.round(Math.random() * max);
+                return Math.floor(Math.random() * max);
             }
+            Array.prototype.random = function () {
+                return this[rand(this.length)];
+            };
+
             // randomize eyes blink
             document.querySelectorAll(".eyes").forEach(function(eye) {
                 eye.style.animationDelay = rand(4000) + "ms";
                 eye.style.animationDuration = 3000 + rand(1000) + "ms"
             });
 
-            var danceMoves = ["carlton", "pull"];
+            var danceMoves = ["wave", "cowboy", "carlton"];
+            var current;
             function changeDance () {
-                document.body.className = danceMoves[rand(danceMoves.length - 1)];
+                var sel = danceMoves.filter(function (move) {
+                    return move != current;
+                }).random();
+                current = sel;
+                document.body.className = sel;
             }
-            setInterval(changeDance, 1000);
+            setInterval(changeDance, 2000);
             changeDance();
         })();
     </script>

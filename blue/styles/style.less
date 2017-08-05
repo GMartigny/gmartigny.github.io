@@ -1,14 +1,26 @@
+html, body {
+    height: 100%;
+}
+
 body {
     background-color: #1a3780;
     font-size: 40px;
     overflow: hidden;
+    margin: 0;
+
+    perspective: 10em;
+    perspective-origin: 50% 50%;
+}
+
+.single {
+    left: 0;
+    right: 0;
+    margin: 0 auto;
 }
 
 .blue {
     position: absolute;
     margin-left: -2em;
-    perspective: 10em;
-    perspective-origin: 50% 0;
 
     width: 4em;
     height: 10em;
@@ -26,12 +38,6 @@ body {
 
     .glow {
         background-image: radial-gradient(ellipse at 10% 10%, rgba(250, 250, 250, .5) 0, rgba(250, 250, 250, 0) 50%);
-    }
-
-    .single {
-        left: 0;
-        right: 0;
-        margin: 0 auto;
     }
 
     .body {
@@ -142,7 +148,6 @@ body {
 .spot {
     position: absolute;
     top: 1em;
-    left: 1em;
 
     width: 1em;
     height: 1em;
@@ -164,12 +169,6 @@ body {
 
         background-image: radial-gradient(ellipse closest-side at center, rgba(250, 250, 250, .9) 0, rgba(250, 250, 250, 0) 100%);
     }
-
-    &:nth-child(2) {
-        left: auto;
-        right: 1em;
-        animation-delay: .5s;
-    }
 }
 
 .floor {
@@ -177,10 +176,51 @@ body {
     bottom: 0;
     left: 0;
 
-    box-sizing: border-box;
+    background-color: #557380;
+
+    height: 50%;
     width: 100%;
 
-    border-style: solid;
-    border-width: 0 10em 8em;
-    border-color: #557380 transparent;
+    transform-origin: 50% 100%;
+    transform: rotate3d(1, 0, 0, 100deg);
+}
+
+.boombox {
+    position: absolute;
+    bottom: 4em;
+
+    width: 5em;
+    height: 8em;
+    background-color: #666;
+
+    perspective-origin: 50% 0;
+    perspective: 10em;
+
+    &:before {
+        position: absolute;
+        bottom: 100%;
+        content: "";
+        height: 30%;
+        width: 100%;
+        background-color: #999;
+        transform-origin: 50% 100%;
+        transform: rotateX(60deg);
+    }
+
+    .mouth {
+        position: absolute;
+        width: 1em;
+        height: 1em;
+        background-color: #333;
+        border-radius: 50%;
+        top: 10%;
+
+        animation: boom unit(60 / 128, s) linear infinite;
+
+        &:nth-child(2) {
+            width: 3em;
+            height: 3em;
+            top: 45%;
+        }
+    }
 }

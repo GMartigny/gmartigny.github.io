@@ -8,6 +8,21 @@
     }
 }
 
+@keyframes wave2 {
+    0% {
+        transform: rotate3d(0, 0, 1, 180-60deg);
+    }
+    40% {
+        transform: rotate3d(0, 0, 1, 180+10deg);
+    }
+    60% {
+        transform: rotate3d(0, 0, 1, 180-10deg);
+    }
+     to {
+        transform: rotate3d(0, 0, 1, 180+60deg);
+    }
+}
+
 @keyframes swing {
     0% {
         transform: rotate3d(0, 0, 1, -5deg);
@@ -83,10 +98,41 @@
 
 /* Move right and left */
 @keyframes shift {
-    0%, 30%, to {
+    0% {
         transform: translate3d(-.5em, 0, 0);
     }
-    50%, 80% {
+    to {
         transform: translate3d(.5em, 0, 0);
+    }
+}
+
+/* Move right and left */
+@keyframes shift2 {
+    0% {
+        transform: translate3d(-.5em, 0, 0);
+    }
+    to {
+        transform: translate3d(.5em, 0, 0);
+    }
+}
+
+@keyframes boom {
+    0% {
+        transform: scale3d(1, 1, 1);
+    }
+    10% {
+        transform: scale3d(1.7, 1.7, 1.7);
+    }
+    30% {
+        transform: scale3d(1.2, 1.2, 1.2);
+    }
+    50% {
+        transform: scale3d(1.5, 1.5, 1.5);
+    }
+    70% {
+        transform: scale3d(1.3, 1.3, 1.3);
+    }
+    90% {
+        transform: scale3d(1.4, 1.4, 1.4);
     }
 }

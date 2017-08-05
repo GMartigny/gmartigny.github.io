@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function(grunt){
 
     // Project configuration.
     grunt.initConfig({
@@ -11,10 +11,20 @@ module.exports = function(grunt) {
                     compress: true
                 }
             }
+        },
+        watch: {
+            scripts: {
+                files: ['**/*.less'],
+                tasks: ['less'],
+                options: {
+                    interrupt: true
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['less']);
+    grunt.registerTask('default', ['less', "watch"]);
 };
