@@ -12,7 +12,7 @@
         "draw": [[1, 3], "bottom"]
     },
     "ewa": {
-        "meaning": "air/gas",
+        "meaning": ["air", "gas"],
         "draw": [[2, 5], [4, 8]]
     },
     "ena": {
@@ -114,11 +114,11 @@
     },
 
     "ki": {
-        "meaning": "I/me",
+        "meaning": ["I", "me"],
         "draw": [[7, 1, 3, 9], [5, 8]]
     },
     "ngi": {
-        "meaning": "ou/we/us",
+        "meaning": ["ou", "we", "us"],
         "draw": [[1, 3, 4, 6, 7]]
     },
     "yu": {
@@ -219,7 +219,7 @@
         "draw": [[1, 3, 9, 4, 7]]
     },
     "yo": {
-        "meaning": "am/are",
+        "meaning": ["am", "are"],
         "draw": [[1, 5, 3], "bottom"]
     },
     "lona": {
@@ -390,7 +390,7 @@
         "draw": [[1, 3], [2, 8], [4, 6, 3]]
     },
     "adal": {
-        "meaning": "go/move",
+        "meaning": ["go", "move"],
         "draw": [[1, 3, 5, 8], [4, 6]]
     },
     "alad": {
@@ -447,7 +447,7 @@
         "draw": [[1, 3], [2, 5], [4, 6]]
     },
     "weki": {
-        "meaning": "spin/turn",
+        "meaning": ["spin", "turn"],
         "draw": [[4, 2, 6], [2, 8], [7, 5, 9]]
     },
     "nelon": {
@@ -537,7 +537,7 @@
         "draw": [[4, 2, 6, 4], [2, 8]]
     },
     "uwa": {
-        "meaning": "tall/long",
+        "meaning": ["tall", "long"],
         "draw": [[7, 4, 5], [8, 2, 3, 9]]
     },
     "iya": {
@@ -582,11 +582,11 @@
         "draw": [[3, 1, 6, 4, 7]]
     },
     "asia": {
-        "meaning": "sphere/ball",
+        "meaning": ["sphere", "ball"],
         "draw": ["top", [5, 8], [4, 7], [6, 9]]
     },
     "akad": {
-        "meaning": "cube/box",
+        "meaning": ["cube", "box"],
         "draw": [[1, 3, 6, 4, 1], [5, 8], [4, 7], [6, 9]]
     },
     "sia": {
@@ -614,7 +614,7 @@
         "draw": [[4, 2, 6, 8, 4], [7, 5, 9]]
     },
     "misk": {
-        "meaning": "art/paint",
+        "meaning": ["art", "paint"],
         "draw": [[1, 9, 3, 1, 7, 6]]
     },
     "amisko": {
@@ -622,7 +622,7 @@
         "draw": [[1, 9, 3, 1, 7, 6], [2, 8]]
     },
     "twef": {
-        "meaning": "star/bright",
+        "meaning": ["star", "bright"],
         "draw": [[2, 5], [4, 6], [7, 5, 9]]
     },
 
@@ -696,7 +696,7 @@
         "draw": [[7, 1, 2, 8, 9], [5, 6]]
     },
     "zem": {
-        "meaning": "warm/tepid",
+        "meaning": ["warm", "tepid"],
         "draw": [[7, 1, 2, 8], [5, 6]]
     },
     "zan": {
@@ -777,7 +777,7 @@
         "draw": [[7, 4, 6], [5, 8]]
     },
     "ream": {
-        "meaning": "amount/some",
+        "meaning": ["amount", "some"],
         "draw": [[7, 4, 6, 9]]
     },
     "am": {
@@ -834,7 +834,7 @@
         "draw": [[4, 2, 6], [1, 9], [3, 7]]
     },
     "atron": {
-        "meaning": "have/called",
+        "meaning": ["have", "called"],
         "draw": [[4, 1, 3, 6], [7, 5, 9]]
     },
     "koga": {
@@ -846,7 +846,7 @@
         "draw": [[1, 3], [2, 5], [7, 5, 9], [4, 6, 8]]
     },
     "amar": {
-        "meaning": "family/heart",
+        "meaning": ["family", "heart"],
         "draw": [[1, 3], [2, 5], [7, 5, 9], [4, 6, 8, 4]]
     },
     "kige": {
@@ -907,7 +907,7 @@
         "draw": [[7, 8, 2]]
     },
     "dan": {
-        "meaning": "invert/not",
+        "meaning": ["invert", "not"],
         "draw": [[2, 1, 7, 8]]
     },
 

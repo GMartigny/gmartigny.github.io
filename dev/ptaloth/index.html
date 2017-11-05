@@ -6,9 +6,27 @@
     <style>
         body {
             margin: 0;
+            color: #333;
         }
         main {
             margin-top: 20px;
+        }
+        #switch {
+            -webkit-appearance: none;
+            width: 1em;
+            outline: none;
+        }
+        #switch:after {
+            content: "";
+            position: absolute;
+            top: .25em;
+            border: .5em solid;
+            border-color: transparent transparent transparent #333;
+            margin-left: .25em;
+        }
+        #switch:checked:after {
+            border-color: transparent #333 transparent transparent;
+            margin-left: -.25em;
         }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
@@ -24,10 +42,10 @@
         </span>
         </div>
         <div class="input-group">
-            <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">Write in english</span>
+            <label class="custom-control custom-checkbox" for="switch">
+                <span>Ptaloth</span>
+                <input type="checkbox" id="switch">
+                <span>English</span>
             </label>
         </div>
     </form>
@@ -45,9 +63,10 @@
 
         let input = document.getElementById("input");
         let output = document.getElementById("output");
+        let switcher = document.getElementById("switch");
 
         // Fetch data and parse to json
-        let url = "data.json";
+        let url = "./data.json";
         fetch(url).then(function(response) {
             if (response.ok) {
                 return response.json();
@@ -118,7 +137,7 @@
                             }
                         });
 
-                        let text = json[ideograms[i]].meaning;
+                        let text = json[ideograms[i]].meaning.toString();
                         ctx.font = Math.min(Math.floor(3 * width / text.length), 35) + "px arial";
                         ctx.fillText(text, x + width / 2, y + height + margin / 2);
                     }
@@ -127,14 +146,37 @@
                 }
             })(json);
 
-            input.addEventListener("keyup", function() {
-                let words = this.value.toString().split(" ");
+            switcher.addEventListener("change", function () {
+                localStorage.setItem("switch", this.checked);
+            });
+            switcher.checked = localStorage.getItem("switch");
+
+            function onKeyUp(value) {
+                let words = value.toString().split(/( |\W)/);
+
+                if (switcher.checked) {
+                    words = words.map(function (word) {
+                        let found = "";
+                        browse(json, function (ideogram, data) {
+                            let meaning = data.meaning;
+                            if (meaning === word || Array.isArray(meaning) && meaning.includes(word)) {
+                                found = ideogram;
+                            }
+                        });
+                        return found;
+                    });
+                }
+
                 drawIdeogram(words.filter(function(word) {
                     return json[word];
                 }));
+            }
+            input.addEventListener("keyup", function() {
+                onKeyUp(this.value);
                 localStorage.setItem("input", this.value);
             });
-
+            input.value = localStorage.getItem("input");
+            onKeyUp(localStorage.getItem("input"));
 
             document.getElementById("clear").addEventListener("click", function() {
                 input.value = "";
