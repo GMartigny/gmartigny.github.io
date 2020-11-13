@@ -4,7 +4,7 @@
         <title>8bit Clock</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="res/js/gameLib.js"></script>
+        <script src="../res/js/gameLib.js"></script>
         <style>
             body{
                 margin: 0;
@@ -24,21 +24,21 @@
         <script>
             var canvas = prepareCanvas("main"),
                 clock;
-            
+
             function start(){
                 canvas.clock.ctx.fillStyle = "#BC0";
                 clock = new Clock();
                 loop();
             };
             window.onload = start;
-            
+
             function loop(){
                 setTimeout(loop, 50);
-                
+
                 clock.updateTime();
                 clock.render(canvas.clock.ctx);
             }
-            
+
             function Clock(){
                 this.time = new Date();
                 this.dHour = new Digit();
@@ -50,7 +50,7 @@
             }
             Clock.prototype.updateTime = function(){
                 this.time = new Date();
-                
+
                 this.dHour.setValue(this.time.getHours()/10<<0);
                 this.hour.setValue((this.time.getHours()/10).toFixed(1).split(".").pop());
                 this.dMinute.setValue(this.time.getMinutes()/10<<0);
@@ -93,7 +93,7 @@
                 this.second.render(ctx);
                 ctx.restore();
             };
-            
+
             function Digit(){
                 this.segments = [];
                 for(var i=0;i<7;++i)
@@ -122,7 +122,7 @@
                 [1,1,1,1,1,1,1], // 8
                 [1,1,1,1,0,1,1]  // 9
             ];
-            
+
             function Segment(n){
                 this.pos = Segment.definePos(n);
                 this.lite = 1;

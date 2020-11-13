@@ -104,12 +104,12 @@
                 this.level = (House.level.val + House.speed*(Date.now() - House.level.date))/House.max;
                 this.move = 0;
             }
+            House.max = 293600;
             House.level = {
-                val: 49124,
-                date: 1491811027726
+                val: House.max-144668,
+                date: 1605267438033,
             };
-            House.speed = 500*12/365.25/24/36e5;
-            House.max = 2e5;
+            House.speed = 1075*12/365.25/24/36e5;
             House.asset = new Image("house.png");
 
             House.prototype.render = function(ctx){
