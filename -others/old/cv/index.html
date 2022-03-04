@@ -1,0 +1,208 @@
+<meta charset="UTF-8"/>
+<head>
+	<style>
+	body, html{
+		width : 100%;
+		height : 100%;
+		margin : 0;
+		padding : 0;
+	}
+	#can{
+		background : #F5F5F5;
+		position : fixed;
+		top : 0;
+		left : 0;
+		z-index : -1;
+	}
+	h1{
+		text-shadow : 2px 3px 0 lightgrey;
+	}
+	a{
+		color : goldenrod;
+		text-decoration : none;
+	}
+	a:hover{
+		color : red;
+	}
+	img{
+		position : relative;
+		top : 5px;
+	}
+	.tile{
+		float : left;
+		margin : 10px;
+		padding : 20px;
+		background : white;
+		max-width : 50%;
+		box-shadow : 2px 2px 9px grey;
+		transition : all ease-out 0.3s;
+		-o-transition : all ease-out 0.3s;
+		-moz-transition : all ease-out 0.3s;
+		-webkit-transition : all ease-out 0.3s;
+	}
+	.tile:hover{
+		transform : scale(1.2);
+		-o-transform : scale(1.2);
+		-moz-transform : scale(1.2);
+		-webkit-transform : scale(1.2);
+	}
+	#greetings{
+		float : none;
+		text-align : center;
+		margin-bottom : 50px;
+		transform : scale(1);
+		-o-transform : scale(1);
+		-moz-transform : scale(1);
+		-webkit-transform : scale(1);
+		max-width : 100%;
+	}
+	#content{
+		width : 70%;
+		margin : 0 auto;
+	}
+	#skills{
+		float : right;
+	}
+	</style>
+<canvas id="can"></canvas>
+<div class="tile" id="greetings">
+	<h1>Bienvenue sur mon CV en ligne</h1>
+</div>
+<div id="content">
+	<div class="tile">
+		<h2>Formation</h2>
+		<p>
+			<ul>
+				<li>Baccalauréat SSI (option physique) au lycée Livet</li>
+				<li>DUT Informatique à l'IUT de Nantes</li>
+				<li>Fomation Informatique Multimédia en alternance avec <a href="http://www.imie-ecole-informatique.fr/">IMIE</a></li>
+			</ul>
+		</p>
+	</div>
+	<div class="tile" id="skills">
+		<h2>Compétences</h2>
+		<p>
+			Les technologies web front-end m'ont toujours attiré et j'aime beaucoup jouer avec le javascipt.<br/>
+			Grâce aux possibilités de l'HTML5 et essentielement des canvas, j'ai réalisés un bon nombres de créations.
+			Vous trouverez ici une liste non exhaustive :
+			<ul>
+				<li><a href="crea/extract">Le jeu Extract</a></li>
+				<li><a href="crea/bigbang">Le Big-Bang</a></li>
+				<li><a href="crea/mmo">Mon projet de jeu multi-joueur</a> (dev en pause)</li>
+				<li><a href="crea/anim">Une utilisation du CSS3</a></li>
+				<li>...</li>
+			</ul>
+			Et bien sur aussi des projets proffessionel :
+			<ul>
+				<li><a href="http://www.zoodejurques.fr/index.php/fr/">Le zoo de Jurques</a> (Joomla!)</li>
+				<li><a href="http://eclatsdiffusion.fr/">Eclats Diffusion</a> (Prestashop)</li>
+			</ul>
+		</p>
+	</div>
+	<div class="tile">
+		<h2>Connaissance</h2>
+		<p>
+			web : Javascript, HTML/CSS, PHP, SQL<br/>
+			programmation : JAVA<br/>
+
+		</p>
+	</div>
+	<div class="tile">
+		<h2>Contact</h2>
+		<p>
+			tel : 06 60 22 37 72<br/>
+			mail : <a href="mailto:guillaume.martigny@free.fr">guillaume.martigny@free.fr</a><br/>
+			<br/>
+			Vous pouvez télécharger <a href="">mon CV version PDF</a>.
+		</p>
+	</div>
+	<div class="tile">
+		<h2>Autres liens</h2>
+		<p>
+			Si vous voulez encore plus d'informations, je suis sur
+			<a href="http://www.linkedin.com/in/guillaumemartigny"><img src="linkedin.png" alt="Linkedin"/></a>
+			ou <a href="http://fr.viadeo.com/fr/profile/guillaume.martigny"><img src="viadeo.png" alt="Viadeo"/></a>.
+		</p>
+	</div>
+</div>
+<script>
+var can = getById("can");
+var ctx = can.getContext("2d");
+
+var raf = 	requestAnimationFrame ||
+			webkitRequestAnimationFrame ||
+			mozRequestAnimationFrame ||
+			msRequestAnimationFrame ||
+			function(f){
+				return setInterval(f, 20);
+			};
+
+var dots = [];
+var mouse = {};
+window.onmousemove = function(e){
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+};
+window.onresize = function(){
+	can.width = document.body.clientWidth;
+	can.height = document.body.clientHeight;
+};
+
+function start(){
+	can.width = document.body.clientWidth;
+	can.height = document.body.clientHeight;
+
+	mouse.x = can.width/2;
+	mouse.y = can.height/2;
+
+	for(var i=0;i<8;++i){
+		dots.push({
+			pos : {
+				x : rand(can.width),
+				y : rand(can.width)
+			},
+			vit : {
+				x : 0,
+				y : 0
+			}
+		});
+	}
+	draw();
+}
+start();
+
+function draw(){
+	raf(draw);
+	ctx.globalAlpha = 0.07;
+	ctx.fillStyle = "#F5F5F5";
+	ctx.fillRect(0, 0, can.width, can.height);
+	ctx.globalAlpha = 1;
+	ctx.fillStyle = "#000000";
+	var e;
+	for(var i=0;i<dots.length;++i){
+		e = dots[i];
+		ctx.fillRect(dots[i].pos.x, dots[i].pos.y, 2, 2);
+		e.pos.x += e.vit.x;
+		e.pos.y += e.vit.y;
+		e.vit.x += (mouse.x - e.pos.x)*distance(e.pos, mouse)/90000*rand(10);
+		e.vit.y += (mouse.y - e.pos.y)*distance(e.pos, mouse)/90000*rand(10);
+
+		if(e.vit.x < -10 || 10 < e.vit.x) e.vit.x /= 1.2;
+		if(e.vit.y < -10 || 10 < e.vit.y) e.vit.y /= 1.2;
+	}
+}
+
+function distance(one, two){
+	return Math.sqrt(carre(one.x - two.x) + carre(one.y - two.y));
+}
+function carre(n){
+	return Math.pow(n, 2);
+}
+function rand(max){
+	return Math.random() * (max+1)<<0;
+}
+
+function getById(id){
+	return document.getElementById(id);
+}
+</script>
