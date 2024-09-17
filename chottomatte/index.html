@@ -68,12 +68,22 @@
         aspect-ratio: 1;
         background-color: var(--womb);
         border-radius: 50%;
-        animation: spin 12s infinite linear;
+        animation: spin 12s infinite linear,
+            glow 2s infinite ease-in-out alternate;
     }
 
     @keyframes spin {
         to {
             transform: rotate(360deg);
+        }
+    }
+
+    @keyframes glow {
+        from {
+            box-shadow: 0 0 0 var(--womb);
+        }
+        to {
+            box-shadow: 0 0 50px 10px var(--womb);
         }
     }
 
@@ -163,8 +173,9 @@
     </div>
 </div>
 <script>
-const start = new Date(2024, 3, 14);
-const due = new Date(2025, 1, 23);
+const due = new Date(2025, 5, 5);
+const start = new Date(due);
+start.setMonth(start.getMonth() - 9);
 const week = 7 * 24 * 3600 * 1000;
 const baby = document.getElementById("baby");
 const display = document.getElementById("percent");
